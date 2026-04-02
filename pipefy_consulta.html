@@ -13,42 +13,39 @@
   .status { margin-top: 10px; font-size: 13px; color: #666; }
   .error { color: red; }
   .success { color: green; }
+  label { font-weight: bold; font-size: 14px; }
 </style>
 </head>
 <body>
 <h2>🔍 Consulta de Campos — Pipefy</h2>
-<p>Cole seu token de API do Pipefy abaixo e clique em <strong>Consultar</strong>.</p>
+<p>Preencha o Pipe ID e seu token, depois clique em <strong>Consultar</strong>.</p>
 
-<input type="password" id="token" placeholder="Cole aqui seu token do Pipefy (ex: eyJh...)" />
+<label>Pipe ID</label>
+<input type="text" id="pipeid" placeholder="Ex: 304137242" />
+
+<label>Token do Pipefy</label>
+<input type="password" id="token" placeholder="Cole aqui seu token (ex: eyJh...)" />
+
 <button onclick="consultar()">Consultar Campos</button>
 <div class="status" id="status"></div>
 <pre id="resultado" style="display:none"></pre>
 
 <script>
 async function consultar() {
+  const pipeId = document.getElementById('pipeid').value.trim();
   const token = document.getElementById('token').value.trim();
   const status = document.getElementById('status');
   const resultado = document.getElementById('resultado');
 
-  if (!token) {
-    status.innerHTML = '<span class="error">⚠️ Por favor, cole seu token.</span>';
+  if (!pipeId || !token) {
+    status.innerHTML = '<span class="error">⚠️ Preencha o Pipe ID e o token.</span>';
     return;
   }
 
   status.innerHTML = 'Consultando...';
   resultado.style.display = 'none';
 
-  const query = `{
-    pipe(id: "307088005") {
-      start_form_fields {
-        id
-        label
-        type
-        options
-        required
-      }
-    }
-  }`;
+  const query = `{ pipe(id: "${pipeId}") { start_form_fields { id label type options required } } }`;
 
   try {
     const res = await fetch('https://api.pipefy.com/graphql', {
