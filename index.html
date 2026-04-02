@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitação de Pagamento</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #4a3f8f, #7c6fd4); color: white; padding: 24px 32px; }
+  .header h1 { font-size: 22px; font-weight: 600; }
+  .header p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+  .container { max-width: 860px; margin: 32px auto; padding: 0 20px 60px; }
+  .card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .card h2 { font-size: 15px; font-weight: 600; color: #4a3f8f; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ede9ff; display: flex; align-items: center; gap: 8px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+  .field label .req { color: #e74c3c; margin-left: 2px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; transition: border 0.2s; background: #fafafa; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #7c6fd4; background: white; }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field .hint { font-size: 11px; color: #888; margin-top: 4px; }
+  .field .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
+  .field .extracted.show { display: block; }
+  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+  .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+  .radio-group label:hover { border-color: #7c6fd4; background: #f5f3ff; }
+  .radio-group input[type=radio] { width: auto; }
+  .upload-area { border: 2px dashed #c5b8ff; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf9ff; position: relative; }
+  .upload-area:hover { border-color: #7c6fd4; background: #f0edff; }
+  .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-area .icon { font-size: 28px; }
+  .upload-area p { font-size: 13px; color: #666; margin-top: 6px; }
+  .upload-area .filename { font-size: 12px; color: #4a3f8f; font-weight: 600; margin-top: 6px; }
+  .analyzing { display: none; align-items: center; gap: 8px; font-size: 13px; color: #7c6fd4; margin-top: 10px; }
+  .analyzing.show { display: flex; }
+  .spinner { width: 16px; height: 16px; border: 2px solid #e0d9ff; border-top-color: #7c6fd4; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .extracted-data { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 10px; display: none; }
+  .extracted-data.show { display: block; }
+  .extracted-data h4 { font-size: 12px; color: #166534; font-weight: 600; margin-bottom: 8px; }
+  .extracted-data ul { list-style: none; }
+  .extracted-data ul li { font-size: 12px; color: #166534; padding: 2px 0; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .config-toggle { font-size: 12px; color: #7c6fd4; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
+  .config-panel { display: none; }
+  .config-panel.show { display: block; }
+  .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #4a3f8f, #7c6fd4); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit:hover { opacity: 0.9; }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
+  .toast.success { background: #16a34a; display: block; }
+  .toast.error { background: #dc2626; display: block; }
+  .toast.info { background: #7c6fd4; display: block; }
+  .progress { display: none; margin-top: 12px; }
+  .progress.show { display: block; }
+  .progress-bar { height: 6px; background: #ede9ff; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #4a3f8f, #7c6fd4); border-radius: 3px; transition: width 0.4s; }
+  .progress-label { font-size: 12px; color: #7c6fd4; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
+  <p>Preencha os campos abaixo. Anexe a NF e o boleto para preenchimento automático.</p>
+</div>
+
+<div class="container">
+
+  <!-- CONFIG -->
+  <div class="card">
+    <h2>⚙️ Configuração</h2>
+    <span class="config-toggle" onclick="toggleConfig()">▼ Mostrar configurações de API</span>
+    <div class="config-panel" id="configPanel">
+      <div class="field">
+        <label>Token do Pipefy</label>
+        <input type="password" id="pipefy_token" placeholder="eyJhbGci..." oninput="saveConfig()" />
+        <div class="hint">Salvo localmente no seu navegador.</div>
+      </div>
+      <div class="field">
+        <label>Chave API Claude (Anthropic)</label>
+        <input type="password" id="claude_token" placeholder="sk-ant-..." oninput="saveConfig()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- DADOS MANUAIS -->
+  <div class="card">
+    <h2>📋 Dados da Solicitação</h2>
+
+    <div class="field">
+      <label>Tipo de Solicitação <span class="req">*</span></label>
+      <select id="tipo_de_solicita_o_de_solicita_o">
+        <option value="">Selecione...</option>
+        <option value="Contas a Pagar">Contas a Pagar</option>
+        <option value="Reembolso">Reembolso</option>
+        <option value="Pagamento internacional">Pagamento internacional</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Frequência de Pagamento <span class="req">*</span></label>
+      <select id="qual_a_frequ_ncia_de_pagamento_deste_fornecedor">
+        <option value="">Selecione...</option>
+        <option>Semanal</option><option>Mensal</option><option>Bimestral </option>
+        <option>Trimestral</option><option>Quadrimestral </option><option>Semestral</option>
+        <option>Anual</option><option>Esporádico</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Possui rateio entre categoria ou centro de custo? <span class="req">*</span></label>
+      <select id="rateio_entre_uma_ou_mais_categorias">
+        <option value="">Selecione...</option>
+        <option>Sim</option><option>Não</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Centro de Custo <span class="req">*</span></label>
+        <select id="selecione_o_centro_de_custo">
+          <option value="">Selecione...</option>
+          <option>BI E INTEGRACOES CORPORATE</option><option>CCO GROWTH</option><option>COALITION CORPORATE</option>
+          <option>COMERCIAL GROWTH</option><option>COMERCIAL PPMF</option><option>CONTABILIDADE CORPORATE</option>
+          <option>CONTROLADORIA CORPORATE</option><option>CS GROWTH</option><option>CS PPMF</option>
+          <option>DADOS GROWTH</option><option>DADOS PPMF</option><option>DEVOPS PPMF</option>
+          <option>DIRETORIA CORPORATE</option><option>DP CORPORATE</option><option>FACILITIES CORPORATE</option>
+          <option>FINANCEIRO CORPORATE</option><option>LEGAL/COMPLIANCE CORPORATE</option><option>MARKETING GROWTH</option>
+          <option>MARKETING INSTITUCIONAL CORPORATE</option><option>MARKETING PPMF</option><option>OUTROS CORPORATE</option>
+          <option>PRE-VENDAS GROWTH</option><option>PRE-VENDAS PPMF</option><option>R&D GROWTH</option>
+          <option>R&D PPMF</option><option>RELGOV CORPORATE</option><option>REVOPS GROWTH</option>
+          <option>RH CORPORATE</option><option>SUPORTE GROWTH</option><option>SUPORTE PPMF</option>
+          <option>TECH GROWTH</option><option>TECH PPMF</option><option>POCs IA</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Categoria <span class="req">*</span></label>
+        <select id="tipo_de_pagamento">
+          <option value="">Selecione...</option>
+          <option>Ações de Clima e Cultura</option><option>Adiantamento ao fornecedor</option><option>Advocacia</option>
+          <option>Aluguel</option><option>Aluguel de Carro</option><option>Aluguel de Equipamentos</option>
+          <option>Aquisição de Equipamentos</option><option>Auditoria</option><option>Consultoria</option>
+          <option>Contabilidade</option><option>Correios</option><option>Cursos e Treinamentos</option>
+          <option>Feiras, Eventos</option><option>Licenças</option><option>Manutenção de Equipamentos</option>
+          <option>Manutenção de escritorio</option><option>Material de Consumo/Limpeza</option><option>Mídia Paga</option>
+          <option>Serviços de Limpeza</option><option>Serviços de terceiros</option><option>Servidores</option>
+          <option>Seguro</option><option>Telefonia</option><option>Internet</option>
+          <option>Passagens aéreas</option><option>Hospedagem</option><option>Energia elétrica</option>
+          <option>Copa e Cozinha</option><option>Taxas</option><option>Multas</option><option>Outros</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Descreva o motivo da solicitação <span class="req">*</span></label>
+      <textarea id="descreva_sua_solicita_o" placeholder="Descreva o motivo..."></textarea>
+    </div>
+  </div>
+
+  <!-- UPLOAD NF -->
+  <div class="card">
+    <h2>🧾 Nota Fiscal</h2>
+    <div class="field">
+      <label>Anexo da Nota Fiscal <span class="req">*</span></label>
+      <div class="upload-area" id="nf_area">
+        <input type="file" id="nf_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleNFUpload()" />
+        <div class="icon">📄</div>
+        <p>Clique ou arraste o PDF da Nota Fiscal aqui</p>
+        <div class="filename" id="nf_filename"></div>
+      </div>
+      <div class="analyzing" id="nf_analyzing"><div class="spinner"></div> Analisando nota fiscal com IA...</div>
+      <div class="extracted-data" id="nf_extracted">
+        <h4>✅ Dados extraídos automaticamente:</h4>
+        <ul id="nf_extracted_list"></ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Número da Nota Fiscal <span class="req">*</span></label>
+        <input type="text" id="n_mero_da_nota_fiscal" placeholder="Ex: 12345" />
+        <div class="extracted" id="ext_nf_num">✨ Preenchido automaticamente</div>
+      </div>
+      <div class="field">
+        <label>Data de Emissão da NF <span class="req">*</span></label>
+        <input type="date" id="data_de_emiss_o_da_nf" />
+        <div class="extracted" id="ext_nf_data">✨ Preenchido automaticamente</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Valor da NF <span class="req">*</span></label>
+        <input type="number" step="0.01" id="valor_restored" placeholder="Ex: 1500.00" />
+        <div class="extracted" id="ext_nf_valor">✨ Preenchido automaticamente</div>
+      </div>
+      <div class="field">
+        <label>Retenção de Imposto? <span class="req">*</span></label>
+        <select id="a_nota_fiscal_possui_reten_o_de_imposto">
+          <option value="">Selecione...</option>
+          <option>Sim</option><option>Não</option>
+        </select>
+        <div class="extracted" id="ext_nf_ret">✨ Preenchido automaticamente</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD BOLETO -->
+  <div class="card">
+    <h2>🏦 Boleto / Pagamento</h2>
+    <div class="field">
+      <label>Anexo do Boleto <span class="req">*</span></label>
+      <div class="upload-area" id="boleto_area">
+        <input type="file" id="boleto_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleBoletoUpload()" />
+        <div class="icon">📑</div>
+        <p>Clique ou arraste o PDF do Boleto aqui</p>
+        <div class="filename" id="boleto_filename"></div>
+      </div>
+      <div class="analyzing" id="boleto_analyzing"><div class="spinner"></div> Analisando boleto com IA...</div>
+      <div class="extracted-data" id="boleto_extracted">
+        <h4>✅ Dados extraídos automaticamente:</h4>
+        <ul id="boleto_extracted_list"></ul>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Forma de Pagamento <span class="req">*</span></label>
+      <div class="radio-group">
+        <label><input type="radio" name="forma_pgto" value="TED" id="fp_ted" /> TED</label>
+        <label><input type="radio" name="forma_pgto" value="BOLETO" id="fp_boleto" /> BOLETO</label>
+      </div>
+      <div class="extracted" id="ext_forma">✨ Preenchido automaticamente</div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Valor da Parcela <span class="req">*</span></label>
+        <input type="number" step="0.01" id="valor_da_parcela" placeholder="Ex: 1500.00" />
+        <div class="extracted" id="ext_valor_parcela">✨ Preenchido automaticamente</div>
+      </div>
+      <div class="field">
+        <label>Vencimento da Parcela <span class="req">*</span></label>
+        <input type="date" id="vencimento_da_parcela" />
+        <div class="extracted" id="ext_venc">✨ Preenchido automaticamente</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Código de Barras do Boleto <span class="req">*</span></label>
+      <textarea id="c_digo_de_barras_do_boleto_2" placeholder="Cole ou aguarde extração automática..." rows="2"></textarea>
+      <div class="extracted" id="ext_cod_barras">✨ Preenchido automaticamente</div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="card">
+    <div class="progress" id="progress_bar">
+      <div class="progress-bar"><div class="progress-fill" id="progress_fill" style="width:0%"></div></div>
+      <div class="progress-label" id="progress_label">Enviando...</div>
+    </div>
+    <button class="btn-submit" id="btn_submit" onclick="submitForm()">🚀 Criar Card no Pipefy</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- CONFIG ----
+function toggleConfig() {
+  const p = document.getElementById('configPanel');
+  p.classList.toggle('show');
+}
+function saveConfig() {
+  localStorage.setItem('pipefy_token', document.getElementById('pipefy_token').value);
+  localStorage.setItem('claude_token', document.getElementById('claude_token').value);
+}
+window.onload = () => {
+  document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
+  document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
+};
+
+// ---- TOAST ----
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  setTimeout(() => t.className = 'toast', 4000);
+}
+
+// ---- PDF TO BASE64 ----
+function fileToBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ---- CLAUDE EXTRACT ----
+async function extractWithClaude(base64, mediaType, prompt) {
+  const token = document.getElementById('claude_token').value.trim();
+  if (!token) { showToast('Configure a chave da API Claude nas configurações.', 'error'); return null; }
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': token,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-5',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
+          { type: 'text', text: prompt }
+        ]
+      }]
+    })
+  });
+  const data = await res.json();
+  try {
+    const text = data.content[0].text;
+    return JSON.parse(text.replace(/```json|```/g, '').trim());
+  } catch { return null; }
+}
+
+// ---- NF UPLOAD ----
+async function handleNFUpload() {
+  const file = document.getElementById('nf_file').files[0];
+  if (!file) return;
+  document.getElementById('nf_filename').textContent = file.name;
+  document.getElementById('nf_analyzing').classList.add('show');
+
+  try {
+    const b64 = await fileToBase64(file);
+    const result = await extractWithClaude(b64, file.type, `
+Analise esta nota fiscal e retorne APENAS um JSON com estes campos:
+{
+  "numero_nf": "número da nota fiscal",
+  "data_emissao": "YYYY-MM-DD",
+  "valor": 0.00,
+  "retencao_imposto": "Sim ou Não"
+}
+Retorne apenas o JSON, sem explicações.`);
+
+    document.getElementById('nf_analyzing').classList.remove('show');
+
+    if (result) {
+      if (result.numero_nf) { document.getElementById('n_mero_da_nota_fiscal').value = result.numero_nf; document.getElementById('ext_nf_num').classList.add('show'); }
+      if (result.data_emissao) { document.getElementById('data_de_emiss_o_da_nf').value = result.data_emissao; document.getElementById('ext_nf_data').classList.add('show'); }
+      if (result.valor) { document.getElementById('valor_restored').value = result.valor; document.getElementById('ext_nf_valor').classList.add('show'); }
+      if (result.retencao_imposto) { document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value = result.retencao_imposto; document.getElementById('ext_nf_ret').classList.add('show'); }
+
+      const list = document.getElementById('nf_extracted_list');
+      list.innerHTML = `
+        <li>📌 Número NF: <b>${result.numero_nf || '-'}</b></li>
+        <li>📅 Data emissão: <b>${result.data_emissao || '-'}</b></li>
+        <li>💰 Valor: <b>R$ ${result.valor || '-'}</b></li>
+        <li>🧾 Retenção: <b>${result.retencao_imposto || '-'}</b></li>`;
+      document.getElementById('nf_extracted').classList.add('show');
+      showToast('Nota fiscal analisada com sucesso!', 'success');
+    } else {
+      showToast('Não foi possível extrair dados da NF. Preencha manualmente.', 'error');
+    }
+  } catch(e) {
+    document.getElementById('nf_analyzing').classList.remove('show');
+    showToast('Erro ao analisar NF: ' + e.message, 'error');
+  }
+}
+
+// ---- BOLETO UPLOAD ----
+async function handleBoletoUpload() {
+  const file = document.getElementById('boleto_file').files[0];
+  if (!file) return;
+  document.getElementById('boleto_filename').textContent = file.name;
+  document.getElementById('boleto_analyzing').classList.add('show');
+
+  try {
+    const b64 = await fileToBase64(file);
+    const result = await extractWithClaude(b64, file.type, `
+Analise este boleto bancário e retorne APENAS um JSON com estes campos:
+{
+  "codigo_barras": "código de barras completo",
+  "valor_parcela": 0.00,
+  "vencimento": "YYYY-MM-DD",
+  "forma_pagamento": "TED ou BOLETO"
+}
+Retorne apenas o JSON, sem explicações.`);
+
+    document.getElementById('boleto_analyzing').classList.remove('show');
+
+    if (result) {
+      if (result.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value = result.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
+      if (result.valor_parcela) { document.getElementById('valor_da_parcela').value = result.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
+      if (result.vencimento) { document.getElementById('vencimento_da_parcela').value = result.vencimento; document.getElementById('ext_venc').classList.add('show'); }
+      if (result.forma_pagamento) {
+        const fp = result.forma_pagamento.toUpperCase();
+        if (fp === 'TED') document.getElementById('fp_ted').checked = true;
+        else document.getElementById('fp_boleto').checked = true;
+        document.getElementById('ext_forma').classList.add('show');
+      }
+
+      const list = document.getElementById('boleto_extracted_list');
+      list.innerHTML = `
+        <li>🔢 Código de barras: <b>${result.codigo_barras ? result.codigo_barras.substring(0,20)+'...' : '-'}</b></li>
+        <li>💰 Valor parcela: <b>R$ ${result.valor_parcela || '-'}</b></li>
+        <li>📅 Vencimento: <b>${result.vencimento || '-'}</b></li>
+        <li>💳 Forma pgto: <b>${result.forma_pagamento || '-'}</b></li>`;
+      document.getElementById('boleto_extracted').classList.add('show');
+      showToast('Boleto analisado com sucesso!', 'success');
+    } else {
+      showToast('Não foi possível extrair dados do boleto. Preencha manualmente.', 'error');
+    }
+  } catch(e) {
+    document.getElementById('boleto_analyzing').classList.remove('show');
+    showToast('Erro ao analisar boleto: ' + e.message, 'error');
+  }
+}
+
+// ---- PROGRESS ----
+function setProgress(pct, label) {
+  document.getElementById('progress_bar').classList.add('show');
+  document.getElementById('progress_fill').style.width = pct + '%';
+  document.getElementById('progress_label').textContent = label;
+}
+
+// ---- PIPEFY GRAPHQL ----
+async function pipefyQuery(query, variables) {
+  const token = document.getElementById('pipefy_token').value.trim();
+  const res = await fetch('https://api.pipefy.com/graphql', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables })
+  });
+  return await res.json();
+}
+
+// ---- SUBMIT ----
+async function submitForm() {
+  const token = document.getElementById('pipefy_token').value.trim();
+  if (!token) { showToast('Configure o token do Pipefy nas configurações!', 'error'); return; }
+
+  const btn = document.getElementById('btn_submit');
+  btn.disabled = true;
+
+  try {
+    // 1. Criar parcela no pipe de pagamentos parcelados
+    setProgress(20, 'Criando registro de parcela...');
+    const formaSelected = document.querySelector('input[name="forma_pgto"]:checked');
+    const forma = formaSelected ? formaSelected.value : '';
+    const vencParcela = document.getElementById('vencimento_da_parcela').value;
+
+    const parcelaFields = [
+      { fieldId: 'forma_de_pagamento_da_parcela', fieldValue: forma },
+      { fieldId: 'valor_da_parcela', fieldValue: document.getElementById('valor_da_parcela').value },
+      { fieldId: 'vencimento_da_parcela', fieldValue: vencParcela ? vencParcela + ' 12:00' : '' },
+      { fieldId: 'insira_o_c_digo_de_barras_do_boleto_da_parcela', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
+    ].filter(f => f.fieldValue);
+
+    const parcelaResult = await pipefyQuery(`
+      mutation($input: CreateCardInput!) {
+        createCard(input: $input) { card { id title } }
+      }`, {
+      input: {
+        pipe_id: "304137242",
+        fields_attributes: parcelaFields
+      }
+    });
+
+    const parcelaId = parcelaResult?.data?.createCard?.card?.id;
+    if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(parcelaResult));
+
+    // 2. Criar card principal
+    setProgress(60, 'Criando solicitação no Pipefy...');
+    const nfDate = document.getElementById('data_de_emiss_o_da_nf').value;
+
+    const mainFields = [
+      { fieldId: 'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value },
+      { fieldId: 'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value },
+      { fieldId: 'rateio_entre_uma_ou_mais_categorias', fieldValue: document.getElementById('rateio_entre_uma_ou_mais_categorias').value },
+      { fieldId: 'selecione_o_centro_de_custo', fieldValue: document.getElementById('selecione_o_centro_de_custo').value },
+      { fieldId: 'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value },
+      { fieldId: 'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value },
+      { fieldId: 'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value },
+      { fieldId: 'data_de_emiss_o_da_nf', fieldValue: nfDate },
+      { fieldId: 'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value },
+      { fieldId: 'valor_restored', fieldValue: document.getElementById('valor_restored').value },
+      { fieldId: 'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
+      { fieldId: 'vencimento_do_pagamento', fieldValue: vencParcela ? vencParcela + ' 12:00' : '' },
+      { fieldId: 'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId },
+    ].filter(f => f.fieldValue);
+
+    const cardResult = await pipefyQuery(`
+      mutation($input: CreateCardInput!) {
+        createCard(input: $input) { card { id title url } }
+      }`, {
+      input: {
+        pipe_id: "307088005",
+        fields_attributes: mainFields
+      }
+    });
+
+    const card = cardResult?.data?.createCard?.card;
+    if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(cardResult));
+
+    setProgress(100, 'Card criado com sucesso!');
+    showToast(`✅ Card criado! ID: ${card.id}`, 'success');
+
+    setTimeout(() => {
+      if (card.url) window.open(card.url, '_blank');
+    }, 1000);
+
+  } catch(e) {
+    showToast('❌ Erro: ' + e.message, 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
