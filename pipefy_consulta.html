@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Consulta Campos Pipefy</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; background: #f5f5f5; }
+  h2 { color: #4a3f8f; }
+  input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+  button { background: #4a3f8f; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; }
+  button:hover { background: #3a2f7f; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; margin-top: 20px; max-height: 500px; overflow-y: auto; }
+  .status { margin-top: 10px; font-size: 13px; color: #666; }
+  .error { color: red; }
+  .success { color: green; }
+</style>
+</head>
+<body>
+<h2>🔍 Consulta de Campos — Pipefy</h2>
+<p>Cole seu token de API do Pipefy abaixo e clique em <strong>Consultar</strong>.</p>
+
+<input type="password" id="token" placeholder="Cole aqui seu token do Pipefy (ex: eyJh...)" />
+<button onclick="consultar()">Consultar Campos</button>
+<div class="status" id="status"></div>
+<pre id="resultado" style="display:none"></pre>
+
+<script>
+async function consultar() {
+  const token = document.getElementById('token').value.trim();
+  const status = document.getElementById('status');
+  const resultado = document.getElementById('resultado');
+
+  if (!token) {
+    status.innerHTML = '<span class="error">⚠️ Por favor, cole seu token.</span>';
+    return;
+  }
+
+  status.innerHTML = 'Consultando...';
+  resultado.style.display = 'none';
+
+  const query = `{
+    pipe(id: "307088005") {
+      start_form_fields {
+        id
+        label
+        type
+        options
+        required
+      }
+    }
+  }`;
+
+  try {
+    const res = await fetch('https://api.pipefy.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await res.json();
+
+    if (data.errors) {
+      status.innerHTML = `<span class="error">❌ Erro: ${data.errors[0].message}</span>`;
+      return;
+    }
+
+    status.innerHTML = '<span class="success">✅ Sucesso! Copie o resultado abaixo e envie para o Claude.</span>';
+    resultado.style.display = 'block';
+    resultado.textContent = JSON.stringify(data, null, 2);
+
+  } catch (e) {
+    status.innerHTML = `<span class="error">❌ Erro de conexão: ${e.message}</span>`;
+  }
+}
+</script>
+</body>
+</html>
