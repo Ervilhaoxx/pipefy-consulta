@@ -63,20 +63,15 @@
 <body>
 
 <div class="header">
-  <svg width="170" height="44" viewBox="0 0 170 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:4px">
-    <!-- Ícone Logcomex: L shape branco + triângulo laranja -->
-    <!-- L branco externo -->
-    <path d="M2 6 L2 38 L22 38 L22 30 L10 30 L10 6 Z" fill="white"/>
-    <!-- Quadrado interno removido (buraco no L) -->
-    <path d="M10 14 L10 30 L22 30 L22 14 Z" fill="white" opacity="0.0"/>
-    <!-- Triângulo laranja (canto superior direito) -->
-    <path d="M14 6 L26 6 L26 20 Z" fill="#FE8F1C"/>
-    <!-- Sombra/detalhe cinza no canto inferior direito do ícone -->
-    <path d="M14 22 L22 22 L22 30 L14 30 Z" fill="white" opacity="0.3"/>
-    <!-- Texto -->
-    <text x="34" y="30" font-family="'Segoe UI', Arial, sans-serif" font-weight="700" font-size="21" fill="white" letter-spacing="-0.3">logcomex</text>
-    <text x="156" y="15" font-family="'Segoe UI', Arial, sans-serif" font-size="8" fill="white" opacity="0.85">™</text>
-  </svg>
+  <div style="display:flex;align-items:center;gap:10px;padding-right:20px;border-right:2px solid rgba(255,255,255,0.3)">
+    <div style="position:relative;width:32px;height:32px;flex-shrink:0">
+      <div style="position:absolute;left:0;top:0;width:20px;height:32px;background:white;border-radius:2px"></div>
+      <div style="position:absolute;left:0;top:0;width:32px;height:20px;background:white;border-radius:2px"></div>
+      <div style="position:absolute;left:8px;top:0;width:24px;height:20px;background:#FE8F1C;border-radius:2px;clip-path:polygon(0 0, 100% 0, 100% 100%)"></div>
+      <div style="position:absolute;left:8px;top:8px;width:16px;height:16px;background:linear-gradient(135deg,#6613D0,#5500bb)"></div>
+    </div>
+    <span style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px;font-family:'Segoe UI',Arial,sans-serif">logcomex<sup style="font-size:10px;font-weight:400">™</sup></span>
+  </div>
   <div class="header-text">
     <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
     <p>Preencha os campos abaixo. Anexe a NF e o boleto para preenchimento automático.</p>
