@@ -63,14 +63,20 @@
 <body>
 
 <div class="header">
-  <div style="display:flex;align-items:center;gap:10px;padding-right:20px;border-right:2px solid rgba(255,255,255,0.3)">
-    <div style="position:relative;width:32px;height:32px;flex-shrink:0">
-      <div style="position:absolute;left:0;top:0;width:20px;height:32px;background:white;border-radius:2px"></div>
-      <div style="position:absolute;left:0;top:0;width:32px;height:20px;background:white;border-radius:2px"></div>
-      <div style="position:absolute;left:8px;top:0;width:24px;height:20px;background:#FE8F1C;border-radius:2px;clip-path:polygon(0 0, 100% 0, 100% 100%)"></div>
-      <div style="position:absolute;left:8px;top:8px;width:16px;height:16px;background:linear-gradient(135deg,#6613D0,#5500bb)"></div>
-    </div>
-    <span style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px;font-family:'Segoe UI',Arial,sans-serif">logcomex<sup style="font-size:10px;font-weight:400">™</sup></span>
+  <div style="display:flex;align-items:center;gap:12px;padding-right:20px;border-right:2px solid rgba(255,255,255,0.3)">
+    <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+      <!-- Triângulo laranja (canto superior direito) -->
+      <polygon points="35,5 95,5 95,60 35,60" fill="#FE8F1C"/>
+      <!-- Quadrado central transparente (recorte) -->
+      <rect x="35" y="25" width="45" height="45" fill="white" opacity="0.15"/>
+      <!-- L branco (esquerda + baixo) -->
+      <path d="M5,5 L30,5 L30,70 L95,70 L95,95 L5,95 Z" fill="white"/>
+      <!-- Quadrado pequeno branco canto inferior direito -->
+      <rect x="70" y="75" width="20" height="18" fill="white"/>
+      <!-- Quadrado central roxo (buraco no meio) -->
+      <rect x="30" y="25" width="45" height="45" fill="#6613D0"/>
+    </svg>
+    <span style="font-size:21px;font-weight:800;color:white;letter-spacing:-0.5px;font-family:'Segoe UI',Arial,sans-serif">logcomex<sup style="font-size:9px;font-weight:400;margin-left:1px">™</sup></span>
   </div>
   <div class="header-text">
     <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
