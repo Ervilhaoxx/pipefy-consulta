@@ -7,17 +7,18 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
-  .header { background: linear-gradient(135deg, #4a3f8f, #7c6fd4); color: white; padding: 24px 32px; }
-  .header h1 { font-size: 22px; font-weight: 600; }
-  .header p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+  .header { background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; padding: 24px 32px; display: flex; align-items: center; gap: 20px; }
+  .header-text h1 { font-size: 22px; font-weight: 600; }
+  .header-text p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+  .header-logo { font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px; border-right: 2px solid rgba(255,255,255,0.3); padding-right: 20px; }
   .container { max-width: 860px; margin: 32px auto; padding: 0 20px 60px; }
   .card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-  .card h2 { font-size: 15px; font-weight: 600; color: #4a3f8f; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ede9ff; display: flex; align-items: center; gap: 8px; }
+  .card h2 { font-size: 15px; font-weight: 600; color: #6613D0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f3e8ff; display: flex; align-items: center; gap: 8px; }
   .field { margin-bottom: 18px; }
   .field label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
   .field label .req { color: #e74c3c; margin-left: 2px; }
   .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; transition: border 0.2s; background: #fafafa; }
-  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #7c6fd4; background: white; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6613D0; background: white; }
   .field textarea { resize: vertical; min-height: 80px; }
   .field .hint { font-size: 11px; color: #888; margin-top: 4px; }
   .field .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
@@ -26,15 +27,15 @@
   .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
   .radio-group label:hover { border-color: #7c6fd4; background: #f5f3ff; }
   .radio-group input[type=radio] { width: auto; }
-  .upload-area { border: 2px dashed #c5b8ff; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf9ff; position: relative; }
-  .upload-area:hover { border-color: #7c6fd4; background: #f0edff; }
+  .upload-area { border: 2px dashed #6613D0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf6ff; position: relative; }
+  .upload-area:hover { border-color: #FE8F1C; background: #fff8f0; }
   .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .upload-area .icon { font-size: 28px; }
   .upload-area p { font-size: 13px; color: #666; margin-top: 6px; }
-  .upload-area .filename { font-size: 12px; color: #4a3f8f; font-weight: 600; margin-top: 6px; }
-  .analyzing { display: none; align-items: center; gap: 8px; font-size: 13px; color: #7c6fd4; margin-top: 10px; }
+  .upload-area .filename { font-size: 12px; color: #6613D0; font-weight: 600; margin-top: 6px; }
+  .analyzing { display: none; align-items: center; gap: 8px; font-size: 13px; color: #6613D0; margin-top: 10px; }
   .analyzing.show { display: flex; }
-  .spinner { width: 16px; height: 16px; border: 2px solid #e0d9ff; border-top-color: #7c6fd4; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .spinner { width: 16px; height: 16px; border: 2px solid #f3e8ff; border-top-color: #6613D0; border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .extracted-data { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 10px; display: none; }
   .extracted-data.show { display: block; }
@@ -45,25 +46,41 @@
   .config-toggle { font-size: 12px; color: #7c6fd4; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
   .config-panel { display: none; }
   .config-panel.show { display: block; }
-  .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #4a3f8f, #7c6fd4); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
   .btn-submit:hover { opacity: 0.9; }
   .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
   .toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
   .toast.success { background: #16a34a; display: block; }
   .toast.error { background: #dc2626; display: block; }
   .toast.info { background: #7c6fd4; display: block; }
-  .progress { display: none; margin-top: 12px; }
+  .progress { display: none; margin-bottom: 12px; }
   .progress.show { display: block; }
   .progress-bar { height: 6px; background: #ede9ff; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #4a3f8f, #7c6fd4); border-radius: 3px; transition: width 0.4s; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #6613D0, #FE8F1C); border-radius: 3px; transition: width 0.4s; }
   .progress-label { font-size: 12px; color: #7c6fd4; margin-top: 6px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
-  <p>Preencha os campos abaixo. Anexe a NF e o boleto para preenchimento automático.</p>
+  <svg width="170" height="44" viewBox="0 0 170 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:4px">
+    <!-- Ícone Logcomex: L shape branco + triângulo laranja -->
+    <!-- L branco externo -->
+    <path d="M2 6 L2 38 L22 38 L22 30 L10 30 L10 6 Z" fill="white"/>
+    <!-- Quadrado interno removido (buraco no L) -->
+    <path d="M10 14 L10 30 L22 30 L22 14 Z" fill="white" opacity="0.0"/>
+    <!-- Triângulo laranja (canto superior direito) -->
+    <path d="M14 6 L26 6 L26 20 Z" fill="#FE8F1C"/>
+    <!-- Sombra/detalhe cinza no canto inferior direito do ícone -->
+    <path d="M14 22 L22 22 L22 30 L14 30 Z" fill="white" opacity="0.3"/>
+    <!-- Texto -->
+    <text x="34" y="30" font-family="'Segoe UI', Arial, sans-serif" font-weight="700" font-size="21" fill="white" letter-spacing="-0.3">logcomex</text>
+    <text x="156" y="15" font-family="'Segoe UI', Arial, sans-serif" font-size="8" fill="white" opacity="0.85">™</text>
+  </svg>
+  <div class="header-text">
+    <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
+    <p>Preencha os campos abaixo. Anexe a NF e o boleto para preenchimento automático.</p>
+  </div>
 </div>
 
 <div class="container">
@@ -81,6 +98,7 @@
       <div class="field">
         <label>Chave API Claude (Anthropic)</label>
         <input type="password" id="claude_token" placeholder="sk-ant-..." oninput="saveConfig()" />
+        <div class="hint">Salvo localmente no seu navegador.</div>
       </div>
     </div>
   </div>
@@ -103,8 +121,8 @@
       <label>Frequência de Pagamento <span class="req">*</span></label>
       <select id="qual_a_frequ_ncia_de_pagamento_deste_fornecedor">
         <option value="">Selecione...</option>
-        <option>Semanal</option><option>Mensal</option><option>Bimestral </option>
-        <option>Trimestral</option><option>Quadrimestral </option><option>Semestral</option>
+        <option>Semanal</option><option>Mensal</option><option>Bimestral</option>
+        <option>Trimestral</option><option>Quadrimestral</option><option>Semestral</option>
         <option>Anual</option><option>Esporádico</option>
       </select>
     </div>
@@ -164,7 +182,7 @@
     <h2>🧾 Nota Fiscal</h2>
     <div class="field">
       <label>Anexo da Nota Fiscal <span class="req">*</span></label>
-      <div class="upload-area" id="nf_area">
+      <div class="upload-area">
         <input type="file" id="nf_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleNFUpload()" />
         <div class="icon">📄</div>
         <p>Clique ou arraste o PDF da Nota Fiscal aqui</p>
@@ -212,7 +230,7 @@
     <h2>🏦 Boleto / Pagamento</h2>
     <div class="field">
       <label>Anexo do Boleto <span class="req">*</span></label>
-      <div class="upload-area" id="boleto_area">
+      <div class="upload-area">
         <input type="file" id="boleto_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleBoletoUpload()" />
         <div class="icon">📑</div>
         <p>Clique ou arraste o PDF do Boleto aqui</p>
@@ -268,10 +286,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ---- CONFIG ----
 function toggleConfig() {
-  const p = document.getElementById('configPanel');
-  p.classList.toggle('show');
+  document.getElementById('configPanel').classList.toggle('show');
 }
 function saveConfig() {
   localStorage.setItem('pipefy_token', document.getElementById('pipefy_token').value);
@@ -282,7 +298,6 @@ window.onload = () => {
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
 };
 
-// ---- TOAST ----
 function showToast(msg, type='info') {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -290,7 +305,6 @@ function showToast(msg, type='info') {
   setTimeout(() => t.className = 'toast', 4000);
 }
 
-// ---- PDF TO BASE64 ----
 function fileToBase64(file) {
   return new Promise((res, rej) => {
     const r = new FileReader();
@@ -300,10 +314,14 @@ function fileToBase64(file) {
   });
 }
 
-// ---- CLAUDE EXTRACT ----
 async function extractWithClaude(base64, mediaType, prompt) {
   const token = document.getElementById('claude_token').value.trim();
   if (!token) { showToast('Configure a chave da API Claude nas configurações.', 'error'); return null; }
+
+  const isImage = mediaType.startsWith('image/');
+  const contentBlock = isImage
+    ? { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } }
+    : { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } };
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -314,15 +332,9 @@ async function extractWithClaude(base64, mediaType, prompt) {
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-5',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'document', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          { type: 'text', text: prompt }
-        ]
-      }]
+      messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
     })
   });
   const data = await res.json();
@@ -332,107 +344,64 @@ async function extractWithClaude(base64, mediaType, prompt) {
   } catch { return null; }
 }
 
-// ---- NF UPLOAD ----
 async function handleNFUpload() {
   const file = document.getElementById('nf_file').files[0];
   if (!file) return;
   document.getElementById('nf_filename').textContent = file.name;
   document.getElementById('nf_analyzing').classList.add('show');
-
   try {
     const b64 = await fileToBase64(file);
-    const result = await extractWithClaude(b64, file.type, `
-Analise esta nota fiscal e retorne APENAS um JSON com estes campos:
-{
-  "numero_nf": "número da nota fiscal",
-  "data_emissao": "YYYY-MM-DD",
-  "valor": 0.00,
-  "retencao_imposto": "Sim ou Não"
-}
+    const result = await extractWithClaude(b64, file.type, `Analise esta nota fiscal e retorne APENAS um JSON:
+{"numero_nf":"número da NF","data_emissao":"YYYY-MM-DD","valor":0.00,"retencao_imposto":"Sim ou Não"}
 Retorne apenas o JSON, sem explicações.`);
-
     document.getElementById('nf_analyzing').classList.remove('show');
-
     if (result) {
       if (result.numero_nf) { document.getElementById('n_mero_da_nota_fiscal').value = result.numero_nf; document.getElementById('ext_nf_num').classList.add('show'); }
       if (result.data_emissao) { document.getElementById('data_de_emiss_o_da_nf').value = result.data_emissao; document.getElementById('ext_nf_data').classList.add('show'); }
       if (result.valor) { document.getElementById('valor_restored').value = result.valor; document.getElementById('ext_nf_valor').classList.add('show'); }
       if (result.retencao_imposto) { document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value = result.retencao_imposto; document.getElementById('ext_nf_ret').classList.add('show'); }
-
       const list = document.getElementById('nf_extracted_list');
-      list.innerHTML = `
-        <li>📌 Número NF: <b>${result.numero_nf || '-'}</b></li>
-        <li>📅 Data emissão: <b>${result.data_emissao || '-'}</b></li>
-        <li>💰 Valor: <b>R$ ${result.valor || '-'}</b></li>
-        <li>🧾 Retenção: <b>${result.retencao_imposto || '-'}</b></li>`;
+      list.innerHTML = `<li>📌 Número NF: <b>${result.numero_nf||'-'}</b></li><li>📅 Data: <b>${result.data_emissao||'-'}</b></li><li>💰 Valor: <b>R$ ${result.valor||'-'}</b></li><li>🧾 Retenção: <b>${result.retencao_imposto||'-'}</b></li>`;
       document.getElementById('nf_extracted').classList.add('show');
-      showToast('Nota fiscal analisada com sucesso!', 'success');
-    } else {
-      showToast('Não foi possível extrair dados da NF. Preencha manualmente.', 'error');
-    }
-  } catch(e) {
-    document.getElementById('nf_analyzing').classList.remove('show');
-    showToast('Erro ao analisar NF: ' + e.message, 'error');
-  }
+      showToast('Nota fiscal analisada!', 'success');
+    } else { showToast('Não foi possível extrair dados. Preencha manualmente.', 'error'); }
+  } catch(e) { document.getElementById('nf_analyzing').classList.remove('show'); showToast('Erro: ' + e.message, 'error'); }
 }
 
-// ---- BOLETO UPLOAD ----
 async function handleBoletoUpload() {
   const file = document.getElementById('boleto_file').files[0];
   if (!file) return;
   document.getElementById('boleto_filename').textContent = file.name;
   document.getElementById('boleto_analyzing').classList.add('show');
-
   try {
     const b64 = await fileToBase64(file);
-    const result = await extractWithClaude(b64, file.type, `
-Analise este boleto bancário e retorne APENAS um JSON com estes campos:
-{
-  "codigo_barras": "código de barras completo",
-  "valor_parcela": 0.00,
-  "vencimento": "YYYY-MM-DD",
-  "forma_pagamento": "TED ou BOLETO"
-}
+    const result = await extractWithClaude(b64, file.type, `Analise este boleto e retorne APENAS um JSON:
+{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD","forma_pagamento":"TED ou BOLETO"}
 Retorne apenas o JSON, sem explicações.`);
-
     document.getElementById('boleto_analyzing').classList.remove('show');
-
     if (result) {
       if (result.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value = result.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
       if (result.valor_parcela) { document.getElementById('valor_da_parcela').value = result.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
       if (result.vencimento) { document.getElementById('vencimento_da_parcela').value = result.vencimento; document.getElementById('ext_venc').classList.add('show'); }
       if (result.forma_pagamento) {
         const fp = result.forma_pagamento.toUpperCase();
-        if (fp === 'TED') document.getElementById('fp_ted').checked = true;
-        else document.getElementById('fp_boleto').checked = true;
+        document.getElementById(fp === 'TED' ? 'fp_ted' : 'fp_boleto').checked = true;
         document.getElementById('ext_forma').classList.add('show');
       }
-
       const list = document.getElementById('boleto_extracted_list');
-      list.innerHTML = `
-        <li>🔢 Código de barras: <b>${result.codigo_barras ? result.codigo_barras.substring(0,20)+'...' : '-'}</b></li>
-        <li>💰 Valor parcela: <b>R$ ${result.valor_parcela || '-'}</b></li>
-        <li>📅 Vencimento: <b>${result.vencimento || '-'}</b></li>
-        <li>💳 Forma pgto: <b>${result.forma_pagamento || '-'}</b></li>`;
+      list.innerHTML = `<li>🔢 Código: <b>${result.codigo_barras ? result.codigo_barras.substring(0,25)+'...' : '-'}</b></li><li>💰 Valor: <b>R$ ${result.valor_parcela||'-'}</b></li><li>📅 Vencimento: <b>${result.vencimento||'-'}</b></li><li>💳 Forma: <b>${result.forma_pagamento||'-'}</b></li>`;
       document.getElementById('boleto_extracted').classList.add('show');
-      showToast('Boleto analisado com sucesso!', 'success');
-    } else {
-      showToast('Não foi possível extrair dados do boleto. Preencha manualmente.', 'error');
-    }
-  } catch(e) {
-    document.getElementById('boleto_analyzing').classList.remove('show');
-    showToast('Erro ao analisar boleto: ' + e.message, 'error');
-  }
+      showToast('Boleto analisado!', 'success');
+    } else { showToast('Não foi possível extrair dados. Preencha manualmente.', 'error'); }
+  } catch(e) { document.getElementById('boleto_analyzing').classList.remove('show'); showToast('Erro: ' + e.message, 'error'); }
 }
 
-// ---- PROGRESS ----
 function setProgress(pct, label) {
   document.getElementById('progress_bar').classList.add('show');
   document.getElementById('progress_fill').style.width = pct + '%';
   document.getElementById('progress_label').textContent = label;
 }
 
-// ---- PIPEFY GRAPHQL ----
 async function pipefyQuery(query, variables) {
   const token = document.getElementById('pipefy_token').value.trim();
   const res = await fetch('https://api.pipefy.com/graphql', {
@@ -443,19 +412,14 @@ async function pipefyQuery(query, variables) {
   return await res.json();
 }
 
-// ---- SUBMIT ----
 async function submitForm() {
   const token = document.getElementById('pipefy_token').value.trim();
-  if (!token) { showToast('Configure o token do Pipefy nas configurações!', 'error'); return; }
-
+  if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
   const btn = document.getElementById('btn_submit');
   btn.disabled = true;
-
   try {
-    // 1. Criar parcela no pipe de pagamentos parcelados
     setProgress(20, 'Criando registro de parcela...');
-    const formaSelected = document.querySelector('input[name="forma_pgto"]:checked');
-    const forma = formaSelected ? formaSelected.value : '';
+    const forma = document.querySelector('input[name="forma_pgto"]:checked')?.value || '';
     const vencParcela = document.getElementById('vencimento_da_parcela').value;
 
     const parcelaFields = [
@@ -465,23 +429,13 @@ async function submitForm() {
       { fieldId: 'insira_o_c_digo_de_barras_do_boleto_da_parcela', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
     ].filter(f => f.fieldValue);
 
-    const parcelaResult = await pipefyQuery(`
-      mutation($input: CreateCardInput!) {
-        createCard(input: $input) { card { id title } }
-      }`, {
-      input: {
-        pipe_id: "304137242",
-        fields_attributes: parcelaFields
-      }
-    });
+    const parcelaResult = await pipefyQuery(`mutation($input: CreateCardInput!) { createCard(input: $input) { card { id } } }`,
+      { input: { pipe_id: "304137242", fields_attributes: parcelaFields } });
 
     const parcelaId = parcelaResult?.data?.createCard?.card?.id;
-    if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(parcelaResult));
+    if (!parcelaId) throw new Error('Erro ao criar parcela.');
 
-    // 2. Criar card principal
     setProgress(60, 'Criando solicitação no Pipefy...');
-    const nfDate = document.getElementById('data_de_emiss_o_da_nf').value;
-
     const mainFields = [
       { fieldId: 'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value },
       { fieldId: 'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value },
@@ -490,7 +444,7 @@ async function submitForm() {
       { fieldId: 'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value },
       { fieldId: 'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value },
       { fieldId: 'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value },
-      { fieldId: 'data_de_emiss_o_da_nf', fieldValue: nfDate },
+      { fieldId: 'data_de_emiss_o_da_nf', fieldValue: document.getElementById('data_de_emiss_o_da_nf').value },
       { fieldId: 'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value },
       { fieldId: 'valor_restored', fieldValue: document.getElementById('valor_restored').value },
       { fieldId: 'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
@@ -498,25 +452,15 @@ async function submitForm() {
       { fieldId: 'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId },
     ].filter(f => f.fieldValue);
 
-    const cardResult = await pipefyQuery(`
-      mutation($input: CreateCardInput!) {
-        createCard(input: $input) { card { id title url } }
-      }`, {
-      input: {
-        pipe_id: "307088005",
-        fields_attributes: mainFields
-      }
-    });
+    const cardResult = await pipefyQuery(`mutation($input: CreateCardInput!) { createCard(input: $input) { card { id title url } } }`,
+      { input: { pipe_id: "307088005", fields_attributes: mainFields } });
 
     const card = cardResult?.data?.createCard?.card;
     if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(cardResult));
 
-    setProgress(100, 'Card criado com sucesso!');
-    showToast(`✅ Card criado! ID: ${card.id}`, 'success');
-
-    setTimeout(() => {
-      if (card.url) window.open(card.url, '_blank');
-    }, 1000);
+    setProgress(100, '✅ Card criado com sucesso!');
+    showToast(`✅ Card #${card.id} criado no Pipefy!`, 'success');
+    setTimeout(() => { if (card.url) window.open(card.url, '_blank'); }, 1000);
 
   } catch(e) {
     showToast('❌ Erro: ' + e.message, 'error');
