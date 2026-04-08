@@ -7,25 +7,23 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
-  .header { background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; padding: 24px 32px; display: flex; align-items: center; gap: 20px; }
-  .header-text h1 { font-size: 22px; font-weight: 600; }
+  .header { background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
+  .header-text h1 { font-size: 20px; font-weight: 600; }
   .header-text p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
-  .header-logo { font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px; border-right: 2px solid rgba(255,255,255,0.3); padding-right: 20px; }
-  .container { max-width: 860px; margin: 32px auto; padding: 0 20px 60px; }
+  .container { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
   .card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
   .card h2 { font-size: 15px; font-weight: 600; color: #6613D0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f3e8ff; display: flex; align-items: center; gap: 8px; }
   .field { margin-bottom: 18px; }
   .field label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
-  .field label .req { color: #e74c3c; margin-left: 2px; }
+  .req { color: #e74c3c; margin-left: 2px; }
   .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; transition: border 0.2s; background: #fafafa; }
   .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6613D0; background: white; }
   .field textarea { resize: vertical; min-height: 80px; }
-  .field .hint { font-size: 11px; color: #888; margin-top: 4px; }
-  .field .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
-  .field .extracted.show { display: block; }
+  .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
+  .extracted.show { display: block; }
   .radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
   .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
-  .radio-group label:hover { border-color: #7c6fd4; background: #f5f3ff; }
+  .radio-group label:hover { border-color: #6613D0; background: #f5f3ff; }
   .radio-group input[type=radio] { width: auto; }
   .upload-area { border: 2px dashed #6613D0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf6ff; position: relative; }
   .upload-area:hover { border-color: #FE8F1C; background: #fff8f0; }
@@ -43,7 +41,7 @@
   .extracted-data ul { list-style: none; }
   .extracted-data ul li { font-size: 12px; color: #166534; padding: 2px 0; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .config-toggle { font-size: 12px; color: #7c6fd4; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
+  .config-toggle { font-size: 12px; color: #6613D0; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
   .config-panel { display: none; }
   .config-panel.show { display: block; }
   .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
@@ -52,31 +50,29 @@
   .toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
   .toast.success { background: #16a34a; display: block; }
   .toast.error { background: #dc2626; display: block; }
-  .toast.info { background: #7c6fd4; display: block; }
+  .toast.info { background: #6613D0; display: block; }
   .progress { display: none; margin-bottom: 12px; }
   .progress.show { display: block; }
   .progress-bar { height: 6px; background: #ede9ff; border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, #6613D0, #FE8F1C); border-radius: 3px; transition: width 0.4s; }
-  .progress-label { font-size: 12px; color: #7c6fd4; margin-top: 6px; }
+  .progress-label { font-size: 12px; color: #6613D0; margin-top: 6px; }
+  .hint { font-size: 11px; color: #888; margin-top: 4px; }
+  .forn-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid #6613D0; border-radius:8px; z-index:100; max-height:220px; overflow-y:auto; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
+  .forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
+  .forn-item:hover { background:#f5f3ff; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div style="display:flex;align-items:center;gap:12px;padding-right:20px;border-right:2px solid rgba(255,255,255,0.3)">
-    <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
-      <!-- Triângulo laranja (canto superior direito) -->
-      <polygon points="35,5 95,5 95,60 35,60" fill="#FE8F1C"/>
-      <!-- Quadrado central transparente (recorte) -->
-      <rect x="35" y="25" width="45" height="45" fill="white" opacity="0.15"/>
-      <!-- L branco (esquerda + baixo) -->
-      <path d="M5,5 L30,5 L30,70 L95,70 L95,95 L5,95 Z" fill="white"/>
-      <!-- Quadrado pequeno branco canto inferior direito -->
-      <rect x="70" y="75" width="20" height="18" fill="white"/>
-      <!-- Quadrado central roxo (buraco no meio) -->
-      <rect x="30" y="25" width="45" height="45" fill="#6613D0"/>
+  <div style="display:flex;align-items:center;gap:10px;padding-right:16px;border-right:2px solid rgba(255,255,255,0.3)">
+    <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="35,5 95,5 95,55 35,55" fill="#FE8F1C"/>
+      <rect x="30" y="25" width="45" height="45" fill="#5500bb"/>
+      <path d="M5,5 L28,5 L28,72 L95,72 L95,95 L5,95 Z" fill="white"/>
+      <rect x="68" y="75" width="20" height="18" fill="white"/>
     </svg>
-    <span style="font-size:21px;font-weight:800;color:white;letter-spacing:-0.5px;font-family:'Segoe UI',Arial,sans-serif">logcomex<sup style="font-size:9px;font-weight:400;margin-left:1px">™</sup></span>
+    <span style="font-size:20px;font-weight:800;color:white;letter-spacing:-0.5px">logcomex<sup style="font-size:9px;font-weight:400">™</sup></span>
   </div>
   <div class="header-text">
     <h1>💳 Solicitação de Pagamento — Contas a Pagar</h1>
@@ -89,38 +85,37 @@
   <!-- CONFIG -->
   <div class="card">
     <h2>⚙️ Configuração</h2>
-    <span class="config-toggle" onclick="toggleConfig()">▼ Mostrar configurações de API</span>
+    <span class="config-toggle" id="configToggle">▼ Mostrar configurações de API</span>
     <div class="config-panel" id="configPanel">
       <div class="field">
         <label>Token do Pipefy</label>
-        <input type="password" id="pipefy_token" placeholder="eyJhbGci..." oninput="saveConfig()" />
+        <input type="password" id="pipefy_token" placeholder="eyJhbGci..." />
         <div class="hint">Salvo localmente no seu navegador.</div>
       </div>
       <div class="field">
         <label>Chave API Claude (Anthropic)</label>
-        <input type="password" id="claude_token" placeholder="sk-ant-..." oninput="saveConfig()" />
+        <input type="password" id="claude_token" placeholder="sk-ant-..." />
         <div class="hint">Salvo localmente no seu navegador.</div>
       </div>
     </div>
   </div>
 
-  <!-- DADOS MANUAIS -->
+  <!-- DADOS -->
   <div class="card">
     <h2>📋 Dados da Solicitação</h2>
 
-    <!-- Logger e Aprovador fixos -->
     <div class="row" style="margin-bottom:18px">
       <div class="field">
         <label>Logger Solicitante</label>
-        <div style="background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px;font-size:14px;color:#333">
-          <div style="font-weight:600">João Victor Faria</div>
+        <div style="background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px">
+          <div style="font-weight:600;font-size:14px">João Victor Faria</div>
           <div style="font-size:12px;color:#666;margin-top:2px">Facilities · Finance</div>
         </div>
       </div>
       <div class="field">
         <label>Aprovador</label>
-        <div style="background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px;font-size:14px;color:#333">
-          <div style="font-weight:600">Daniel Portella Alle</div>
+        <div style="background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px">
+          <div style="font-weight:600;font-size:14px">Daniel Portella Alle</div>
           <div style="font-size:12px;color:#666;margin-top:2px">Financeiro · daniel.alle@logcomex.com</div>
         </div>
       </div>
@@ -134,6 +129,25 @@
         <option value="Reembolso">Reembolso</option>
         <option value="Pagamento internacional">Pagamento internacional</option>
       </select>
+    </div>
+
+    <div class="field">
+      <label>Selecione o Fornecedor <span class="req">*</span></label>
+      <div style="position:relative">
+        <input type="text" id="fornecedor_search" placeholder="Digite o nome do fornecedor para buscar..." autocomplete="off" />
+        <div class="forn-dropdown" id="fornecedor_dropdown"></div>
+      </div>
+      <div id="fornecedor_selected" style="display:none;margin-top:8px;background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div id="fornecedor_nome" style="font-weight:600;font-size:14px"></div>
+            <div id="fornecedor_id_display" style="font-size:11px;color:#888;margin-top:2px"></div>
+          </div>
+          <button id="fornecedor_clear" style="background:none;border:none;color:#6613D0;cursor:pointer;font-size:20px">✕</button>
+        </div>
+      </div>
+      <input type="hidden" id="fornecedor_id" />
+      <div class="hint" id="fornecedor_hint">Configure o token do Pipefy para carregar os fornecedores.</div>
     </div>
 
     <div class="field">
@@ -160,16 +174,25 @@
         <select id="selecione_o_centro_de_custo">
           <option value="">Selecione...</option>
           <option>BI E INTEGRACOES CORPORATE</option><option>CCO GROWTH</option><option>COALITION CORPORATE</option>
-          <option>COMERCIAL GROWTH</option><option>COMERCIAL PPMF</option><option>CONTABILIDADE CORPORATE</option>
-          <option>CONTROLADORIA CORPORATE</option><option>CS GROWTH</option><option>CS PPMF</option>
-          <option>DADOS GROWTH</option><option>DADOS PPMF</option><option>DEVOPS PPMF</option>
+          <option>COMERCIAL GROWTH</option><option>COMERCIAL INTERNATIONAL PPMF</option><option>COMERCIAL MEXICO PPMF</option>
+          <option>COMERCIAL MVP</option><option>COMERCIAL PPMF</option><option>CONTABILIDADE CORPORATE</option>
+          <option>CONTROLADORIA CORPORATE</option><option>CS GERAL GROWTH</option><option>CS GROWTH</option>
+          <option>CS INTERNACIONAL PPMF</option><option>CS MEXICO PPMF</option><option>CS OPS & INSIGHTS GROWTH</option>
+          <option>CS PPMF</option><option>DADOS GERAL GROWTH</option><option>DADOS GROWTH</option>
+          <option>DADOS MVP</option><option>DADOS PPMF</option><option>DEVOPS PPMF</option>
           <option>DIRETORIA CORPORATE</option><option>DP CORPORATE</option><option>FACILITIES CORPORATE</option>
           <option>FINANCEIRO CORPORATE</option><option>LEGAL/COMPLIANCE CORPORATE</option><option>MARKETING GROWTH</option>
-          <option>MARKETING INSTITUCIONAL CORPORATE</option><option>MARKETING PPMF</option><option>OUTROS CORPORATE</option>
-          <option>PRE-VENDAS GROWTH</option><option>PRE-VENDAS PPMF</option><option>R&D GROWTH</option>
+          <option>MARKETING INSTITUCIONAL CORPORATE</option><option>MARKETING INTERNACIONAL PPMF</option><option>MARKETING MEXICO PPMF</option>
+          <option>MARKETING MVP</option><option>MARKETING PPMF</option><option>NOVOS NEGOCIOS PPMF</option>
+          <option>OUTROS CORPORATE</option><option>PRE-VENDAS GROWTH</option><option>PRE-VENDAS PPMF</option>
+          <option>PROFESSIONAL SERVICES GROWTH</option><option>QUALIDADE GERAL GROWTH</option><option>QUALIDADE GROWTH</option>
+          <option>QUALIDADE PPMF</option><option>R&D GERAL PPMF</option><option>R&D GROWTH</option>
+          <option>R&D INTERNACIONAL PPMF</option><option>R&D MEXICO PPMF</option><option>R&D MVP</option>
           <option>R&D PPMF</option><option>RELGOV CORPORATE</option><option>REVOPS GROWTH</option>
-          <option>RH CORPORATE</option><option>SUPORTE GROWTH</option><option>SUPORTE PPMF</option>
-          <option>TECH GROWTH</option><option>TECH PPMF</option><option>POCs IA</option>
+          <option>REVOPS INTELLIGENCE PPMF</option><option>REVOPS OPERATIONS GROWTH</option><option>RH CORPORATE</option>
+          <option>SUPORTE GROWTH</option><option>SUPORTE PPMF</option><option>TECH AUTOMATION GROWTH</option>
+          <option>TECH GERAL PPMF</option><option>TECH GROWTH</option><option>TECH INTERNATIONAL PPMF</option>
+          <option>TECH MVP</option><option>TECH PPMF</option><option>POCs IA</option>
         </select>
       </div>
       <div class="field">
@@ -196,24 +219,55 @@
     </div>
   </div>
 
-  <!-- UPLOAD NF -->
+  <!-- RATEIO -->
+  <div class="card" id="rateio_section" style="display:none">
+    <h2>📊 Planilha de Rateio</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div style="font-size:13px;font-weight:600;color:#333">Total da NF: <span id="rateio_nf_display" style="color:#6613D0">R$ 0,00</span></div>
+      <div id="rateio_validacao" style="font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666">Aguardando...</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:800px">
+        <thead>
+          <tr style="background:#6613D0;color:white">
+            <th style="padding:8px 10px;text-align:left;min-width:180px;position:sticky;left:0;background:#6613D0;z-index:2">DEPARTAMENTOS</th>
+            <th style="padding:6px;min-width:150px"><select id="cs1" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 1</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs2" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 2</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs3" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 3</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs4" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 4</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs5" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 5</option></select></th>
+            <th style="padding:8px;min-width:100px;background:#4a0099;text-align:center">TOTAL DEPT</th>
+          </tr>
+          <tr style="background:#f0edff">
+            <td style="padding:6px 10px;font-size:11px;color:#6613D0;font-weight:600;position:sticky;left:0;background:#f0edff">Total por categoria →</td>
+            <td id="ct1" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
+            <td id="ct2" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
+            <td id="ct3" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
+            <td id="ct4" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
+            <td id="ct5" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
+            <td id="gt" style="padding:6px;text-align:center;font-weight:700;color:#4a0099">R$ 0,00</td>
+          </tr>
+        </thead>
+        <tbody id="rateio_tbody"></tbody>
+      </table>
+    </div>
+    <div class="hint" style="margin-top:8px">💡 Deixe em branco os departamentos sem rateio nessa categoria.</div>
+  </div>
+
+  <!-- NF -->
   <div class="card">
     <h2>🧾 Nota Fiscal</h2>
     <div class="field">
       <label>Anexo da Nota Fiscal <span class="req">*</span></label>
       <div class="upload-area">
-        <input type="file" id="nf_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleNFUpload()" />
+        <input type="file" id="nf_file" accept=".pdf,.png,.jpg,.jpeg" />
         <div class="icon">📄</div>
         <p>Clique ou arraste o PDF da Nota Fiscal aqui</p>
         <div class="filename" id="nf_filename"></div>
       </div>
       <div class="analyzing" id="nf_analyzing"><div class="spinner"></div> Analisando nota fiscal com IA...</div>
-      <div class="extracted-data" id="nf_extracted">
-        <h4>✅ Dados extraídos automaticamente:</h4>
-        <ul id="nf_extracted_list"></ul>
-      </div>
+      <div class="extracted-data" id="nf_extracted"><h4>✅ Dados extraídos automaticamente:</h4><ul id="nf_extracted_list"></ul></div>
     </div>
-
     <div class="row">
       <div class="field">
         <label>Número da Nota Fiscal <span class="req">*</span></label>
@@ -226,7 +280,6 @@
         <div class="extracted" id="ext_nf_data">✨ Preenchido automaticamente</div>
       </div>
     </div>
-
     <div class="row">
       <div class="field">
         <label>Valor da NF <span class="req">*</span></label>
@@ -236,32 +289,27 @@
       <div class="field">
         <label>Retenção de Imposto? <span class="req">*</span></label>
         <select id="a_nota_fiscal_possui_reten_o_de_imposto">
-          <option value="">Selecione...</option>
-          <option>Sim</option><option>Não</option>
+          <option value="">Selecione...</option><option>Sim</option><option>Não</option>
         </select>
         <div class="extracted" id="ext_nf_ret">✨ Preenchido automaticamente</div>
       </div>
     </div>
   </div>
 
-  <!-- UPLOAD BOLETO -->
+  <!-- BOLETO -->
   <div class="card">
     <h2>🏦 Boleto / Pagamento</h2>
     <div class="field">
       <label>Anexo do Boleto <span class="req">*</span></label>
       <div class="upload-area">
-        <input type="file" id="boleto_file" accept=".pdf,.png,.jpg,.jpeg" onchange="handleBoletoUpload()" />
+        <input type="file" id="boleto_file" accept=".pdf,.png,.jpg,.jpeg" />
         <div class="icon">📑</div>
         <p>Clique ou arraste o PDF do Boleto aqui</p>
         <div class="filename" id="boleto_filename"></div>
       </div>
       <div class="analyzing" id="boleto_analyzing"><div class="spinner"></div> Analisando boleto com IA...</div>
-      <div class="extracted-data" id="boleto_extracted">
-        <h4>✅ Dados extraídos automaticamente:</h4>
-        <ul id="boleto_extracted_list"></ul>
-      </div>
+      <div class="extracted-data" id="boleto_extracted"><h4>✅ Dados extraídos automaticamente:</h4><ul id="boleto_extracted_list"></ul></div>
     </div>
-
     <div class="field">
       <label>Forma de Pagamento <span class="req">*</span></label>
       <div class="radio-group">
@@ -270,7 +318,6 @@
       </div>
       <div class="extracted" id="ext_forma">✨ Preenchido automaticamente</div>
     </div>
-
     <div class="row">
       <div class="field">
         <label>Valor da Parcela <span class="req">*</span></label>
@@ -283,7 +330,6 @@
         <div class="extracted" id="ext_venc">✨ Preenchido automaticamente</div>
       </div>
     </div>
-
     <div class="field">
       <label>Código de Barras do Boleto <span class="req">*</span></label>
       <textarea id="c_digo_de_barras_do_boleto_2" placeholder="Cole ou aguarde extração automática..." rows="2"></textarea>
@@ -297,122 +343,301 @@
       <div class="progress-bar"><div class="progress-fill" id="progress_fill" style="width:0%"></div></div>
       <div class="progress-label" id="progress_label">Enviando...</div>
     </div>
-    <button class="btn-submit" id="btn_submit" onclick="submitForm()">🚀 Criar Card no Pipefy</button>
+    <button class="btn-submit" id="btn_submit">🚀 Criar Card no Pipefy</button>
   </div>
 
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-function toggleConfig() {
-  document.getElementById('configPanel').classList.toggle('show');
-}
-function saveConfig() {
-  localStorage.setItem('pipefy_token', document.getElementById('pipefy_token').value);
-  localStorage.setItem('claude_token', document.getElementById('claude_token').value);
-}
-window.onload = () => {
+var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
+var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
+
+var todosFornecedores = [];
+var fornecedorCarregado = false;
+var rateioData = {};
+var rateioIniciado = false;
+
+window.addEventListener('DOMContentLoaded', function() {
+
+  // Config
+  document.getElementById('configToggle').addEventListener('click', function() {
+    document.getElementById('configPanel').classList.toggle('show');
+  });
+  document.getElementById('pipefy_token').addEventListener('input', function() {
+    localStorage.setItem('pipefy_token', this.value);
+  });
+  document.getElementById('claude_token').addEventListener('input', function() {
+    localStorage.setItem('claude_token', this.value);
+  });
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
-};
 
-function showToast(msg, type='info') {
-  const t = document.getElementById('toast');
+  // Carregar fornecedores se token já existe
+  if (document.getElementById('pipefy_token').value) {
+    carregarFornecedores();
+  }
+  document.getElementById('pipefy_token').addEventListener('change', function() {
+    if (this.value && !fornecedorCarregado) carregarFornecedores();
+  });
+
+  // Fornecedor
+  document.getElementById('fornecedor_search').addEventListener('input', function() {
+    filtrarFornecedores(this.value);
+  });
+  document.getElementById('fornecedor_clear').addEventListener('click', function() {
+    document.getElementById('fornecedor_id').value = '';
+    document.getElementById('fornecedor_search').value = '';
+    document.getElementById('fornecedor_selected').style.display = 'none';
+  });
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#fornecedor_search') && !e.target.closest('#fornecedor_dropdown')) {
+      document.getElementById('fornecedor_dropdown').style.display = 'none';
+    }
+  });
+
+  // Rateio
+  document.getElementById('rateio_entre_uma_ou_mais_categorias').addEventListener('change', function() {
+    var sec = document.getElementById('rateio_section');
+    if (this.value === 'Sim') {
+      sec.style.display = 'block';
+      if (!rateioIniciado) iniciarRateio();
+    } else {
+      sec.style.display = 'none';
+    }
+  });
+
+  // Valor NF → atualiza rateio
+  document.getElementById('valor_restored').addEventListener('input', calcTotais);
+
+  // Uploads
+  document.getElementById('nf_file').addEventListener('change', handleNFUpload);
+  document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
+
+  // Submit
+  document.getElementById('btn_submit').addEventListener('click', submitForm);
+});
+
+// ===== TOAST =====
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = `toast ${type}`;
-  setTimeout(() => t.className = 'toast', 4000);
+  t.className = 'toast ' + (type || 'info');
+  setTimeout(function() { t.className = 'toast'; }, 4000);
 }
 
+// ===== FORNECEDOR =====
+function carregarFornecedores() {
+  var token = document.getElementById('pipefy_token').value.trim();
+  if (!token) return;
+  var inp = document.getElementById('fornecedor_search');
+  var hint = document.getElementById('fornecedor_hint');
+  inp.placeholder = 'Carregando fornecedores...';
+  inp.disabled = true;
+  hint.textContent = 'Carregando lista de fornecedores...';
+  todosFornecedores = [];
+  buscarPagina(null);
+}
+
+function buscarPagina(cursor) {
+  var token = document.getElementById('pipefy_token').value.trim();
+  var after = cursor ? ', after: "' + cursor + '"' : '';
+  var gql = '{ table_records(table_id: "304075895", first: 50' + after + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+  pipefyQuery(gql, null).then(function(data) {
+    var tr = data && data.data && data.data.table_records;
+    if (tr && tr.edges) {
+      tr.edges.forEach(function(e) {
+        if (e.node && e.node.title) todosFornecedores.push({ id: e.node.id, nome: e.node.title });
+      });
+    }
+    if (tr && tr.pageInfo && tr.pageInfo.hasNextPage) {
+      buscarPagina(tr.pageInfo.endCursor);
+    } else {
+      fornecedorCarregado = true;
+      todosFornecedores.sort(function(a, b) { return a.nome.localeCompare(b.nome); });
+      var inp = document.getElementById('fornecedor_search');
+      inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
+      inp.disabled = false;
+      document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
+    }
+  }).catch(function(e) {
+    var inp = document.getElementById('fornecedor_search');
+    inp.placeholder = 'Erro ao carregar. Verifique o token.';
+    inp.disabled = false;
+    document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
+  });
+}
+
+function filtrarFornecedores(query) {
+  var dd = document.getElementById('fornecedor_dropdown');
+  if (!query || query.length < 2) { dd.style.display = 'none'; return; }
+  if (!fornecedorCarregado) {
+    dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde, carregando...</div>';
+    dd.style.display = 'block'; return;
+  }
+  var q = query.toLowerCase();
+  var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
+  if (!res.length) {
+    dd.innerHTML = '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
+  } else {
+    dd.innerHTML = res.map(function(f) {
+      return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g,"\\'") + '\')">' +
+        '<div style="font-weight:600">' + f.nome + '</div>' +
+        '<div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
+    }).join('');
+  }
+  dd.style.display = 'block';
+}
+
+function selecionarFornecedor(id, nome) {
+  document.getElementById('fornecedor_id').value = id;
+  document.getElementById('fornecedor_search').value = '';
+  document.getElementById('fornecedor_dropdown').style.display = 'none';
+  document.getElementById('fornecedor_nome').textContent = nome;
+  document.getElementById('fornecedor_id_display').textContent = 'ID: ' + id;
+  document.getElementById('fornecedor_selected').style.display = 'block';
+}
+
+// ===== RATEIO =====
+function iniciarRateio() {
+  rateioIniciado = true;
+  for (var c = 1; c <= 5; c++) {
+    var sel = document.getElementById('cs' + c);
+    CATEGORIAS.forEach(function(cat) {
+      var opt = document.createElement('option');
+      opt.value = cat; opt.textContent = cat;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', calcTotais);
+  }
+  var tbody = document.getElementById('rateio_tbody');
+  tbody.innerHTML = DEPARTAMENTOS.map(function(dept, i) {
+    rateioData[i] = {};
+    var bg = i % 2 === 0 ? '#fff' : '#faf8ff';
+    return '<tr style="background:' + bg + ';border-bottom:1px solid #f0edff">' +
+      '<td style="padding:6px 10px;font-size:11px;font-weight:600;color:#333;position:sticky;left:0;background:' + bg + ';white-space:nowrap">' + dept + '</td>' +
+      [1,2,3,4,5].map(function(c) {
+        return '<td style="padding:4px 6px"><input type="number" step="0.01" placeholder="-" data-dept="' + i + '" data-cat="' + c + '" style="width:100%;padding:5px;border:1.5px solid #e0d9ff;border-radius:5px;font-size:12px;text-align:right;background:white" /></td>';
+      }).join('') +
+      '<td id="dt' + i + '" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333">R$ 0,00</td></tr>';
+  }).join('');
+
+  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      var di = parseInt(this.getAttribute('data-dept'));
+      var ci = parseInt(this.getAttribute('data-cat'));
+      rateioData[di][ci] = parseFloat(this.value) || 0;
+      calcTotais();
+    });
+  });
+}
+
+function calcTotais() {
+  if (!rateioIniciado) return;
+  var catT = {1:0,2:0,3:0,4:0,5:0};
+  DEPARTAMENTOS.forEach(function(d, i) {
+    var dt = 0;
+    [1,2,3,4,5].forEach(function(c) { var v = (rateioData[i] && rateioData[i][c]) || 0; catT[c] += v; dt += v; });
+    var el = document.getElementById('dt' + i);
+    if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
+  });
+  var grand = 0;
+  [1,2,3,4,5].forEach(function(c) {
+    grand += catT[c];
+    var el = document.getElementById('ct' + c);
+    if (el) el.textContent = 'R$ ' + catT[c].toFixed(2).replace('.',',');
+  });
+  var gtEl = document.getElementById('gt');
+  if (gtEl) gtEl.textContent = 'R$ ' + grand.toFixed(2).replace('.',',');
+  var nfVal = parseFloat(document.getElementById('valor_restored').value) || 0;
+  var nfD = document.getElementById('rateio_nf_display');
+  var valEl = document.getElementById('rateio_validacao');
+  if (nfD) nfD.textContent = 'R$ ' + nfVal.toFixed(2).replace('.',',');
+  if (valEl) {
+    if (nfVal > 0) {
+      var diff = Math.abs(grand - nfVal);
+      if (diff < 0.01) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534'; valEl.textContent='✔ OK'; }
+      else if (grand > nfVal) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626'; valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',','); }
+      else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e'; valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',','); }
+    } else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666'; valEl.textContent='Aguardando...'; }
+  }
+}
+
+// ===== PDF/CLAUDE =====
 function fileToBase64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
+  return new Promise(function(res, rej) {
+    var r = new FileReader();
+    r.onload = function() { res(r.result.split(',')[1]); };
     r.onerror = rej;
     r.readAsDataURL(file);
   });
 }
 
-async function extractWithClaude(base64, mediaType, prompt) {
-  const token = document.getElementById('claude_token').value.trim();
-  if (!token) { showToast('Configure a chave da API Claude nas configurações.', 'error'); return null; }
-
-  const isImage = mediaType.startsWith('image/');
-  const contentBlock = isImage
-    ? { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } }
-    : { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } };
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+function extractWithClaude(b64, mediaType, prompt) {
+  var token = document.getElementById('claude_token').value.trim();
+  if (!token) { showToast('Configure a chave API Claude!', 'error'); return Promise.resolve(null); }
+  var block = mediaType.startsWith('image/')
+    ? {type:'image',source:{type:'base64',media_type:mediaType,data:b64}}
+    : {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}};
+  return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {
-      'x-api-key': token,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }]
-    })
+    headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
   });
-  const data = await res.json();
-  try {
-    const text = data.content[0].text;
-    return JSON.parse(text.replace(/```json|```/g, '').trim());
-  } catch { return null; }
 }
 
-async function handleNFUpload() {
-  const file = document.getElementById('nf_file').files[0];
+function handleNFUpload() {
+  var file = document.getElementById('nf_file').files[0];
   if (!file) return;
   document.getElementById('nf_filename').textContent = file.name;
   document.getElementById('nf_analyzing').classList.add('show');
-  try {
-    const b64 = await fileToBase64(file);
-    const result = await extractWithClaude(b64, file.type, `Analise esta nota fiscal e retorne APENAS um JSON:
-{"numero_nf":"número da NF","data_emissao":"YYYY-MM-DD","valor":0.00,"retencao_imposto":"Sim ou Não"}
-Retorne apenas o JSON, sem explicações.`);
+  fileToBase64(file).then(function(b64) {
+    return extractWithClaude(b64, file.type, 'Analise esta nota fiscal e retorne APENAS um JSON:\n{"numero_nf":"número da NF","data_emissao":"YYYY-MM-DD","valor":0.00,"retencao_imposto":"Sim ou Não"}\nRetorne apenas o JSON.');
+  }).then(function(r) {
     document.getElementById('nf_analyzing').classList.remove('show');
-    if (result) {
-      if (result.numero_nf) { document.getElementById('n_mero_da_nota_fiscal').value = result.numero_nf; document.getElementById('ext_nf_num').classList.add('show'); }
-      if (result.data_emissao) { document.getElementById('data_de_emiss_o_da_nf').value = result.data_emissao; document.getElementById('ext_nf_data').classList.add('show'); }
-      if (result.valor) { document.getElementById('valor_restored').value = result.valor; document.getElementById('ext_nf_valor').classList.add('show'); }
-      if (result.retencao_imposto) { document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value = result.retencao_imposto; document.getElementById('ext_nf_ret').classList.add('show'); }
-      const list = document.getElementById('nf_extracted_list');
-      list.innerHTML = `<li>📌 Número NF: <b>${result.numero_nf||'-'}</b></li><li>📅 Data: <b>${result.data_emissao||'-'}</b></li><li>💰 Valor: <b>R$ ${result.valor||'-'}</b></li><li>🧾 Retenção: <b>${result.retencao_imposto||'-'}</b></li>`;
+    if (r) {
+      if (r.numero_nf) { document.getElementById('n_mero_da_nota_fiscal').value=r.numero_nf; document.getElementById('ext_nf_num').classList.add('show'); }
+      if (r.data_emissao) { document.getElementById('data_de_emiss_o_da_nf').value=r.data_emissao; document.getElementById('ext_nf_data').classList.add('show'); }
+      if (r.valor) { document.getElementById('valor_restored').value=r.valor; document.getElementById('ext_nf_valor').classList.add('show'); calcTotais(); }
+      if (r.retencao_imposto) { document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value=r.retencao_imposto; document.getElementById('ext_nf_ret').classList.add('show'); }
+      document.getElementById('nf_extracted_list').innerHTML='<li>📌 NF: <b>'+(r.numero_nf||'-')+'</b></li><li>📅 Data: <b>'+(r.data_emissao||'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor||'-')+'</b></li><li>🧾 Retenção: <b>'+(r.retencao_imposto||'-')+'</b></li>';
       document.getElementById('nf_extracted').classList.add('show');
       showToast('Nota fiscal analisada!', 'success');
-    } else { showToast('Não foi possível extrair dados. Preencha manualmente.', 'error'); }
-  } catch(e) { document.getElementById('nf_analyzing').classList.remove('show'); showToast('Erro: ' + e.message, 'error'); }
+    } else showToast('Não foi possível extrair. Preencha manualmente.', 'error');
+  }).catch(function(e) { document.getElementById('nf_analyzing').classList.remove('show'); showToast('Erro: '+e.message,'error'); });
 }
 
-async function handleBoletoUpload() {
-  const file = document.getElementById('boleto_file').files[0];
+function handleBoletoUpload() {
+  var file = document.getElementById('boleto_file').files[0];
   if (!file) return;
   document.getElementById('boleto_filename').textContent = file.name;
   document.getElementById('boleto_analyzing').classList.add('show');
-  try {
-    const b64 = await fileToBase64(file);
-    const result = await extractWithClaude(b64, file.type, `Analise este boleto e retorne APENAS um JSON:
-{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD","forma_pagamento":"TED ou BOLETO"}
-Retorne apenas o JSON, sem explicações.`);
+  fileToBase64(file).then(function(b64) {
+    return extractWithClaude(b64, file.type, 'Analise este boleto e retorne APENAS um JSON:\n{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD","forma_pagamento":"TED ou BOLETO"}\nRetorne apenas o JSON.');
+  }).then(function(r) {
     document.getElementById('boleto_analyzing').classList.remove('show');
-    if (result) {
-      if (result.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value = result.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
-      if (result.valor_parcela) { document.getElementById('valor_da_parcela').value = result.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
-      if (result.vencimento) { document.getElementById('vencimento_da_parcela').value = result.vencimento; document.getElementById('ext_venc').classList.add('show'); }
-      if (result.forma_pagamento) {
-        const fp = result.forma_pagamento.toUpperCase();
-        document.getElementById(fp === 'TED' ? 'fp_ted' : 'fp_boleto').checked = true;
-        document.getElementById('ext_forma').classList.add('show');
-      }
-      const list = document.getElementById('boleto_extracted_list');
-      list.innerHTML = `<li>🔢 Código: <b>${result.codigo_barras ? result.codigo_barras.substring(0,25)+'...' : '-'}</b></li><li>💰 Valor: <b>R$ ${result.valor_parcela||'-'}</b></li><li>📅 Vencimento: <b>${result.vencimento||'-'}</b></li><li>💳 Forma: <b>${result.forma_pagamento||'-'}</b></li>`;
+    if (r) {
+      if (r.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value=r.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
+      if (r.valor_parcela) { document.getElementById('valor_da_parcela').value=r.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
+      if (r.vencimento) { document.getElementById('vencimento_da_parcela').value=r.vencimento; document.getElementById('ext_venc').classList.add('show'); }
+      if (r.forma_pagamento) { document.getElementById(r.forma_pagamento.toUpperCase()==='TED'?'fp_ted':'fp_boleto').checked=true; document.getElementById('ext_forma').classList.add('show'); }
+      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li><li>💳 Forma: <b>'+(r.forma_pagamento||'-')+'</b></li>';
       document.getElementById('boleto_extracted').classList.add('show');
       showToast('Boleto analisado!', 'success');
-    } else { showToast('Não foi possível extrair dados. Preencha manualmente.', 'error'); }
-  } catch(e) { document.getElementById('boleto_analyzing').classList.remove('show'); showToast('Erro: ' + e.message, 'error'); }
+    } else showToast('Não foi possível extrair. Preencha manualmente.', 'error');
+  }).catch(function(e) { document.getElementById('boleto_analyzing').classList.remove('show'); showToast('Erro: '+e.message,'error'); });
+}
+
+// ===== PIPEFY =====
+function pipefyQuery(query, variables) {
+  var token = document.getElementById('pipefy_token').value.trim();
+  return fetch('https://api.pipefy.com/graphql', {
+    method: 'POST',
+    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body: JSON.stringify({query: query, variables: variables})
+  }).then(function(r) { return r.json(); });
 }
 
 function setProgress(pct, label) {
@@ -421,72 +646,54 @@ function setProgress(pct, label) {
   document.getElementById('progress_label').textContent = label;
 }
 
-async function pipefyQuery(query, variables) {
-  const token = document.getElementById('pipefy_token').value.trim();
-  const res = await fetch('https://api.pipefy.com/graphql', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables })
-  });
-  return await res.json();
-}
-
-async function submitForm() {
-  const token = document.getElementById('pipefy_token').value.trim();
+// ===== SUBMIT =====
+function submitForm() {
+  var token = document.getElementById('pipefy_token').value.trim();
   if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
-  const btn = document.getElementById('btn_submit');
+  var btn = document.getElementById('btn_submit');
   btn.disabled = true;
-  try {
-    setProgress(20, 'Criando registro de parcela...');
-    const forma = document.querySelector('input[name="forma_pgto"]:checked')?.value || '';
-    const vencParcela = document.getElementById('vencimento_da_parcela').value;
+  var forma = document.querySelector('input[name="forma_pgto"]:checked');
+  var vencParcela = document.getElementById('vencimento_da_parcela').value;
+  var parcelaFields = [
+    {fieldId:'forma_de_pagamento_da_parcela', fieldValue: forma ? forma.value : ''},
+    {fieldId:'valor_da_parcela', fieldValue: document.getElementById('valor_da_parcela').value},
+    {fieldId:'vencimento_da_parcela', fieldValue: vencParcela ? vencParcela+' 12:00' : ''},
+    {fieldId:'insira_o_c_digo_de_barras_do_boleto_da_parcela', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value}
+  ].filter(function(f) { return f.fieldValue; });
 
-    const parcelaFields = [
-      { fieldId: 'forma_de_pagamento_da_parcela', fieldValue: forma },
-      { fieldId: 'valor_da_parcela', fieldValue: document.getElementById('valor_da_parcela').value },
-      { fieldId: 'vencimento_da_parcela', fieldValue: vencParcela ? vencParcela + ' 12:00' : '' },
-      { fieldId: 'insira_o_c_digo_de_barras_do_boleto_da_parcela', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
-    ].filter(f => f.fieldValue);
-
-    const parcelaResult = await pipefyQuery(`mutation($input: CreateCardInput!) { createCard(input: $input) { card { id } } }`,
-      { input: { pipe_id: "304137242", fields_attributes: parcelaFields } });
-
-    const parcelaId = parcelaResult?.data?.createCard?.card?.id;
-    if (!parcelaId) throw new Error('Erro ao criar parcela.');
-
+  setProgress(20, 'Criando registro de parcela...');
+  pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}', {input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
+  .then(function(res) {
+    var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
+    if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
     setProgress(60, 'Criando solicitação no Pipefy...');
-    const mainFields = [
-      { fieldId: 'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value },
-      { fieldId: 'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value },
-      { fieldId: 'rateio_entre_uma_ou_mais_categorias', fieldValue: document.getElementById('rateio_entre_uma_ou_mais_categorias').value },
-      { fieldId: 'selecione_o_centro_de_custo', fieldValue: document.getElementById('selecione_o_centro_de_custo').value },
-      { fieldId: 'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value },
-      { fieldId: 'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value },
-      { fieldId: 'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value },
-      { fieldId: 'data_de_emiss_o_da_nf', fieldValue: document.getElementById('data_de_emiss_o_da_nf').value },
-      { fieldId: 'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value },
-      { fieldId: 'valor_restored', fieldValue: document.getElementById('valor_restored').value },
-      { fieldId: 'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value },
-      { fieldId: 'vencimento_do_pagamento', fieldValue: vencParcela ? vencParcela + ' 12:00' : '' },
-      { fieldId: 'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId },
-    ].filter(f => f.fieldValue);
-
-    const cardResult = await pipefyQuery(`mutation($input: CreateCardInput!) { createCard(input: $input) { card { id title url } } }`,
-      { input: { pipe_id: "307088005", fields_attributes: mainFields } });
-
-    const card = cardResult?.data?.createCard?.card;
-    if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(cardResult));
-
+    var mainFields = [
+      {fieldId:'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
+      {fieldId:'selecione_o_fornecedor', fieldValue: document.getElementById('fornecedor_id').value},
+      {fieldId:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
+      {fieldId:'rateio_entre_uma_ou_mais_categorias', fieldValue: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
+      {fieldId:'selecione_o_centro_de_custo', fieldValue: document.getElementById('selecione_o_centro_de_custo').value},
+      {fieldId:'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value},
+      {fieldId:'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value},
+      {fieldId:'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value},
+      {fieldId:'data_de_emiss_o_da_nf', fieldValue: document.getElementById('data_de_emiss_o_da_nf').value},
+      {fieldId:'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
+      {fieldId:'valor_restored', fieldValue: document.getElementById('valor_restored').value},
+      {fieldId:'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value},
+      {fieldId:'vencimento_do_pagamento', fieldValue: vencParcela ? vencParcela+' 12:00' : ''},
+      {fieldId:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId}
+    ].filter(function(f) { return f.fieldValue; });
+    return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}', {input:{pipe_id:"307088005",fields_attributes:mainFields}});
+  }).then(function(res) {
+    var card = res && res.data && res.data.createCard && res.data.createCard.card;
+    if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(res));
     setProgress(100, '✅ Card criado com sucesso!');
-    showToast(`✅ Card #${card.id} criado no Pipefy!`, 'success');
-    setTimeout(() => { if (card.url) window.open(card.url, '_blank'); }, 1000);
-
-  } catch(e) {
+    showToast('✅ Card #' + card.id + ' criado no Pipefy!', 'success');
+    setTimeout(function() { if (card.url) window.open(card.url, '_blank'); }, 1000);
+  }).catch(function(e) {
     showToast('❌ Erro: ' + e.message, 'error');
     console.error(e);
-  } finally {
-    btn.disabled = false;
-  }
+  }).finally(function() { btn.disabled = false; });
 }
 </script>
 </body>
