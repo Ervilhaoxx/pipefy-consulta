@@ -373,13 +373,8 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
 
-  // Carregar fornecedores se token já existe
-  if (document.getElementById('pipefy_token').value) {
-    carregarFornecedores();
-  }
-  document.getElementById('pipefy_token').addEventListener('change', function() {
-    if (this.value && !fornecedorCarregado) carregarFornecedores();
-  });
+  // Carregar fornecedores ao abrir
+  carregarFornecedores();
 
   // Fornecedor
   document.getElementById('fornecedor_search').addEventListener('input', function() {
@@ -428,8 +423,6 @@ function showToast(msg, type) {
 
 // ===== FORNECEDOR =====
 function carregarFornecedores() {
-  var token = document.getElementById('pipefy_token').value.trim();
-  if (!token) return;
   var inp = document.getElementById('fornecedor_search');
   var hint = document.getElementById('fornecedor_hint');
   inp.placeholder = 'Carregando fornecedores...';
@@ -440,11 +433,13 @@ function carregarFornecedores() {
 }
 
 function buscarPagina(cursor) {
-  var token = document.getElementById('pipefy_token').value.trim();
   var after = cursor ? ', after: "' + cursor + '"' : '';
   var gql = '{ table_records(table_id: "304075895", first: 50' + after + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
-  pipefyQuery(gql, null).then(function(data) {
-    var tr = data && data.data && data.data.table_records;
+
+  fetch('https://ramonlogcomex.app.n8n.cloud/webhook/fornecedores?search=' + encodeURIComponent(gql), {
+    method: 'GET'
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var tr = data && data.table_records;
     if (tr && tr.edges) {
       tr.edges.forEach(function(e) {
         if (e.node && e.node.title) todosFornecedores.push({ id: e.node.id, nome: e.node.title });
@@ -462,7 +457,7 @@ function buscarPagina(cursor) {
     }
   }).catch(function(e) {
     var inp = document.getElementById('fornecedor_search');
-    inp.placeholder = 'Erro ao carregar. Verifique o token.';
+    inp.placeholder = 'Erro ao carregar fornecedores.';
     inp.disabled = false;
     document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
   });
