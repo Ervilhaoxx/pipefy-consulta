@@ -709,6 +709,75 @@ function submitForm() {
       console.error(e);
     })
     .finally(function() { btn.disabled = false; });
+  function carregarFornecedores() {
+  var inp = document.getElementById('fornecedor_search');
+  inp.placeholder = 'Carregando fornecedores...';
+  inp.disabled = true;
+  document.getElementById('fornecedor_hint').textContent = 'Buscando fornecedores...';
+
+  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
+  var TABLE_ID = '304075895';
+  var allEdges = [];
+  var hasNextPage = true;
+  var cursor = null;
+
+  function buscarPagina() {
+    var afterClause = cursor ? ', after: "' + cursor + '"' : '';
+    var query = '{ table_records(table_id: "' + TABLE_ID + '", first: 100' + afterClause + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+
+    fetch('https://api.pipefy.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query: query })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var records = data && data.data && data.data.table_records;
+      if (!records || !records.edges) {
+        finalizarCarregamento();
+        return;
+      }
+
+      records.edges.forEach(function(e) {
+        var node = e && e.node;
+        if (node && node.id && node.title && node.title.trim()) {
+          allEdges.push({ id: String(node.id), nome: node.title.trim() });
+        }
+      });
+
+      document.getElementById('fornecedor_hint').textContent =
+        'Carregando... ' + allEdges.length + ' fornecedores até agora';
+
+      hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
+      cursor = records.pageInfo && records.pageInfo.endCursor;
+
+      if (hasNextPage) {
+        buscarPagina();
+      } else {
+        finalizarCarregamento();
+      }
+    })
+    .catch(function(e) {
+      inp.placeholder = 'Erro ao carregar. Recarregue a página.';
+      inp.disabled = false;
+      document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
+    });
+  }
+
+  function finalizarCarregamento() {
+    allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+    todosFornecedores = allEdges;
+    fornecedorCarregado = true;
+    inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
+    inp.disabled = false;
+    document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
+  }
+
+  buscarPagina();
+}
 }
 </script>
 </body>
