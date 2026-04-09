@@ -82,7 +82,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 
 <div class="container">
 
-  <!-- CONFIG -->
   <div class="card">
     <h2>⚙️ Configuração</h2>
     <span class="config-toggle" id="configToggle">▼ Mostrar configurações de API</span>
@@ -100,10 +99,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
-  <!-- DADOS DA SOLICITAÇÃO -->
   <div class="card">
     <h2>📋 Dados da Solicitação</h2>
-
     <div class="row" style="margin-bottom:18px">
       <div class="field">
         <label>Logger Solicitante</label>
@@ -219,7 +216,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
-  <!-- RATEIO -->
   <div class="card" id="rateio_section" style="display:none">
     <h2>📊 Planilha de Rateio</h2>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
@@ -254,7 +250,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     <div class="hint" style="margin-top:8px">💡 Deixe em branco os departamentos sem rateio nessa categoria.</div>
   </div>
 
-  <!-- NOTA FISCAL -->
   <div class="card">
     <h2>🧾 Nota Fiscal</h2>
     <div class="field">
@@ -296,7 +291,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
-  <!-- BOLETO -->
   <div class="card">
     <h2>🏦 Boleto / Pagamento</h2>
     <div class="field">
@@ -337,7 +331,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
-  <!-- SUBMIT -->
   <div class="card">
     <div class="progress" id="progress_bar">
       <div class="progress-bar"><div class="progress-fill" id="progress_fill" style="width:0%"></div></div>
@@ -353,14 +346,12 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 <script>
 var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
 var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
-var N8N_URL = 'https://ramonlogcomex.app.n8n.cloud/webhook/fornecedores';
 var todosFornecedores = [];
 var fornecedorCarregado = false;
 var rateioData = {};
 var rateioIniciado = false;
 
 window.addEventListener('DOMContentLoaded', function() {
-  // Config
   document.getElementById('configToggle').addEventListener('click', function() {
     document.getElementById('configPanel').classList.toggle('show');
   });
@@ -373,10 +364,8 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
 
-  // Carregar fornecedores via n8n
   carregarFornecedores();
 
-  // Fornecedor search
   document.getElementById('fornecedor_search').addEventListener('input', function() {
     filtrarFornecedores(this.value);
   });
@@ -391,23 +380,14 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Rateio
   document.getElementById('rateio_entre_uma_ou_mais_categorias').addEventListener('change', function() {
     var sec = document.getElementById('rateio_section');
-    if (this.value === 'Sim') {
-      sec.style.display = 'block';
-      if (!rateioIniciado) iniciarRateio();
-    } else {
-      sec.style.display = 'none';
-    }
+    if (this.value === 'Sim') { sec.style.display = 'block'; if (!rateioIniciado) iniciarRateio(); }
+    else { sec.style.display = 'none'; }
   });
   document.getElementById('valor_restored').addEventListener('input', calcTotais);
-
-  // Uploads
   document.getElementById('nf_file').addEventListener('change', handleNFUpload);
   document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
-
-  // Submit
   document.getElementById('btn_submit').addEventListener('click', submitForm);
 });
 
@@ -418,51 +398,58 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 4000);
 }
 
-// ===== FORNECEDOR VIA N8N (CORRIGIDO) =====
 function carregarFornecedores() {
   var inp = document.getElementById('fornecedor_search');
   inp.placeholder = 'Carregando fornecedores...';
   inp.disabled = true;
+  document.getElementById('fornecedor_hint').textContent = 'Buscando fornecedores...';
 
-  fetch(N8N_URL, { method: 'GET' })
+  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
+  var TABLE_ID = '304075895';
+  var allEdges = [];
+  var cursor = null;
+  var hasNextPage = true;
+
+  function buscarPagina() {
+    var afterClause = cursor ? ', after: "' + cursor + '"' : '';
+    var query = '{ table_records(table_id: "' + TABLE_ID + '", first: 100' + afterClause + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+    fetch('https://api.pipefy.com/graphql', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: query })
+    })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      // Estrutura real do n8n: data.data.table_records.edges[].node.{id, title}
-      var edges = data &&
-                  data.data &&
-                  data.data.table_records &&
-                  data.data.table_records.edges;
-
-      if (!Array.isArray(edges)) {
-        throw new Error('Estrutura inesperada: ' + JSON.stringify(data).substring(0, 200));
-      }
-
-      edges.forEach(function(e) {
+      var records = data && data.data && data.data.table_records;
+      if (!records || !records.edges) { finalizarCarregamento(); return; }
+      records.edges.forEach(function(e) {
         var node = e && e.node;
         if (node && node.id && node.title && node.title.trim()) {
-          todosFornecedores.push({
-            id: String(node.id),
-            nome: node.title.trim()
-          });
+          allEdges.push({ id: String(node.id), nome: node.title.trim() });
         }
       });
-
-      fornecedorCarregado = true;
-      todosFornecedores.sort(function(a, b) {
-        return a.nome.localeCompare(b.nome, 'pt-BR');
-      });
-
-      inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
-      inp.disabled = false;
-      document.getElementById('fornecedor_hint').textContent =
-        todosFornecedores.length + ' fornecedores carregados.';
+      document.getElementById('fornecedor_hint').textContent = 'Carregando... ' + allEdges.length + ' fornecedores';
+      hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
+      cursor = records.pageInfo && records.pageInfo.endCursor;
+      if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
     })
     .catch(function(e) {
       inp.placeholder = 'Erro ao carregar. Recarregue a página.';
       inp.disabled = false;
       document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
-      console.error('Erro ao carregar fornecedores:', e);
     });
+  }
+
+  function finalizarCarregamento() {
+    allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+    todosFornecedores = allEdges;
+    fornecedorCarregado = true;
+    inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
+    inp.disabled = false;
+    document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
+  }
+
+  buscarPagina();
 }
 
 function filtrarFornecedores(query) {
@@ -470,13 +457,10 @@ function filtrarFornecedores(query) {
   if (!query || query.length < 2) { dd.style.display = 'none'; return; }
   if (!fornecedorCarregado) {
     dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde, carregando...</div>';
-    dd.style.display = 'block';
-    return;
+    dd.style.display = 'block'; return;
   }
   var q = query.toLowerCase();
-  var res = todosFornecedores.filter(function(f) {
-    return f.nome.toLowerCase().indexOf(q) !== -1;
-  }).slice(0, 20);
+  var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
   if (!res.length) {
     dd.innerHTML = '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
   } else {
@@ -498,7 +482,6 @@ function selecionarFornecedor(id, nome) {
   document.getElementById('fornecedor_selected').style.display = 'block';
 }
 
-// ===== RATEIO =====
 function iniciarRateio() {
   rateioIniciado = true;
   for (var c = 1; c <= 5; c++) {
@@ -558,24 +541,13 @@ function calcTotais() {
   if (valEl) {
     if (nfVal > 0) {
       var diff = Math.abs(grand - nfVal);
-      if (diff < 0.01) {
-        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534';
-        valEl.textContent='✔ OK';
-      } else if (grand > nfVal) {
-        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626';
-        valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',',');
-      } else {
-        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e';
-        valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',',');
-      }
-    } else {
-      valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666';
-      valEl.textContent='Aguardando...';
-    }
+      if (diff < 0.01) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534'; valEl.textContent='✔ OK'; }
+      else if (grand > nfVal) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626'; valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',','); }
+      else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e'; valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',','); }
+    } else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666'; valEl.textContent='Aguardando...'; }
   }
 }
 
-// ===== CLAUDE AI =====
 function fileToBase64(file) {
   return new Promise(function(res, rej) {
     var r = new FileReader();
@@ -596,8 +568,7 @@ function extractWithClaude(b64, mediaType, prompt) {
     headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
     body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
   }).then(function(r) { return r.json(); }).then(function(data) {
-    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); }
-    catch(e) { return null; }
+    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
   });
 }
 
@@ -643,7 +614,6 @@ function handleBoletoUpload() {
   }).catch(function(e) { document.getElementById('boleto_analyzing').classList.remove('show'); showToast('Erro: '+e.message,'error'); });
 }
 
-// ===== PIPEFY =====
 function pipefyQuery(query, variables) {
   var token = document.getElementById('pipefy_token').value.trim();
   return fetch('https://api.pipefy.com/graphql', {
@@ -704,80 +674,8 @@ function submitForm() {
       showToast('✅ Card #' + card.id + ' criado no Pipefy!', 'success');
       setTimeout(function() { if (card.url) window.open(card.url, '_blank'); }, 1000);
     })
-    .catch(function(e) {
-      showToast('❌ Erro: ' + e.message, 'error');
-      console.error(e);
-    })
+    .catch(function(e) { showToast('❌ Erro: ' + e.message, 'error'); console.error(e); })
     .finally(function() { btn.disabled = false; });
-  function carregarFornecedores() {
-  var inp = document.getElementById('fornecedor_search');
-  inp.placeholder = 'Carregando fornecedores...';
-  inp.disabled = true;
-  document.getElementById('fornecedor_hint').textContent = 'Buscando fornecedores...';
-
-  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
-  var TABLE_ID = '304075895';
-  var allEdges = [];
-  var hasNextPage = true;
-  var cursor = null;
-
-  function buscarPagina() {
-    var afterClause = cursor ? ', after: "' + cursor + '"' : '';
-    var query = '{ table_records(table_id: "' + TABLE_ID + '", first: 100' + afterClause + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
-
-    fetch('https://api.pipefy.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + TOKEN,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ query: query })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var records = data && data.data && data.data.table_records;
-      if (!records || !records.edges) {
-        finalizarCarregamento();
-        return;
-      }
-
-      records.edges.forEach(function(e) {
-        var node = e && e.node;
-        if (node && node.id && node.title && node.title.trim()) {
-          allEdges.push({ id: String(node.id), nome: node.title.trim() });
-        }
-      });
-
-      document.getElementById('fornecedor_hint').textContent =
-        'Carregando... ' + allEdges.length + ' fornecedores até agora';
-
-      hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
-      cursor = records.pageInfo && records.pageInfo.endCursor;
-
-      if (hasNextPage) {
-        buscarPagina();
-      } else {
-        finalizarCarregamento();
-      }
-    })
-    .catch(function(e) {
-      inp.placeholder = 'Erro ao carregar. Recarregue a página.';
-      inp.disabled = false;
-      document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
-    });
-  }
-
-  function finalizarCarregamento() {
-    allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
-    todosFornecedores = allEdges;
-    fornecedorCarregado = true;
-    inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
-    inp.disabled = false;
-    document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
-  }
-
-  buscarPagina();
-}
 }
 </script>
 </body>
