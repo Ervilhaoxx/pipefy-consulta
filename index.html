@@ -82,7 +82,6 @@
 
 <div class="container">
 
-  <!-- CONFIG -->
   <div class="card">
     <h2>⚙️ Configuração</h2>
     <span class="config-toggle" id="configToggle">▼ Mostrar configurações de API</span>
@@ -100,7 +99,6 @@
     </div>
   </div>
 
-  <!-- DADOS -->
   <div class="card">
     <h2>📋 Dados da Solicitação</h2>
 
@@ -134,7 +132,7 @@
     <div class="field">
       <label>Selecione o Fornecedor <span class="req">*</span></label>
       <div style="position:relative">
-        <input type="text" id="fornecedor_search" placeholder="Digite o nome do fornecedor para buscar..." autocomplete="off" />
+        <input type="text" id="fornecedor_search" placeholder="Carregando fornecedores..." autocomplete="off" />
         <div class="forn-dropdown" id="fornecedor_dropdown"></div>
       </div>
       <div id="fornecedor_selected" style="display:none;margin-top:8px;background:#f0edff;border:1.5px solid #6613D0;border-radius:8px;padding:10px 14px">
@@ -147,7 +145,7 @@
         </div>
       </div>
       <input type="hidden" id="fornecedor_id" />
-      <div class="hint" id="fornecedor_hint">Configure o token do Pipefy para carregar os fornecedores.</div>
+      <div class="hint" id="fornecedor_hint">Carregando lista de fornecedores...</div>
     </div>
 
     <div class="field">
@@ -254,7 +252,6 @@
     <div class="hint" style="margin-top:8px">💡 Deixe em branco os departamentos sem rateio nessa categoria.</div>
   </div>
 
-  <!-- NF -->
   <div class="card">
     <h2>🧾 Nota Fiscal</h2>
     <div class="field">
@@ -296,7 +293,6 @@
     </div>
   </div>
 
-  <!-- BOLETO -->
   <div class="card">
     <h2>🏦 Boleto / Pagamento</h2>
     <div class="field">
@@ -337,7 +333,6 @@
     </div>
   </div>
 
-  <!-- SUBMIT -->
   <div class="card">
     <div class="progress" id="progress_bar">
       <div class="progress-bar"><div class="progress-fill" id="progress_fill" style="width:0%"></div></div>
@@ -352,34 +347,27 @@
 <script>
 var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
 var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
-
+var N8N_URL = 'https://ramonlogcomex.app.n8n.cloud/webhook/fornecedores';
 var todosFornecedores = [];
 var fornecedorCarregado = false;
 var rateioData = {};
 var rateioIniciado = false;
 
 window.addEventListener('DOMContentLoaded', function() {
-
   // Config
   document.getElementById('configToggle').addEventListener('click', function() {
     document.getElementById('configPanel').classList.toggle('show');
   });
-  document.getElementById('pipefy_token').addEventListener('input', function() {
-    localStorage.setItem('pipefy_token', this.value);
-  });
-  document.getElementById('claude_token').addEventListener('input', function() {
-    localStorage.setItem('claude_token', this.value);
-  });
+  document.getElementById('pipefy_token').addEventListener('input', function() { localStorage.setItem('pipefy_token', this.value); });
+  document.getElementById('claude_token').addEventListener('input', function() { localStorage.setItem('claude_token', this.value); });
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
 
-  // Carregar fornecedores ao abrir
+  // Carregar fornecedores via n8n
   carregarFornecedores();
 
   // Fornecedor
-  document.getElementById('fornecedor_search').addEventListener('input', function() {
-    filtrarFornecedores(this.value);
-  });
+  document.getElementById('fornecedor_search').addEventListener('input', function() { filtrarFornecedores(this.value); });
   document.getElementById('fornecedor_clear').addEventListener('click', function() {
     document.getElementById('fornecedor_id').value = '';
     document.getElementById('fornecedor_search').value = '';
@@ -401,19 +389,14 @@ window.addEventListener('DOMContentLoaded', function() {
       sec.style.display = 'none';
     }
   });
-
-  // Valor NF → atualiza rateio
   document.getElementById('valor_restored').addEventListener('input', calcTotais);
 
   // Uploads
   document.getElementById('nf_file').addEventListener('change', handleNFUpload);
   document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
-
-  // Submit
   document.getElementById('btn_submit').addEventListener('click', submitForm);
 });
 
-// ===== TOAST =====
 function showToast(msg, type) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -421,47 +404,45 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 4000);
 }
 
-// ===== FORNECEDOR =====
+// ===== FORNECEDOR VIA N8N =====
 function carregarFornecedores() {
   var inp = document.getElementById('fornecedor_search');
-  var hint = document.getElementById('fornecedor_hint');
   inp.placeholder = 'Carregando fornecedores...';
   inp.disabled = true;
-  hint.textContent = 'Carregando lista de fornecedores...';
-  todosFornecedores = [];
-  buscarPagina(null);
-}
 
-function buscarPagina(cursor) {
-  var after = cursor ? ', after: "' + cursor + '"' : '';
-  var gql = '{ table_records(table_id: "304075895", first: 50' + after + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+  fetch(N8N_URL, { method: 'GET' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      // Processar resposta do n8n — pode vir em vários formatos
+      var edges = [];
+      if (data && data.table_records && data.table_records.edges) {
+        edges = data.table_records.edges;
+      } else if (data && data.registros_da_tabela && data.registros_da_tabela.bordas) {
+        edges = data.registros_da_tabela.bordas;
+      } else if (data && data.bordas) {
+        edges = data.bordas;
+      } else if (Array.isArray(data)) {
+        edges = data;
+      }
 
-  fetch('https://ramonlogcomex.app.n8n.cloud/webhook/fornecedores', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-  }).then(function(r) { return r.json(); }).then(function(data) {
-    var tr = data && data.table_records;
-    if (tr && tr.edges) {
-      tr.edges.forEach(function(e) {
-        if (e.node && e.node.title) todosFornecedores.push({ id: e.node.id, nome: e.node.title });
+      edges.forEach(function(e) {
+        var node = e.node || e.no || e;
+        var id = node.id || node['eu ia'];
+        var title = node.title || node.titulo;
+        if (id && title) todosFornecedores.push({ id: String(id), nome: title });
       });
-    }
-    if (tr && tr.pageInfo && tr.pageInfo.hasNextPage) {
-      buscarPagina(tr.pageInfo.endCursor);
-    } else {
+
       fornecedorCarregado = true;
       todosFornecedores.sort(function(a, b) { return a.nome.localeCompare(b.nome); });
-      var inp = document.getElementById('fornecedor_search');
       inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
       inp.disabled = false;
       document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
-    }
-  }).catch(function(e) {
-    var inp = document.getElementById('fornecedor_search');
-    inp.placeholder = 'Erro ao carregar fornecedores.';
-    inp.disabled = false;
-    document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
-  });
+    })
+    .catch(function(e) {
+      inp.placeholder = 'Erro ao carregar. Tente recarregar.';
+      inp.disabled = false;
+      document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
+    });
 }
 
 function filtrarFornecedores(query) {
@@ -477,7 +458,7 @@ function filtrarFornecedores(query) {
     dd.innerHTML = '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
   } else {
     dd.innerHTML = res.map(function(f) {
-      return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g,"\\'") + '\')">' +
+      return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g, "\\'") + '\')">' +
         '<div style="font-weight:600">' + f.nome + '</div>' +
         '<div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
     }).join('');
@@ -517,7 +498,6 @@ function iniciarRateio() {
       }).join('') +
       '<td id="dt' + i + '" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333">R$ 0,00</td></tr>';
   }).join('');
-
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.addEventListener('input', function() {
       var di = parseInt(this.getAttribute('data-dept'));
@@ -559,7 +539,7 @@ function calcTotais() {
   }
 }
 
-// ===== PDF/CLAUDE =====
+// ===== CLAUDE AI =====
 function fileToBase64(file) {
   return new Promise(function(res, rej) {
     var r = new FileReader();
@@ -632,7 +612,7 @@ function pipefyQuery(query, variables) {
   return fetch('https://api.pipefy.com/graphql', {
     method: 'POST',
     headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: JSON.stringify({query: query, variables: variables})
+    body: JSON.stringify({query:query,variables:variables})
   }).then(function(r) { return r.json(); });
 }
 
@@ -642,7 +622,6 @@ function setProgress(pct, label) {
   document.getElementById('progress_label').textContent = label;
 }
 
-// ===== SUBMIT =====
 function submitForm() {
   var token = document.getElementById('pipefy_token').value.trim();
   if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
