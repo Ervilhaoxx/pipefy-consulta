@@ -413,22 +413,20 @@ function carregarFornecedores() {
   fetch(N8N_URL, { method: 'GET' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      // Processar resposta do n8n — pode vir em vários formatos
       var edges = [];
-      if (data && data.table_records && data.table_records.edges) {
-        edges = data.table_records.edges;
-      } else if (data && data.registros_da_tabela && data.registros_da_tabela.bordas) {
+      // Estrutura retornada pelo n8n em português
+      if (data && data.registros_da_tabela && data.registros_da_tabela.bordas) {
         edges = data.registros_da_tabela.bordas;
-      } else if (data && data.bordas) {
-        edges = data.bordas;
+      } else if (data && data.table_records && data.table_records.edges) {
+        edges = data.table_records.edges;
       } else if (Array.isArray(data)) {
         edges = data;
       }
 
       edges.forEach(function(e) {
-        var node = e.node || e.no || e;
-        var id = node.id || node['eu ia'];
-        var title = node.title || node.titulo;
+        var node = e['nó'] || e.node || e;
+        var id = node['ID'] || node.id || node['eu ia'];
+        var title = node['Título'] || node.título || node.title;
         if (id && title) todosFornecedores.push({ id: String(id), nome: title });
       });
 
