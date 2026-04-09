@@ -437,9 +437,8 @@ function buscarPagina(cursor) {
   var gql = '{ table_records(table_id: "304075895", first: 50' + after + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
 
   fetch('https://ramonlogcomex.app.n8n.cloud/webhook/fornecedores', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ search: '' })
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
   }).then(function(r) { return r.json(); }).then(function(data) {
     var tr = data && data.table_records;
     if (tr && tr.edges) {
