@@ -413,21 +413,47 @@ function carregarFornecedores() {
   fetch(N8N_URL, { method: 'GET' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
+      // Log para debug
+      console.log('Dados n8n:', JSON.stringify(data).substring(0, 500));
+
       var edges = [];
-      // Estrutura retornada pelo n8n em português
-      if (data && data.registros_da_tabela && data.registros_da_tabela.bordas) {
-        edges = data.registros_da_tabela.bordas;
-      } else if (data && data.table_records && data.table_records.edges) {
-        edges = data.table_records.edges;
-      } else if (Array.isArray(data)) {
-        edges = data;
-      }
+      // Tenta todas as possíveis estruturas
+      var keys = Object.keys(data);
+      console.log('Chaves raiz:', keys);
+
+      // Percorre todas as chaves para encontrar os dados
+      keys.forEach(function(k) {
+        if (data[k] && typeof data[k] === 'object') {
+          var subkeys = Object.keys(data[k]);
+          subkeys.forEach(function(sk) {
+            if (Array.isArray(data[k][sk])) {
+              edges = data[k][sk];
+            }
+          });
+        }
+      });
+
+      console.log('Edges encontrados:', edges.length);
 
       edges.forEach(function(e) {
-        var node = e['nó'] || e.node || e;
-        var id = node['ID'] || node.id || node['eu ia'];
-        var title = node['Título'] || node.título || node.title;
-        if (id && title) todosFornecedores.push({ id: String(id), nome: title });
+        // Pega todas as chaves do objeto e encontra id e titulo
+        var node = null;
+        Object.keys(e).forEach(function(k) {
+          if (typeof e[k] === 'object' && e[k] !== null) node = e[k];
+        });
+        if (!node) node = e;
+
+        var id = null, title = null;
+        Object.keys(node).forEach(function(k) {
+          var v = node[k];
+          if (typeof v === 'number' || (typeof v === 'string' && /^\d+$/.test(v))) {
+            if (!id) id = String(v);
+          } else if (typeof v === 'string' && v.length > 2) {
+            if (!title) title = v;
+          }
+        });
+
+        if (id && title) todosFornecedores.push({ id: id, nome: title });
       });
 
       fornecedorCarregado = true;
