@@ -5,61 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solicitação de Pagamento</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
-  .header { background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
-  .header-text h1 { font-size: 20px; font-weight: 600; }
-  .header-text p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
-  .container { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
-  .card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-  .card h2 { font-size: 15px; font-weight: 600; color: #6613D0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f3e8ff; display: flex; align-items: center; gap: 8px; }
-  .field { margin-bottom: 18px; }
-  .field label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
-  .req { color: #e74c3c; margin-left: 2px; }
-  .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; transition: border 0.2s; background: #fafafa; }
-  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6613D0; background: white; }
-  .field textarea { resize: vertical; min-height: 80px; }
-  .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
-  .extracted.show { display: block; }
-  .radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
-  .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
-  .radio-group label:hover { border-color: #6613D0; background: #f5f3ff; }
-  .radio-group input[type=radio] { width: auto; }
-  .upload-area { border: 2px dashed #6613D0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf6ff; position: relative; }
-  .upload-area:hover { border-color: #FE8F1C; background: #fff8f0; }
-  .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .upload-area .icon { font-size: 28px; }
-  .upload-area p { font-size: 13px; color: #666; margin-top: 6px; }
-  .upload-area .filename { font-size: 12px; color: #6613D0; font-weight: 600; margin-top: 6px; }
-  .analyzing { display: none; align-items: center; gap: 8px; font-size: 13px; color: #6613D0; margin-top: 10px; }
-  .analyzing.show { display: flex; }
-  .spinner { width: 16px; height: 16px; border: 2px solid #f3e8ff; border-top-color: #6613D0; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .extracted-data { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 10px; display: none; }
-  .extracted-data.show { display: block; }
-  .extracted-data h4 { font-size: 12px; color: #166534; font-weight: 600; margin-bottom: 8px; }
-  .extracted-data ul { list-style: none; }
-  .extracted-data ul li { font-size: 12px; color: #166534; padding: 2px 0; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .config-toggle { font-size: 12px; color: #6613D0; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
-  .config-panel { display: none; }
-  .config-panel.show { display: block; }
-  .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-  .btn-submit:hover { opacity: 0.9; }
-  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-  .toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
-  .toast.success { background: #16a34a; display: block; }
-  .toast.error { background: #dc2626; display: block; }
-  .toast.info { background: #6613D0; display: block; }
-  .progress { display: none; margin-bottom: 12px; }
-  .progress.show { display: block; }
-  .progress-bar { height: 6px; background: #ede9ff; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #6613D0, #FE8F1C); border-radius: 3px; transition: width 0.4s; }
-  .progress-label { font-size: 12px; color: #6613D0; margin-top: 6px; }
-  .hint { font-size: 11px; color: #888; margin-top: 4px; }
-  .forn-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid #6613D0; border-radius:8px; z-index:100; max-height:220px; overflow-y:auto; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
-  .forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
-  .forn-item:hover { background:#f5f3ff; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+.header { background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
+.header-text h1 { font-size: 20px; font-weight: 600; }
+.header-text p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+.container { max-width: 900px; margin: 32px auto; padding: 0 20px 60px; }
+.card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.card h2 { font-size: 15px; font-weight: 600; color: #6613D0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f3e8ff; display: flex; align-items: center; gap: 8px; }
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+.req { color: #e74c3c; margin-left: 2px; }
+.field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; color: #333; transition: border 0.2s; background: #fafafa; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6613D0; background: white; }
+.field textarea { resize: vertical; min-height: 80px; }
+.extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
+.extracted.show { display: block; }
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+.radio-group label:hover { border-color: #6613D0; background: #f5f3ff; }
+.radio-group input[type=radio] { width: auto; }
+.upload-area { border: 2px dashed #6613D0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf6ff; position: relative; }
+.upload-area:hover { border-color: #FE8F1C; background: #fff8f0; }
+.upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-area .icon { font-size: 28px; }
+.upload-area p { font-size: 13px; color: #666; margin-top: 6px; }
+.upload-area .filename { font-size: 12px; color: #6613D0; font-weight: 600; margin-top: 6px; }
+.analyzing { display: none; align-items: center; gap: 8px; font-size: 13px; color: #6613D0; margin-top: 10px; }
+.analyzing.show { display: flex; }
+.spinner { width: 16px; height: 16px; border: 2px solid #f3e8ff; border-top-color: #6613D0; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.extracted-data { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; margin-top: 10px; display: none; }
+.extracted-data.show { display: block; }
+.extracted-data h4 { font-size: 12px; color: #166534; font-weight: 600; margin-bottom: 8px; }
+.extracted-data ul { list-style: none; }
+.extracted-data ul li { font-size: 12px; color: #166534; padding: 2px 0; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.config-toggle { font-size: 12px; color: #6613D0; cursor: pointer; text-decoration: underline; margin-bottom: 16px; display: inline-block; }
+.config-panel { display: none; }
+.config-panel.show { display: block; }
+.btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.btn-submit:hover { opacity: 0.9; }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
+.toast.success { background: #16a34a; display: block; }
+.toast.error { background: #dc2626; display: block; }
+.toast.info { background: #6613D0; display: block; }
+.progress { display: none; margin-bottom: 12px; }
+.progress.show { display: block; }
+.progress-bar { height: 6px; background: #ede9ff; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #6613D0, #FE8F1C); border-radius: 3px; transition: width 0.4s; }
+.progress-label { font-size: 12px; color: #6613D0; margin-top: 6px; }
+.hint { font-size: 11px; color: #888; margin-top: 4px; }
+.forn-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid #6613D0; border-radius:8px; z-index:100; max-height:220px; overflow-y:auto; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
+.forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
+.forn-item:hover { background:#f5f3ff; }
 </style>
 </head>
 <body>
@@ -82,6 +82,7 @@
 
 <div class="container">
 
+  <!-- CONFIG -->
   <div class="card">
     <h2>⚙️ Configuração</h2>
     <span class="config-toggle" id="configToggle">▼ Mostrar configurações de API</span>
@@ -99,6 +100,7 @@
     </div>
   </div>
 
+  <!-- DADOS DA SOLICITAÇÃO -->
   <div class="card">
     <h2>📋 Dados da Solicitação</h2>
 
@@ -252,6 +254,7 @@
     <div class="hint" style="margin-top:8px">💡 Deixe em branco os departamentos sem rateio nessa categoria.</div>
   </div>
 
+  <!-- NOTA FISCAL -->
   <div class="card">
     <h2>🧾 Nota Fiscal</h2>
     <div class="field">
@@ -293,6 +296,7 @@
     </div>
   </div>
 
+  <!-- BOLETO -->
   <div class="card">
     <h2>🏦 Boleto / Pagamento</h2>
     <div class="field">
@@ -333,6 +337,7 @@
     </div>
   </div>
 
+  <!-- SUBMIT -->
   <div class="card">
     <div class="progress" id="progress_bar">
       <div class="progress-bar"><div class="progress-fill" id="progress_fill" style="width:0%"></div></div>
@@ -342,6 +347,7 @@
   </div>
 
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -358,16 +364,22 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('configToggle').addEventListener('click', function() {
     document.getElementById('configPanel').classList.toggle('show');
   });
-  document.getElementById('pipefy_token').addEventListener('input', function() { localStorage.setItem('pipefy_token', this.value); });
-  document.getElementById('claude_token').addEventListener('input', function() { localStorage.setItem('claude_token', this.value); });
+  document.getElementById('pipefy_token').addEventListener('input', function() {
+    localStorage.setItem('pipefy_token', this.value);
+  });
+  document.getElementById('claude_token').addEventListener('input', function() {
+    localStorage.setItem('claude_token', this.value);
+  });
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
 
   // Carregar fornecedores via n8n
   carregarFornecedores();
 
-  // Fornecedor
-  document.getElementById('fornecedor_search').addEventListener('input', function() { filtrarFornecedores(this.value); });
+  // Fornecedor search
+  document.getElementById('fornecedor_search').addEventListener('input', function() {
+    filtrarFornecedores(this.value);
+  });
   document.getElementById('fornecedor_clear').addEventListener('click', function() {
     document.getElementById('fornecedor_id').value = '';
     document.getElementById('fornecedor_search').value = '';
@@ -394,6 +406,8 @@ window.addEventListener('DOMContentLoaded', function() {
   // Uploads
   document.getElementById('nf_file').addEventListener('change', handleNFUpload);
   document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
+
+  // Submit
   document.getElementById('btn_submit').addEventListener('click', submitForm);
 });
 
@@ -404,7 +418,7 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 4000);
 }
 
-// ===== FORNECEDOR VIA N8N =====
+// ===== FORNECEDOR VIA N8N (CORRIGIDO) =====
 function carregarFornecedores() {
   var inp = document.getElementById('fornecedor_search');
   inp.placeholder = 'Carregando fornecedores...';
@@ -413,59 +427,41 @@ function carregarFornecedores() {
   fetch(N8N_URL, { method: 'GET' })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      // Log para debug
-      console.log('Dados n8n:', JSON.stringify(data).substring(0, 500));
+      // Estrutura real do n8n: data.data.table_records.edges[].node.{id, title}
+      var edges = data &&
+                  data.data &&
+                  data.data.table_records &&
+                  data.data.table_records.edges;
 
-      var edges = [];
-      // Tenta todas as possíveis estruturas
-      var keys = Object.keys(data);
-      console.log('Chaves raiz:', keys);
+      if (!Array.isArray(edges)) {
+        throw new Error('Estrutura inesperada: ' + JSON.stringify(data).substring(0, 200));
+      }
 
-      // Percorre todas as chaves para encontrar os dados
-      keys.forEach(function(k) {
-        if (data[k] && typeof data[k] === 'object') {
-          var subkeys = Object.keys(data[k]);
-          subkeys.forEach(function(sk) {
-            if (Array.isArray(data[k][sk])) {
-              edges = data[k][sk];
-            }
+      edges.forEach(function(e) {
+        var node = e && e.node;
+        if (node && node.id && node.title && node.title.trim()) {
+          todosFornecedores.push({
+            id: String(node.id),
+            nome: node.title.trim()
           });
         }
       });
 
-      console.log('Edges encontrados:', edges.length);
-
-      edges.forEach(function(e) {
-        // Pega todas as chaves do objeto e encontra id e titulo
-        var node = null;
-        Object.keys(e).forEach(function(k) {
-          if (typeof e[k] === 'object' && e[k] !== null) node = e[k];
-        });
-        if (!node) node = e;
-
-        var id = null, title = null;
-        Object.keys(node).forEach(function(k) {
-          var v = node[k];
-          if (typeof v === 'number' || (typeof v === 'string' && /^\d+$/.test(v))) {
-            if (!id) id = String(v);
-          } else if (typeof v === 'string' && v.length > 2) {
-            if (!title) title = v;
-          }
-        });
-
-        if (id && title) todosFornecedores.push({ id: id, nome: title });
+      fornecedorCarregado = true;
+      todosFornecedores.sort(function(a, b) {
+        return a.nome.localeCompare(b.nome, 'pt-BR');
       });
 
-      fornecedorCarregado = true;
-      todosFornecedores.sort(function(a, b) { return a.nome.localeCompare(b.nome); });
       inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
       inp.disabled = false;
-      document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
+      document.getElementById('fornecedor_hint').textContent =
+        todosFornecedores.length + ' fornecedores carregados.';
     })
     .catch(function(e) {
-      inp.placeholder = 'Erro ao carregar. Tente recarregar.';
+      inp.placeholder = 'Erro ao carregar. Recarregue a página.';
       inp.disabled = false;
       document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
+      console.error('Erro ao carregar fornecedores:', e);
     });
 }
 
@@ -474,10 +470,13 @@ function filtrarFornecedores(query) {
   if (!query || query.length < 2) { dd.style.display = 'none'; return; }
   if (!fornecedorCarregado) {
     dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde, carregando...</div>';
-    dd.style.display = 'block'; return;
+    dd.style.display = 'block';
+    return;
   }
   var q = query.toLowerCase();
-  var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
+  var res = todosFornecedores.filter(function(f) {
+    return f.nome.toLowerCase().indexOf(q) !== -1;
+  }).slice(0, 20);
   if (!res.length) {
     dd.innerHTML = '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
   } else {
@@ -537,7 +536,10 @@ function calcTotais() {
   var catT = {1:0,2:0,3:0,4:0,5:0};
   DEPARTAMENTOS.forEach(function(d, i) {
     var dt = 0;
-    [1,2,3,4,5].forEach(function(c) { var v = (rateioData[i] && rateioData[i][c]) || 0; catT[c] += v; dt += v; });
+    [1,2,3,4,5].forEach(function(c) {
+      var v = (rateioData[i] && rateioData[i][c]) || 0;
+      catT[c] += v; dt += v;
+    });
     var el = document.getElementById('dt' + i);
     if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
   });
@@ -556,10 +558,20 @@ function calcTotais() {
   if (valEl) {
     if (nfVal > 0) {
       var diff = Math.abs(grand - nfVal);
-      if (diff < 0.01) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534'; valEl.textContent='✔ OK'; }
-      else if (grand > nfVal) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626'; valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',','); }
-      else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e'; valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',','); }
-    } else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666'; valEl.textContent='Aguardando...'; }
+      if (diff < 0.01) {
+        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534';
+        valEl.textContent='✔ OK';
+      } else if (grand > nfVal) {
+        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626';
+        valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',',');
+      } else {
+        valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e';
+        valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',',');
+      }
+    } else {
+      valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666';
+      valEl.textContent='Aguardando...';
+    }
   }
 }
 
@@ -584,7 +596,8 @@ function extractWithClaude(b64, mediaType, prompt) {
     headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
     body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
   }).then(function(r) { return r.json(); }).then(function(data) {
-    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
+    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); }
+    catch(e) { return null; }
   });
 }
 
@@ -662,37 +675,40 @@ function submitForm() {
 
   setProgress(20, 'Criando registro de parcela...');
   pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}', {input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
-  .then(function(res) {
-    var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
-    if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
-    setProgress(60, 'Criando solicitação no Pipefy...');
-    var mainFields = [
-      {fieldId:'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
-      {fieldId:'selecione_o_fornecedor', fieldValue: document.getElementById('fornecedor_id').value},
-      {fieldId:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
-      {fieldId:'rateio_entre_uma_ou_mais_categorias', fieldValue: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
-      {fieldId:'selecione_o_centro_de_custo', fieldValue: document.getElementById('selecione_o_centro_de_custo').value},
-      {fieldId:'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value},
-      {fieldId:'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value},
-      {fieldId:'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value},
-      {fieldId:'data_de_emiss_o_da_nf', fieldValue: document.getElementById('data_de_emiss_o_da_nf').value},
-      {fieldId:'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
-      {fieldId:'valor_restored', fieldValue: document.getElementById('valor_restored').value},
-      {fieldId:'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-      {fieldId:'vencimento_do_pagamento', fieldValue: vencParcela ? vencParcela+' 12:00' : ''},
-      {fieldId:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId}
-    ].filter(function(f) { return f.fieldValue; });
-    return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}', {input:{pipe_id:"307088005",fields_attributes:mainFields}});
-  }).then(function(res) {
-    var card = res && res.data && res.data.createCard && res.data.createCard.card;
-    if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(res));
-    setProgress(100, '✅ Card criado com sucesso!');
-    showToast('✅ Card #' + card.id + ' criado no Pipefy!', 'success');
-    setTimeout(function() { if (card.url) window.open(card.url, '_blank'); }, 1000);
-  }).catch(function(e) {
-    showToast('❌ Erro: ' + e.message, 'error');
-    console.error(e);
-  }).finally(function() { btn.disabled = false; });
+    .then(function(res) {
+      var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
+      if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
+      setProgress(60, 'Criando solicitação no Pipefy...');
+      var mainFields = [
+        {fieldId:'tipo_de_solicita_o_de_solicita_o', fieldValue: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
+        {fieldId:'selecione_o_fornecedor', fieldValue: document.getElementById('fornecedor_id').value},
+        {fieldId:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', fieldValue: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
+        {fieldId:'rateio_entre_uma_ou_mais_categorias', fieldValue: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
+        {fieldId:'selecione_o_centro_de_custo', fieldValue: document.getElementById('selecione_o_centro_de_custo').value},
+        {fieldId:'tipo_de_pagamento', fieldValue: document.getElementById('tipo_de_pagamento').value},
+        {fieldId:'descreva_sua_solicita_o', fieldValue: document.getElementById('descreva_sua_solicita_o').value},
+        {fieldId:'n_mero_da_nota_fiscal', fieldValue: document.getElementById('n_mero_da_nota_fiscal').value},
+        {fieldId:'data_de_emiss_o_da_nf', fieldValue: document.getElementById('data_de_emiss_o_da_nf').value},
+        {fieldId:'a_nota_fiscal_possui_reten_o_de_imposto', fieldValue: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
+        {fieldId:'valor_restored', fieldValue: document.getElementById('valor_restored').value},
+        {fieldId:'c_digo_de_barras_do_boleto_2', fieldValue: document.getElementById('c_digo_de_barras_do_boleto_2').value},
+        {fieldId:'vencimento_do_pagamento', fieldValue: vencParcela ? vencParcela+' 12:00' : ''},
+        {fieldId:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', fieldValue: parcelaId}
+      ].filter(function(f) { return f.fieldValue; });
+      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}', {input:{pipe_id:"307088005",fields_attributes:mainFields}});
+    })
+    .then(function(res) {
+      var card = res && res.data && res.data.createCard && res.data.createCard.card;
+      if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(res));
+      setProgress(100, '✅ Card criado com sucesso!');
+      showToast('✅ Card #' + card.id + ' criado no Pipefy!', 'success');
+      setTimeout(function() { if (card.url) window.open(card.url, '_blank'); }, 1000);
+    })
+    .catch(function(e) {
+      showToast('❌ Erro: ' + e.message, 'error');
+      console.error(e);
+    })
+    .finally(function() { btn.disabled = false; });
 }
 </script>
 </body>
