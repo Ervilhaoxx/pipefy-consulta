@@ -304,14 +304,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
       <div class="analyzing" id="boleto_analyzing"><div class="spinner"></div> Analisando boleto com IA...</div>
       <div class="extracted-data" id="boleto_extracted"><h4>✅ Dados extraídos automaticamente:</h4><ul id="boleto_extracted_list"></ul></div>
     </div>
-    <div class="field">
-      <label>Forma de Pagamento <span class="req">*</span></label>
-      <div class="radio-group">
-        <label><input type="radio" name="forma_pgto" value="TED" id="fp_ted" /> TED</label>
-        <label><input type="radio" name="forma_pgto" value="BOLETO" id="fp_boleto" /> BOLETO</label>
-      </div>
-      <div class="extracted" id="ext_forma">✨ Preenchido automaticamente</div>
-    </div>
     <div class="row">
       <div class="field">
         <label>Valor da Parcela <span class="req">*</span></label>
@@ -366,20 +358,16 @@ window.addEventListener('DOMContentLoaded', function() {
 
   carregarFornecedores();
 
-  document.getElementById('fornecedor_search').addEventListener('input', function() {
-    filtrarFornecedores(this.value);
-  });
+  document.getElementById('fornecedor_search').addEventListener('input', function() { filtrarFornecedores(this.value); });
   document.getElementById('fornecedor_clear').addEventListener('click', function() {
     document.getElementById('fornecedor_id').value = '';
     document.getElementById('fornecedor_search').value = '';
     document.getElementById('fornecedor_selected').style.display = 'none';
   });
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('#fornecedor_search') && !e.target.closest('#fornecedor_dropdown')) {
+    if (!e.target.closest('#fornecedor_search') && !e.target.closest('#fornecedor_dropdown'))
       document.getElementById('fornecedor_dropdown').style.display = 'none';
-    }
   });
-
   document.getElementById('rateio_entre_uma_ou_mais_categorias').addEventListener('change', function() {
     var sec = document.getElementById('rateio_section');
     if (this.value === 'Sim') { sec.style.display = 'block'; if (!rateioIniciado) iniciarRateio(); }
@@ -403,7 +391,6 @@ function carregarFornecedores() {
   inp.placeholder = 'Carregando fornecedores...';
   inp.disabled = true;
   document.getElementById('fornecedor_hint').textContent = 'Buscando fornecedores...';
-
   var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
   var TABLE_ID = '304075895';
   var allEdges = [];
@@ -424,9 +411,8 @@ function carregarFornecedores() {
       if (!records || !records.edges) { finalizarCarregamento(); return; }
       records.edges.forEach(function(e) {
         var node = e && e.node;
-        if (node && node.id && node.title && node.title.trim()) {
+        if (node && node.id && node.title && node.title.trim())
           allEdges.push({ id: String(node.id), nome: node.title.trim() });
-        }
       });
       document.getElementById('fornecedor_hint').textContent = 'Carregando... ' + allEdges.length + ' fornecedores';
       hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
@@ -461,15 +447,10 @@ function filtrarFornecedores(query) {
   }
   var q = query.toLowerCase();
   var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
-  if (!res.length) {
-    dd.innerHTML = '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
-  } else {
-    dd.innerHTML = res.map(function(f) {
-      return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g, "\\'") + '\')">' +
-        '<div style="font-weight:600">' + f.nome + '</div>' +
-        '<div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
-    }).join('');
-  }
+  dd.innerHTML = res.length ? res.map(function(f) {
+    return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g, "\\'") + '\')">' +
+      '<div style="font-weight:600">' + f.nome + '</div><div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
+  }).join('') : '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
   dd.style.display = 'block';
 }
 
@@ -506,9 +487,7 @@ function iniciarRateio() {
   }).join('');
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.addEventListener('input', function() {
-      var di = parseInt(this.getAttribute('data-dept'));
-      var ci = parseInt(this.getAttribute('data-cat'));
-      rateioData[di][ci] = parseFloat(this.value) || 0;
+      rateioData[parseInt(this.getAttribute('data-dept'))][parseInt(this.getAttribute('data-cat'))] = parseFloat(this.value) || 0;
       calcTotais();
     });
   });
@@ -519,10 +498,7 @@ function calcTotais() {
   var catT = {1:0,2:0,3:0,4:0,5:0};
   DEPARTAMENTOS.forEach(function(d, i) {
     var dt = 0;
-    [1,2,3,4,5].forEach(function(c) {
-      var v = (rateioData[i] && rateioData[i][c]) || 0;
-      catT[c] += v; dt += v;
-    });
+    [1,2,3,4,5].forEach(function(c) { var v = (rateioData[i] && rateioData[i][c]) || 0; catT[c] += v; dt += v; });
     var el = document.getElementById('dt' + i);
     if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
   });
@@ -606,8 +582,7 @@ function handleBoletoUpload() {
       if (r.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value=r.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
       if (r.valor_parcela) { document.getElementById('valor_da_parcela').value=r.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
       if (r.vencimento) { document.getElementById('vencimento_da_parcela').value=r.vencimento; document.getElementById('ext_venc').classList.add('show'); }
-      if (r.forma_pagamento) { document.getElementById(r.forma_pagamento.toUpperCase()==='TED'?'fp_ted':'fp_boleto').checked=true; document.getElementById('ext_forma').classList.add('show'); }
-      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li><li>💳 Forma: <b>'+(r.forma_pagamento||'-')+'</b></li>';
+      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li>';
       document.getElementById('boleto_extracted').classList.add('show');
       showToast('Boleto analisado!', 'success');
     } else showToast('Não foi possível extrair. Preencha manualmente.', 'error');
@@ -623,6 +598,21 @@ function pipefyQuery(query, variables) {
   }).then(function(r) { return r.json(); });
 }
 
+function uploadParaPipefy(file) {
+  var token = document.getElementById('pipefy_token').value.trim();
+  return pipefyQuery('mutation($filename:String!,$mimeType:String!){createPresignedUrl(input:{fileName:$filename,mimeType:$mimeType}){downloadUrl,uploadUrl}}',
+    {filename: file.name, mimeType: file.type}
+  ).then(function(res) {
+    var urls = res && res.data && res.data.createPresignedUrl;
+    if (!urls) throw new Error('Erro ao obter URL de upload');
+    return fetch(urls.uploadUrl, {
+      method: 'PUT',
+      headers: {'Content-Type': file.type},
+      body: file
+    }).then(function() { return urls.downloadUrl; });
+  });
+}
+
 function setProgress(pct, label) {
   document.getElementById('progress_bar').classList.add('show');
   document.getElementById('progress_fill').style.width = pct + '%';
@@ -632,20 +622,31 @@ function setProgress(pct, label) {
 function submitForm() {
   var token = document.getElementById('pipefy_token').value.trim();
   if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
+
+  var boletoFile = document.getElementById('boleto_file').files[0];
+  if (!boletoFile) { showToast('Anexe o boleto antes de enviar!', 'error'); return; }
+
   var btn = document.getElementById('btn_submit');
   btn.disabled = true;
-  var forma = document.querySelector('input[name="forma_pgto"]:checked');
   var vencParcela = document.getElementById('vencimento_da_parcela').value;
 
-  var parcelaFields = [
-    {field_id:'forma_de_pagamento_da_parcela', field_value: forma ? forma.value : ''},
-    {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
-    {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
-    {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
-  ].filter(function(f) { return f.field_value; });
+  setProgress(10, 'Fazendo upload do boleto...');
 
-  setProgress(20, 'Criando registro de parcela...');
-  pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}', {input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
+  uploadParaPipefy(boletoFile)
+    .then(function(boletoUrl) {
+      setProgress(30, 'Criando registro de parcela...');
+
+      var parcelaFields = [
+        {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
+        {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
+        {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
+        {field_id:'anexos_quando_for_boletos', field_value: boletoUrl},
+        {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
+      ].filter(function(f) { return f.field_value; });
+
+      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
+        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
+    })
     .then(function(res) {
       var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
       if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
@@ -668,7 +669,8 @@ function submitForm() {
         {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', field_value: parcelaId}
       ].filter(function(f) { return f.field_value; });
 
-      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}', {input:{pipe_id:"307088005",fields_attributes:mainFields}});
+      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
+        {input:{pipe_id:"307088005", fields_attributes:mainFields}});
     })
     .then(function(res) {
       var card = res && res.data && res.data.createCard && res.data.createCard.card;
