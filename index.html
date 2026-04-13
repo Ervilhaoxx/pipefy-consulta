@@ -340,9 +340,7 @@ var rateioData = {};
 var rateioIniciado = false;
 
 window.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('configToggle').addEventListener('click', function() {
-    document.getElementById('configPanel').classList.toggle('show');
-  });
+  document.getElementById('configToggle').addEventListener('click', function() { document.getElementById('configPanel').classList.toggle('show'); });
   document.getElementById('pipefy_token').addEventListener('input', function() { localStorage.setItem('pipefy_token', this.value); });
   document.getElementById('claude_token').addEventListener('input', function() { localStorage.setItem('claude_token', this.value); });
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
@@ -606,7 +604,6 @@ function uploadParaPipefy(file) {
       headers: {'Content-Type': file.type},
       body: file
     }).then(function() {
-      // Remove query string do S3 para passar como valor limpo ao Pipefy
       return url.split('?')[0];
     });
   });
