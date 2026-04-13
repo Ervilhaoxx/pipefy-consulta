@@ -520,7 +520,8 @@ function fileToBase64(file) {
   });
 }
 
-function extractWithClaude(b64, mediaType, prompt) {
+function extractWithClaude(b64, mediaType, prompt, tentativa) {
+  tentativa = tentativa || 1;
   var token = document.getElementById('claude_token').value.trim();
   if (!token) { showToast('Configure a chave API Claude!', 'error'); return Promise.resolve(null); }
   var block = mediaType.startsWith('image/')
@@ -531,6 +532,14 @@ function extractWithClaude(b64, mediaType, prompt) {
     headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
     body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
   }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.type === 'error' && data.error && data.error.type === 'overloaded_error' && tentativa < 4) {
+      showToast('API sobrecarregada, tentando novamente (' + tentativa + '/3)...', 'info');
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1));
+        }, 3000 * tentativa);
+      });
+    }
     try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
   });
 }
