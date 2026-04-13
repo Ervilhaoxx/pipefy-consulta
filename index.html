@@ -593,19 +593,22 @@ function uploadParaPipefy(file) {
     method: 'POST',
     headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
     body: JSON.stringify({
-      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){downloadUrl uploadUrl}}',
+      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
       variables: {orgId: '300759615', filename: file.name}
     })
   })
   .then(function(r) { return r.json(); })
   .then(function(res) {
-    var urls = res && res.data && res.data.createPresignedUrl;
-    if (!urls) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
-    return fetch(urls.uploadUrl, {
+    var url = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
+    if (!url) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
+    return fetch(url, {
       method: 'PUT',
       headers: {'Content-Type': file.type},
       body: file
-    }).then(function() { return urls.downloadUrl; });
+    }).then(function() {
+      // Remove query string do S3 para passar como valor limpo ao Pipefy
+      return url.split('?')[0];
+    });
   });
 }
 
