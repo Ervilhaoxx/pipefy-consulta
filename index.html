@@ -21,10 +21,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .field textarea { resize: vertical; min-height: 80px; }
 .extracted { font-size: 11px; color: #27ae60; margin-top: 4px; display: none; }
 .extracted.show { display: block; }
-.radio-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
-.radio-group label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; padding: 8px 16px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
-.radio-group label:hover { border-color: #6613D0; background: #f5f3ff; }
-.radio-group input[type=radio] { width: auto; }
 .upload-area { border: 2px dashed #6613D0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #faf6ff; position: relative; }
 .upload-area:hover { border-color: #FE8F1C; background: #fff8f0; }
 .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -347,17 +343,11 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('configToggle').addEventListener('click', function() {
     document.getElementById('configPanel').classList.toggle('show');
   });
-  document.getElementById('pipefy_token').addEventListener('input', function() {
-    localStorage.setItem('pipefy_token', this.value);
-  });
-  document.getElementById('claude_token').addEventListener('input', function() {
-    localStorage.setItem('claude_token', this.value);
-  });
+  document.getElementById('pipefy_token').addEventListener('input', function() { localStorage.setItem('pipefy_token', this.value); });
+  document.getElementById('claude_token').addEventListener('input', function() { localStorage.setItem('claude_token', this.value); });
   document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
   document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
-
   carregarFornecedores();
-
   document.getElementById('fornecedor_search').addEventListener('input', function() { filtrarFornecedores(this.value); });
   document.getElementById('fornecedor_clear').addEventListener('click', function() {
     document.getElementById('fornecedor_id').value = '';
@@ -511,9 +501,8 @@ function calcTotais() {
   var gtEl = document.getElementById('gt');
   if (gtEl) gtEl.textContent = 'R$ ' + grand.toFixed(2).replace('.',',');
   var nfVal = parseFloat(document.getElementById('valor_restored').value) || 0;
-  var nfD = document.getElementById('rateio_nf_display');
+  if (document.getElementById('rateio_nf_display')) document.getElementById('rateio_nf_display').textContent = 'R$ ' + nfVal.toFixed(2).replace('.',',');
   var valEl = document.getElementById('rateio_validacao');
-  if (nfD) nfD.textContent = 'R$ ' + nfVal.toFixed(2).replace('.',',');
   if (valEl) {
     if (nfVal > 0) {
       var diff = Math.abs(grand - nfVal);
@@ -575,7 +564,7 @@ function handleBoletoUpload() {
   document.getElementById('boleto_filename').textContent = file.name;
   document.getElementById('boleto_analyzing').classList.add('show');
   fileToBase64(file).then(function(b64) {
-    return extractWithClaude(b64, file.type, 'Analise este boleto e retorne APENAS um JSON:\n{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD","forma_pagamento":"TED ou BOLETO"}\nRetorne apenas o JSON.');
+    return extractWithClaude(b64, file.type, 'Analise este boleto e retorne APENAS um JSON:\n{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD"}\nRetorne apenas o JSON.');
   }).then(function(r) {
     document.getElementById('boleto_analyzing').classList.remove('show');
     if (r) {
@@ -600,11 +589,18 @@ function pipefyQuery(query, variables) {
 
 function uploadParaPipefy(file) {
   var token = document.getElementById('pipefy_token').value.trim();
-  return pipefyQuery('mutation($filename:String!,$mimeType:String!){createPresignedUrl(input:{fileName:$filename,mimeType:$mimeType}){downloadUrl,uploadUrl}}',
-    {filename: file.name, mimeType: file.type}
-  ).then(function(res) {
+  return fetch('https://api.pipefy.com/graphql', {
+    method: 'POST',
+    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body: JSON.stringify({
+      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){downloadUrl uploadUrl}}',
+      variables: {orgId: '300759615', filename: file.name}
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
     var urls = res && res.data && res.data.createPresignedUrl;
-    if (!urls) throw new Error('Erro ao obter URL de upload');
+    if (!urls) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
     return fetch(urls.uploadUrl, {
       method: 'PUT',
       headers: {'Content-Type': file.type},
@@ -622,10 +618,8 @@ function setProgress(pct, label) {
 function submitForm() {
   var token = document.getElementById('pipefy_token').value.trim();
   if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
-
   var boletoFile = document.getElementById('boleto_file').files[0];
   if (!boletoFile) { showToast('Anexe o boleto antes de enviar!', 'error'); return; }
-
   var btn = document.getElementById('btn_submit');
   btn.disabled = true;
   var vencParcela = document.getElementById('vencimento_da_parcela').value;
@@ -635,7 +629,6 @@ function submitForm() {
   uploadParaPipefy(boletoFile)
     .then(function(boletoUrl) {
       setProgress(30, 'Criando registro de parcela...');
-
       var parcelaFields = [
         {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
         {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
@@ -643,7 +636,6 @@ function submitForm() {
         {field_id:'anexos_quando_for_boletos', field_value: boletoUrl},
         {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
       ].filter(function(f) { return f.field_value; });
-
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
         {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
     })
@@ -651,7 +643,6 @@ function submitForm() {
       var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
       if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
       setProgress(60, 'Criando solicitação no Pipefy...');
-
       var mainFields = [
         {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
         {field_id:'selecione_o_fornecedor', field_value: document.getElementById('fornecedor_id').value},
@@ -668,7 +659,6 @@ function submitForm() {
         {field_id:'vencimento_do_pagamento', field_value: vencParcela ? vencParcela+' 12:00' : ''},
         {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', field_value: parcelaId}
       ].filter(function(f) { return f.field_value; });
-
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
         {input:{pipe_id:"307088005", fields_attributes:mainFields}});
     })
