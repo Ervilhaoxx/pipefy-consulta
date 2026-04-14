@@ -383,7 +383,6 @@ function carregarFornecedores() {
   var TABLE_ID = '304075895';
   var allEdges = [];
   var cursor = null;
-  var hasNextPage = true;
 
   function buscarPagina() {
     var afterClause = cursor ? ', after: "' + cursor + '"' : '';
@@ -403,7 +402,7 @@ function carregarFornecedores() {
           allEdges.push({ id: String(node.id), nome: node.title.trim() });
       });
       document.getElementById('fornecedor_hint').textContent = 'Carregando... ' + allEdges.length + ' fornecedores';
-      hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
+      var hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
       cursor = records.pageInfo && records.pageInfo.endCursor;
       if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
     })
@@ -594,7 +593,7 @@ function pipefyQuery(query, variables) {
 
 function uploadParaPipefy(file) {
   return fileToBase64(file).then(function(b64) {
-    return fetch('https://ramonlogcomex.app.n8n.cloud/webhook/upload-pipefy', {
+    return fetch('https://ramonlogcomex.app.n8n.cloud/webhook/upload-boleto', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
