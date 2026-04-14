@@ -535,9 +535,7 @@ function extractWithClaude(b64, mediaType, prompt, tentativa) {
     if (data.type === 'error' && data.error && data.error.type === 'overloaded_error' && tentativa < 4) {
       showToast('API sobrecarregada, tentando novamente (' + tentativa + '/3)...', 'info');
       return new Promise(function(resolve) {
-        setTimeout(function() {
-          resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1));
-        }, 3000 * tentativa);
+        setTimeout(function() { resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1)); }, 3000 * tentativa);
       });
     }
     try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
@@ -595,25 +593,20 @@ function pipefyQuery(query, variables) {
 }
 
 function uploadParaPipefy(file) {
-  var token = document.getElementById('pipefy_token').value.trim();
-  return fetch('https://api.pipefy.com/graphql', {
-    method: 'POST',
-    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: JSON.stringify({
-      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
-      variables: {orgId: '300759615', filename: file.name}
-    })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    var url = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
-    if (!url) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
-    return fetch(url, {
-      method: 'PUT',
-      headers: {'Content-Type': file.type},
-      body: file
-    }).then(function() {
-      return url.split('?')[0];
+  return fileToBase64(file).then(function(b64) {
+    return fetch('https://ramonlogcomex.app.n8n.cloud/webhook/upload-pipefy', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        body: {
+          fileName: file.name,
+          fileContent: b64,
+          mimeType: file.type
+        }
+      })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (!data.url) throw new Error('Upload falhou: ' + JSON.stringify(data));
+      return data.url;
     });
   });
 }
@@ -642,23 +635,16 @@ function submitForm() {
         {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
         {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
         {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
+        {field_id:'anexos_quando_for_boletos', field_value: boletoUrl},
         {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
-        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}})
-        .then(function(res2) {
-          var parcelaId = res2 && res2.data && res2.data.createCard && res2.data.createCard.card && res2.data.createCard.card.id;
-          if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res2));
-          setProgress(45, 'Anexando boleto...');
-          return pipefyQuery(
-            'mutation($cardId:ID!,$fieldId:String!,$value:[UndefinedInput]){updateCardField(input:{card_id:$cardId,field_id:$fieldId,new_value:$value}){card{id}}}',
-            {cardId: parcelaId, fieldId: 'anexos_quando_for_boletos', value: [boletoUrl]}
-          ).then(function() { return parcelaId; });
-        });
+        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
     })
-    .then(function(parcelaId) {
-      if (!parcelaId) throw new Error('Parcela não criada');
+    .then(function(res) {
+      var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
+      if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
       setProgress(60, 'Criando solicitação no Pipefy...');
       var mainFields = [
         {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
