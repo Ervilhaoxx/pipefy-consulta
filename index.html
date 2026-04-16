@@ -332,9 +332,9 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 <div class="toast" id="toast"></div>
 
 <script>
-// ✅ IDs confirmados via API
-var LOGGER_ID   = '1249410709'; // João Victor Faria — tabela Colaboradores
-var APROVADOR_ID = '932558839'; // Daniel Portella Alle — Financeiro (não Controladoria)
+// ✅ IDs confirmados via API Pipefy
+var LOGGER_ID    = '1249410709'; // João Victor Faria — Colaboradores / Finance
+var APROVADOR_ID = '932558839';  // Daniel Portella Alle — FINANCEIRO ✅ (não Controladoria)
 
 var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
 var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
@@ -405,7 +405,7 @@ function carregarFornecedores() {
       var hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
       cursor = records.pageInfo && records.pageInfo.endCursor;
       if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
-    }).catch(function(e) { inp.placeholder = 'Erro ao carregar.'; inp.disabled = false; });
+    }).catch(function() { inp.placeholder = 'Erro ao carregar.'; inp.disabled = false; });
   }
   function finalizarCarregamento() {
     allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
@@ -625,11 +625,11 @@ function submitForm() {
 
       setProgress(35, 'Criando registro de parcela...');
       var parcelaFields = [
-        {field_id:'forma_de_pagamento_da_parcela',              field_value:'BOLETO'},
-        {field_id:'valor_da_parcela',                           field_value: document.getElementById('valor_da_parcela').value},
-        {field_id:'vencimento_da_parcela',                      field_value: vencParcela ? vencParcela+' 12:00' : ''},
+        {field_id:'forma_de_pagamento_da_parcela',                  field_value:'BOLETO'},
+        {field_id:'valor_da_parcela',                               field_value: document.getElementById('valor_da_parcela').value},
+        {field_id:'vencimento_da_parcela',                          field_value: vencParcela ? vencParcela+' 12:00' : ''},
         {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-        {field_id:'anexos_quando_for_boletos',                  field_value: boletoPath}
+        {field_id:'anexos_quando_for_boletos',                      field_value: boletoPath}
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
@@ -640,7 +640,7 @@ function submitForm() {
 
           setProgress(65, 'Criando solicitação no Pipefy...');
           var mainFields = [
-            {field_id:'tipo_de_solicita_o_de_solicita_o',               field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
+            {field_id:'tipo_de_solicita_o_de_solicita_o',                field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
             {field_id:'logger',                                           field_value: LOGGER_ID},
             {field_id:'selecione_o_aprovador',                            field_value: APROVADOR_ID},
             {field_id:'selecione_o_fornecedor',                           field_value: document.getElementById('fornecedor_id').value},
