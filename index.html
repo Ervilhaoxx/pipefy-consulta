@@ -591,21 +591,28 @@ function pipefyQuery(query, variables) {
   }).then(function(r) { return r.json(); });
 }
 
+// ✅ UPLOAD DIRETO PARA O S3 DO PIPEFY — SEM N8N
 function uploadParaPipefy(file) {
-  return fileToBase64(file).then(function(b64) {
-    return fetch('https://ramonlogcomex.app.n8n.cloud/webhook/upload-boleto', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        body: {
-          fileName: file.name,
-          fileContent: b64,
-          mimeType: file.type
-        }
-      })
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      if (!data.url) throw new Error('Upload falhou: ' + JSON.stringify(data));
-      return data.url;
+  var token = document.getElementById('pipefy_token').value.trim();
+  return fetch('https://api.pipefy.com/graphql', {
+    method: 'POST',
+    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body: JSON.stringify({
+      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
+      variables: {orgId: '300759615', filename: file.name}
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    var url = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
+    if (!url) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
+    return fetch(url, {
+      method: 'PUT',
+      headers: {'Content-Type': file.type || 'application/pdf'},
+      body: file
+    }).then(function(r) {
+      if (!r.ok) throw new Error('Erro S3: ' + r.status);
+      return url.split('?')[0];
     });
   });
 }
