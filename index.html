@@ -602,6 +602,19 @@ function uploadParaPipefy(file) {
       variables: {orgId: '300759615', filename: file.name}
     })
   })
+ function uploadParaPipefy(file) {
+  var token = document.getElementById('pipefy_token').value.trim();
+  // ✅ Remove espaços e caracteres especiais do nome
+  var nomeSeguro = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+  
+  return fetch('https://api.pipefy.com/graphql', {
+    method: 'POST',
+    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body: JSON.stringify({
+      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
+      variables: {orgId: '300759615', filename: nomeSeguro}
+    })
+  })
   .then(function(r) { return r.json(); })
   .then(function(res) {
     var presignedUrl = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
@@ -612,9 +625,9 @@ function uploadParaPipefy(file) {
       body: file
     }).then(function(r) {
       if (!r.ok) throw new Error('Erro S3: ' + r.status);
-      // ✅ Retorna o PATH RELATIVO (não a URL completa)
+      // ✅ Retorna PATH RELATIVO sem espaços
       var urlPath = new URL(presignedUrl).pathname;
-      return urlPath.substring(1); // "orgs/.../uploads/.../arquivo.pdf"
+      return urlPath.substring(1);
     });
   });
 }
