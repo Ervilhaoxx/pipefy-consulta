@@ -591,7 +591,6 @@ function pipefyQuery(query, variables) {
   }).then(function(r) { return r.json(); });
 }
 
-// ✅ UPLOAD DIRETO PARA O S3 DO PIPEFY — SEM N8N
 function uploadParaPipefy(file) {
   var token = document.getElementById('pipefy_token').value.trim();
   return fetch('https://api.pipefy.com/graphql', {
@@ -637,20 +636,29 @@ function submitForm() {
   uploadParaPipefy(boletoFile)
     .then(function(boletoUrl) {
       setProgress(30, 'Criando registro de parcela...');
+      // ✅ Sem o campo attachment — será adicionado depois
       var parcelaFields = [
         {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
         {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
         {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
-        {field_id:'anexos_quando_for_boletos', field_value: boletoUrl},
         {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
-        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
+        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}})
+        .then(function(res2) {
+          var parcelaId = res2 && res2.data && res2.data.createCard && res2.data.createCard.card && res2.data.createCard.card.id;
+          if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res2));
+          setProgress(45, 'Anexando boleto...');
+          // ✅ Anexa o boleto após criar o card
+          return pipefyQuery(
+            'mutation($cardId:ID!,$fieldId:String!,$value:[UndefinedInput]){updateCardField(input:{card_id:$cardId,field_id:$fieldId,new_value:$value}){card{id}}}',
+            {cardId: parcelaId, fieldId: 'anexos_quando_for_boletos', value: [boletoUrl]}
+          ).then(function() { return parcelaId; });
+        });
     })
-    .then(function(res) {
-      var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
-      if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
+    .then(function(parcelaId) {
+      if (!parcelaId) throw new Error('Parcela não criada');
       setProgress(60, 'Criando solicitação no Pipefy...');
       var mainFields = [
         {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
