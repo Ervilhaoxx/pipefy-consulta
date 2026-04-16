@@ -401,10 +401,7 @@ function carregarFornecedores() {
       var hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
       cursor = records.pageInfo && records.pageInfo.endCursor;
       if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
-    }).catch(function(e) {
-      inp.placeholder = 'Erro ao carregar.';
-      inp.disabled = false;
-    });
+    }).catch(function(e) { inp.placeholder = 'Erro ao carregar.'; inp.disabled = false; });
   }
   function finalizarCarregamento() {
     allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
@@ -574,7 +571,6 @@ function pipefyQuery(query, variables) {
 // ✅ UPLOAD DIRETO S3 — NOME SEM ESPAÇOS — RETORNA PATH RELATIVO
 function uploadParaPipefy(file) {
   var token = document.getElementById('pipefy_token').value.trim();
-  // Remove espaços e caracteres especiais do nome do arquivo
   var nomeSeguro = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
   return fetch('https://api.pipefy.com/graphql', {
     method: 'POST',
@@ -586,14 +582,13 @@ function uploadParaPipefy(file) {
   }).then(function(r) { return r.json(); })
   .then(function(res) {
     var presignedUrl = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
-    if (!presignedUrl) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
+    if (!presignedUrl) throw new Error('Erro ao obter URL: ' + JSON.stringify(res));
     return fetch(presignedUrl, {
       method: 'PUT',
       headers: {'Content-Type': file.type || 'application/pdf'},
       body: file
     }).then(function(r) {
       if (!r.ok) throw new Error('Erro S3: ' + r.status);
-      // ✅ Retorna PATH RELATIVO sem espaços — formato aceito pelo Pipefy
       var urlPath = new URL(presignedUrl).pathname;
       return urlPath.substring(1); // "orgs/.../uploads/.../arquivo.pdf"
     });
@@ -611,14 +606,21 @@ function submitForm() {
   if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
   var boletoFile = document.getElementById('boleto_file').files[0];
   if (!boletoFile) { showToast('Anexe o boleto antes de enviar!', 'error'); return; }
+  var nfFile = document.getElementById('nf_file').files[0];
+  if (!nfFile) { showToast('Anexe a nota fiscal antes de enviar!', 'error'); return; }
   var btn = document.getElementById('btn_submit');
   btn.disabled = true;
   var vencParcela = document.getElementById('vencimento_da_parcela').value;
+  var valorNF = document.getElementById('valor_restored').value;
 
   setProgress(10, 'Fazendo upload do boleto...');
 
-  uploadParaPipefy(boletoFile)
-    .then(function(boletoPath) {
+  // ✅ Faz upload do boleto E da NF em paralelo
+  Promise.all([uploadParaPipefy(boletoFile), uploadParaPipefy(nfFile)])
+    .then(function(paths) {
+      var boletoPath = paths[0];
+      var nfPath = paths[1];
+
       setProgress(30, 'Criando registro de parcela...');
       var parcelaFields = [
         {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
@@ -629,30 +631,37 @@ function submitForm() {
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
-        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
-    })
-    .then(function(res) {
-      var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
-      if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
-      setProgress(60, 'Criando solicitação no Pipefy...');
-      var mainFields = [
-        {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
-        {field_id:'selecione_o_fornecedor', field_value: document.getElementById('fornecedor_id').value},
-        {field_id:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', field_value: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
-        {field_id:'rateio_entre_uma_ou_mais_categorias', field_value: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
-        {field_id:'selecione_o_centro_de_custo', field_value: document.getElementById('selecione_o_centro_de_custo').value},
-        {field_id:'tipo_de_pagamento', field_value: document.getElementById('tipo_de_pagamento').value},
-        {field_id:'descreva_sua_solicita_o', field_value: document.getElementById('descreva_sua_solicita_o').value},
-        {field_id:'n_mero_da_nota_fiscal', field_value: document.getElementById('n_mero_da_nota_fiscal').value},
-        {field_id:'data_de_emiss_o_da_nf', field_value: document.getElementById('data_de_emiss_o_da_nf').value},
-        {field_id:'a_nota_fiscal_possui_reten_o_de_imposto', field_value: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
-        {field_id:'valor_restored', field_value: document.getElementById('valor_restored').value},
-        {field_id:'c_digo_de_barras_do_boleto_2', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-        {field_id:'vencimento_do_pagamento', field_value: vencParcela ? vencParcela+' 12:00' : ''},
-        {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', field_value: parcelaId}
-      ].filter(function(f) { return f.field_value; });
-      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
-        {input:{pipe_id:"307088005", fields_attributes:mainFields}});
+        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}})
+        .then(function(res) {
+          var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
+          if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
+          setProgress(60, 'Criando solicitação no Pipefy...');
+
+          var mainFields = [
+            {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
+            {field_id:'logger', field_value: '307164077'},
+            {field_id:'selecione_o_aprovador', field_value: '302317733'},
+            {field_id:'selecione_o_fornecedor', field_value: document.getElementById('fornecedor_id').value},
+            {field_id:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor', field_value: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
+            {field_id:'rateio_entre_uma_ou_mais_categorias', field_value: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
+            {field_id:'selecione_o_centro_de_custo', field_value: document.getElementById('selecione_o_centro_de_custo').value},
+            {field_id:'tipo_de_pagamento', field_value: document.getElementById('tipo_de_pagamento').value},
+            {field_id:'descreva_sua_solicita_o', field_value: document.getElementById('descreva_sua_solicita_o').value},
+            {field_id:'n_mero_da_nota_fiscal', field_value: document.getElementById('n_mero_da_nota_fiscal').value},
+            {field_id:'data_de_emiss_o_da_nf', field_value: document.getElementById('data_de_emiss_o_da_nf').value},
+            {field_id:'a_nota_fiscal_possui_reten_o_de_imposto', field_value: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
+            {field_id:'valor_restored', field_value: valorNF},
+            {field_id:'valor_bruto_da_nota_fiscal', field_value: valorNF},
+            {field_id:'valor_l_quido_da_nf', field_value: valorNF},
+            {field_id:'anexo_da_nota_fiscal', field_value: nfPath},
+            {field_id:'c_digo_de_barras_do_boleto_2', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
+            {field_id:'vencimento_do_pagamento', field_value: vencParcela ? vencParcela+' 12:00' : ''},
+            {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo', field_value: parcelaId}
+          ].filter(function(f) { return f.field_value; });
+
+          return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
+            {input:{pipe_id:"307088005", fields_attributes:mainFields}});
+        });
     })
     .then(function(res) {
       var card = res && res.data && res.data.createCard && res.data.createCard.card;
