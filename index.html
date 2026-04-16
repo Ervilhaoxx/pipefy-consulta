@@ -378,12 +378,10 @@ function carregarFornecedores() {
   var inp = document.getElementById('fornecedor_search');
   inp.placeholder = 'Carregando fornecedores...';
   inp.disabled = true;
-  document.getElementById('fornecedor_hint').textContent = 'Buscando fornecedores...';
   var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
   var TABLE_ID = '304075895';
   var allEdges = [];
   var cursor = null;
-
   function buscarPagina() {
     var afterClause = cursor ? ', after: "' + cursor + '"' : '';
     var query = '{ table_records(table_id: "' + TABLE_ID + '", first: 100' + afterClause + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
@@ -391,9 +389,7 @@ function carregarFornecedores() {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify({ query: query })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
+    }).then(function(r) { return r.json(); }).then(function(data) {
       var records = data && data.data && data.data.table_records;
       if (!records || !records.edges) { finalizarCarregamento(); return; }
       records.edges.forEach(function(e) {
@@ -405,14 +401,11 @@ function carregarFornecedores() {
       var hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
       cursor = records.pageInfo && records.pageInfo.endCursor;
       if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
-    })
-    .catch(function(e) {
-      inp.placeholder = 'Erro ao carregar. Recarregue a página.';
+    }).catch(function(e) {
+      inp.placeholder = 'Erro ao carregar.';
       inp.disabled = false;
-      document.getElementById('fornecedor_hint').textContent = 'Erro: ' + e.message;
     });
   }
-
   function finalizarCarregamento() {
     allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
     todosFornecedores = allEdges;
@@ -421,23 +414,19 @@ function carregarFornecedores() {
     inp.disabled = false;
     document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
   }
-
   buscarPagina();
 }
 
 function filtrarFornecedores(query) {
   var dd = document.getElementById('fornecedor_dropdown');
   if (!query || query.length < 2) { dd.style.display = 'none'; return; }
-  if (!fornecedorCarregado) {
-    dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde, carregando...</div>';
-    dd.style.display = 'block'; return;
-  }
+  if (!fornecedorCarregado) { dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde...</div>'; dd.style.display = 'block'; return; }
   var q = query.toLowerCase();
   var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
   dd.innerHTML = res.length ? res.map(function(f) {
     return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g, "\\'") + '\')">' +
       '<div style="font-weight:600">' + f.nome + '</div><div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
-  }).join('') : '<div class="forn-item" style="color:#888">Nenhum fornecedor encontrado.</div>';
+  }).join('') : '<div class="forn-item" style="color:#888">Nenhum encontrado.</div>';
   dd.style.display = 'block';
 }
 
@@ -454,11 +443,7 @@ function iniciarRateio() {
   rateioIniciado = true;
   for (var c = 1; c <= 5; c++) {
     var sel = document.getElementById('cs' + c);
-    CATEGORIAS.forEach(function(cat) {
-      var opt = document.createElement('option');
-      opt.value = cat; opt.textContent = cat;
-      sel.appendChild(opt);
-    });
+    CATEGORIAS.forEach(function(cat) { var opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; sel.appendChild(opt); });
     sel.addEventListener('change', calcTotais);
   }
   var tbody = document.getElementById('rateio_tbody');
@@ -486,17 +471,14 @@ function calcTotais() {
   DEPARTAMENTOS.forEach(function(d, i) {
     var dt = 0;
     [1,2,3,4,5].forEach(function(c) { var v = (rateioData[i] && rateioData[i][c]) || 0; catT[c] += v; dt += v; });
-    var el = document.getElementById('dt' + i);
-    if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
+    var el = document.getElementById('dt' + i); if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
   });
   var grand = 0;
   [1,2,3,4,5].forEach(function(c) {
     grand += catT[c];
-    var el = document.getElementById('ct' + c);
-    if (el) el.textContent = 'R$ ' + catT[c].toFixed(2).replace('.',',');
+    var el = document.getElementById('ct' + c); if (el) el.textContent = 'R$ ' + catT[c].toFixed(2).replace('.',',');
   });
-  var gtEl = document.getElementById('gt');
-  if (gtEl) gtEl.textContent = 'R$ ' + grand.toFixed(2).replace('.',',');
+  var gtEl = document.getElementById('gt'); if (gtEl) gtEl.textContent = 'R$ ' + grand.toFixed(2).replace('.',',');
   var nfVal = parseFloat(document.getElementById('valor_restored').value) || 0;
   if (document.getElementById('rateio_nf_display')) document.getElementById('rateio_nf_display').textContent = 'R$ ' + nfVal.toFixed(2).replace('.',',');
   var valEl = document.getElementById('rateio_validacao');
@@ -533,9 +515,7 @@ function extractWithClaude(b64, mediaType, prompt, tentativa) {
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (data.type === 'error' && data.error && data.error.type === 'overloaded_error' && tentativa < 4) {
       showToast('API sobrecarregada, tentando novamente (' + tentativa + '/3)...', 'info');
-      return new Promise(function(resolve) {
-        setTimeout(function() { resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1)); }, 3000 * tentativa);
-      });
+      return new Promise(function(resolve) { setTimeout(function() { resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1)); }, 3000 * tentativa); });
     }
     try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
   });
@@ -591,22 +571,11 @@ function pipefyQuery(query, variables) {
   }).then(function(r) { return r.json(); });
 }
 
-// ✅ UPLOAD DIRETO PARA O S3 — RETORNA PATH RELATIVO
+// ✅ UPLOAD DIRETO S3 — NOME SEM ESPAÇOS — RETORNA PATH RELATIVO
 function uploadParaPipefy(file) {
   var token = document.getElementById('pipefy_token').value.trim();
-  return fetch('https://api.pipefy.com/graphql', {
-    method: 'POST',
-    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: JSON.stringify({
-      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
-      variables: {orgId: '300759615', filename: file.name}
-    })
-  })
- function uploadParaPipefy(file) {
-  var token = document.getElementById('pipefy_token').value.trim();
-  // ✅ Remove espaços e caracteres especiais do nome
+  // Remove espaços e caracteres especiais do nome do arquivo
   var nomeSeguro = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
-  
   return fetch('https://api.pipefy.com/graphql', {
     method: 'POST',
     headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
@@ -614,8 +583,7 @@ function uploadParaPipefy(file) {
       query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
       variables: {orgId: '300759615', filename: nomeSeguro}
     })
-  })
-  .then(function(r) { return r.json(); })
+  }).then(function(r) { return r.json(); })
   .then(function(res) {
     var presignedUrl = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
     if (!presignedUrl) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
@@ -625,9 +593,9 @@ function uploadParaPipefy(file) {
       body: file
     }).then(function(r) {
       if (!r.ok) throw new Error('Erro S3: ' + r.status);
-      // ✅ Retorna PATH RELATIVO sem espaços
+      // ✅ Retorna PATH RELATIVO sem espaços — formato aceito pelo Pipefy
       var urlPath = new URL(presignedUrl).pathname;
-      return urlPath.substring(1);
+      return urlPath.substring(1); // "orgs/.../uploads/.../arquivo.pdf"
     });
   });
 }
