@@ -591,6 +591,7 @@ function pipefyQuery(query, variables) {
   }).then(function(r) { return r.json(); });
 }
 
+// ✅ UPLOAD DIRETO PARA O S3 — RETORNA PATH RELATIVO
 function uploadParaPipefy(file) {
   var token = document.getElementById('pipefy_token').value.trim();
   return fetch('https://api.pipefy.com/graphql', {
@@ -603,15 +604,17 @@ function uploadParaPipefy(file) {
   })
   .then(function(r) { return r.json(); })
   .then(function(res) {
-    var url = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
-    if (!url) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
-    return fetch(url, {
+    var presignedUrl = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
+    if (!presignedUrl) throw new Error('Erro ao obter URL de upload: ' + JSON.stringify(res));
+    return fetch(presignedUrl, {
       method: 'PUT',
       headers: {'Content-Type': file.type || 'application/pdf'},
       body: file
     }).then(function(r) {
       if (!r.ok) throw new Error('Erro S3: ' + r.status);
-      return url.split('?')[0];
+      // ✅ Retorna o PATH RELATIVO (não a URL completa)
+      var urlPath = new URL(presignedUrl).pathname;
+      return urlPath.substring(1); // "orgs/.../uploads/.../arquivo.pdf"
     });
   });
 }
@@ -634,31 +637,22 @@ function submitForm() {
   setProgress(10, 'Fazendo upload do boleto...');
 
   uploadParaPipefy(boletoFile)
-    .then(function(boletoUrl) {
+    .then(function(boletoPath) {
       setProgress(30, 'Criando registro de parcela...');
-      // ✅ Sem o campo attachment — será adicionado depois
       var parcelaFields = [
         {field_id:'forma_de_pagamento_da_parcela', field_value: 'BOLETO'},
         {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
         {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
-        {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value}
+        {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
+        {field_id:'anexos_quando_for_boletos', field_value: boletoPath}
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
-        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}})
-        .then(function(res2) {
-          var parcelaId = res2 && res2.data && res2.data.createCard && res2.data.createCard.card && res2.data.createCard.card.id;
-          if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res2));
-          setProgress(45, 'Anexando boleto...');
-          // ✅ Anexa o boleto após criar o card
-          return pipefyQuery(
-            'mutation($cardId:ID!,$fieldId:String!,$value:[UndefinedInput]){updateCardField(input:{card_id:$cardId,field_id:$fieldId,new_value:$value}){card{id}}}',
-            {cardId: parcelaId, fieldId: 'anexos_quando_for_boletos', value: [boletoUrl]}
-          ).then(function() { return parcelaId; });
-        });
+        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}});
     })
-    .then(function(parcelaId) {
-      if (!parcelaId) throw new Error('Parcela não criada');
+    .then(function(res) {
+      var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
+      if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
       setProgress(60, 'Criando solicitação no Pipefy...');
       var mainFields = [
         {field_id:'tipo_de_solicita_o_de_solicita_o', field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
