@@ -56,6 +56,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .forn-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid #6613D0; border-radius:8px; z-index:100; max-height:220px; overflow-y:auto; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
 .forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
 .forn-item:hover { background:#f5f3ff; }
+/* ✅ CORREÇÃO: options do select do rateio ficam visíveis */
+.rateio-cat-select option { color: #333 !important; background: white !important; }
 </style>
 </head>
 <body>
@@ -223,11 +225,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
         <thead>
           <tr style="background:#6613D0;color:white">
             <th style="padding:8px 10px;text-align:left;min-width:180px;position:sticky;left:0;background:#6613D0;z-index:2">DEPARTAMENTOS</th>
-            <th style="padding:6px;min-width:150px"><select id="cs1" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 1</option></select></th>
-            <th style="padding:6px;min-width:150px"><select id="cs2" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 2</option></select></th>
-            <th style="padding:6px;min-width:150px"><select id="cs3" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 3</option></select></th>
-            <th style="padding:6px;min-width:150px"><select id="cs4" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 4</option></select></th>
-            <th style="padding:6px;min-width:150px"><select id="cs5" style="background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="">Categoria 5</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs1" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 1</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs2" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 2</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs3" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 3</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs4" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 4</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs5" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 5</option></select></th>
             <th style="padding:8px;min-width:100px;background:#4a0099;text-align:center">TOTAL DEPT</th>
           </tr>
           <tr style="background:#f0edff">
@@ -334,7 +336,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 <script>
 // ✅ IDs confirmados via API Pipefy
 var LOGGER_ID    = '1249410709'; // João Victor Faria — Colaboradores / Finance
-var APROVADOR_ID = '932558839';  // Daniel Portella Alle — FINANCEIRO ✅ (não Controladoria)
+var APROVADOR_ID = '932558839';  // Daniel Portella Alle — FINANCEIRO ✅
 
 var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
 var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
@@ -444,7 +446,15 @@ function iniciarRateio() {
   rateioIniciado = true;
   for (var c = 1; c <= 5; c++) {
     var sel = document.getElementById('cs' + c);
-    CATEGORIAS.forEach(function(cat) { var opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; sel.appendChild(opt); });
+    CATEGORIAS.forEach(function(cat) {
+      var opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      // ✅ CORREÇÃO: options com cor escura para ficarem visíveis
+      opt.style.color = '#333';
+      opt.style.background = 'white';
+      sel.appendChild(opt);
+    });
     sel.addEventListener('change', calcTotais);
   }
   var tbody = document.getElementById('rateio_tbody');
