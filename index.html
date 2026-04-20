@@ -43,7 +43,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #6613D0, #FE8F1C); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
 .btn-submit:hover { opacity: 0.9; }
 .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-.toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 320px; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; z-index: 999; display: none; max-width: 360px; }
 .toast.success { background: #16a34a; display: block; }
 .toast.error { background: #dc2626; display: block; }
 .toast.info { background: #6613D0; display: block; }
@@ -56,8 +56,16 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .forn-dropdown { display:none; position:absolute; top:100%; left:0; right:0; background:white; border:1.5px solid #6613D0; border-radius:8px; z-index:100; max-height:220px; overflow-y:auto; box-shadow:0 4px 16px rgba(0,0,0,0.12); }
 .forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
 .forn-item:hover { background:#f5f3ff; }
-/* ✅ CORREÇÃO: options do select do rateio ficam visíveis */
 .rateio-cat-select option { color: #333 !important; background: white !important; }
+.rateio-upload-box { background: linear-gradient(135deg, #f5f3ff, #fff8f0); border: 2px dashed #9333ea; border-radius: 10px; padding: 20px; margin-bottom: 16px; position: relative; }
+.rateio-upload-box input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.rateio-upload-box .rateio-icon { font-size: 24px; }
+.rateio-upload-box p { font-size: 13px; color: #666; margin-top: 6px; }
+.rateio-upload-box .rateio-filename { font-size: 12px; color: #6613D0; font-weight: 600; margin-top: 4px; }
+.fornecedor-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-left: 8px; }
+.badge-onfly { background: #dbeafe; color: #1d4ed8; }
+.badge-copastur { background: #fef3c7; color: #92400e; }
+.badge-tecnicopias { background: #dcfce7; color: #166534; }
 </style>
 </head>
 <body>
@@ -214,9 +222,25 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
+  <!-- PLANILHA DE RATEIO -->
   <div class="card" id="rateio_section" style="display:none">
     <h2>📊 Planilha de Rateio</h2>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+
+    <!-- UPLOAD AUTOMÁTICO -->
+    <div class="rateio-upload-box" style="text-align:center">
+      <input type="file" id="rateio_file" accept=".xlsx,.xls,.pdf" />
+      <div class="rateio-icon">📂</div>
+      <p style="font-weight:600;color:#6613D0;margin-top:6px">Anexe a planilha de rateio para preenchimento automático</p>
+      <p style="font-size:11px;color:#888;margin-top:4px">Suporta: <span class="fornecedor-badge badge-onfly">Onfly (.xlsx)</span> <span class="fornecedor-badge badge-copastur">Copastur (.pdf)</span> <span class="fornecedor-badge badge-tecnicopias">Tecnicópias (em breve)</span></p>
+      <div class="rateio-filename" id="rateio_filename"></div>
+    </div>
+    <div class="analyzing" id="rateio_analyzing"><div class="spinner"></div> <span id="rateio_analyzing_text">Lendo planilha de rateio com IA...</span></div>
+    <div class="extracted-data" id="rateio_extracted">
+      <h4 id="rateio_extracted_title">✅ Rateio preenchido automaticamente:</h4>
+      <ul id="rateio_extracted_list"></ul>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;margin-top:16px">
       <div style="font-size:13px;font-weight:600;color:#333">Total da NF: <span id="rateio_nf_display" style="color:#6613D0">R$ 0,00</span></div>
       <div id="rateio_validacao" style="font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666">Aguardando...</div>
     </div>
@@ -330,13 +354,88 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
   </div>
 
 </div>
-
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ✅ IDs confirmados via API Pipefy
-var LOGGER_ID    = '1249410709'; // João Victor Faria — Colaboradores / Finance
-var APROVADOR_ID = '932558839';  // Daniel Portella Alle — FINANCEIRO ✅
+// ✅ IDs confirmados
+var LOGGER_ID    = '1249410709';
+var APROVADOR_ID = '932558839';
+
+// ✅ Pessoas que SEMPRE vão para DIRETORIA CORPORATE na Copastur
+var DIRETORIA_COPASTUR = [
+  'CARLOS HENRIQUE BASTOS FERREIRA DE SOUZA',
+  'HELMUTH HOFSTATTER FILHO',
+  'ALLAN ROGERIO FLORES SCHMITT',
+  'RAFAEL AUGUSTO FIRAKOWSKI CRUZ',
+  'RAFAEL CASTELLI SILVA AGUIAR',
+  'THIERRY JOINOVICI CADIER',
+  'MICHELA CANTARINI SCHLOSSER',
+  'MICHELA SCHLOSSER'
+];
+
+// ✅ Mapeamento CC Copastur → CC Pipefy
+var CC_MAP = {
+  'DIRETORIA': 'DIRETORIA CORPORATE',
+  'DIRETORIA CORPORATE': 'DIRETORIA CORPORATE',
+  'CS GROWTH': 'CS GROWTH',
+  'TECH GROWTH': 'TECH GROWTH',
+  'COMERCIAL MVP': 'COMERCIAL MVP',
+  'COMERCIAL GROWTH': 'COMERCIAL GROWTH',
+  'R&D GERAL PPMF': 'R&D GERAL PPMF',
+  'LEGAL/COMPLIANCE CORPORATE': 'LEGAL/COMPLIANCE CORPORATE',
+  'TECH GERAL PPMF': 'TECH GERAL PPMF',
+  'MARKETING INSTITUCIONAL': 'MARKETING INSTITUCIONAL CORPORATE',
+  'MARKETING INSTITUCIONAL CORPORATE': 'MARKETING INSTITUCIONAL CORPORATE',
+  'FINANCEIRO': 'FINANCEIRO CORPORATE',
+  'FINANCEIRO CORPORATE': 'FINANCEIRO CORPORATE',
+  'RH': 'RH CORPORATE',
+  'RH CORPORATE': 'RH CORPORATE',
+  'FACILITIES': 'FACILITIES CORPORATE',
+  'FACILITIES CORPORATE': 'FACILITIES CORPORATE',
+  'BI E INTEGRACOES': 'BI E INTEGRACOES CORPORATE',
+  'BI E INTEGRACOES CORPORATE': 'BI E INTEGRACOES CORPORATE',
+  'CONTROLADORIA': 'CONTROLADORIA CORPORATE',
+  'CONTROLADORIA CORPORATE': 'CONTROLADORIA CORPORATE',
+  'CONTABILIDADE': 'CONTABILIDADE CORPORATE',
+  'CONTABILIDADE CORPORATE': 'CONTABILIDADE CORPORATE',
+  'DP': 'DP CORPORATE',
+  'DP CORPORATE': 'DP CORPORATE',
+  'PRE-VENDAS GROWTH': 'PRE-VENDAS GROWTH',
+  'PRE-VENDAS PPMF': 'PRE-VENDAS PPMF',
+  'CS PPMF': 'CS PPMF',
+  'CS GERAL GROWTH': 'CS GERAL GROWTH',
+  'CS OPS & INSIGHTS GROWTH': 'CS OPS & INSIGHTS GROWTH',
+  'DADOS GROWTH': 'DADOS GROWTH',
+  'DADOS PPMF': 'DADOS PPMF',
+  'DEVOPS PPMF': 'DEVOPS PPMF',
+  'TECH PPMF': 'TECH PPMF',
+  'TECH AUTOMATION GROWTH': 'TECH AUTOMATION GROWTH',
+  'R&D PPMF': 'R&D PPMF',
+  'R&D MVP': 'R&D MVP',
+  'COMERCIAL PPMF': 'COMERCIAL PPMF',
+  'SUPORTE GROWTH': 'SUPORTE GROWTH',
+  'SUPORTE PPMF': 'SUPORTE PPMF',
+  'QUALIDADE GROWTH': 'QUALIDADE GROWTH',
+  'QUALIDADE PPMF': 'QUALIDADE PPMF',
+  'MARKETING GROWTH': 'MARKETING GROWTH',
+  'MARKETING PPMF': 'MARKETING PPMF',
+  'REVOPS GROWTH': 'REVOPS GROWTH',
+  'REVOPS OPERATIONS GROWTH': 'REVOPS OPERATIONS GROWTH',
+  'REVOPS INTELLIGENCE PPMF': 'REVOPS INTELLIGENCE PPMF',
+  'CCO GROWTH': 'CCO GROWTH',
+  'PROFESSIONAL SERVICES GROWTH': 'PROFESSIONAL SERVICES GROWTH',
+  'CS INTERNACIONAL PPMF': 'CS INTERNACIONAL PPMF',
+  'COMERCIAL INTERNATIONAL PPMF': 'COMERCIAL INTERNATIONAL PPMF',
+  'COMERCIAL MEXICO PPMF': 'COMERCIAL MEXICO PPMF',
+  'DADOS GERAL GROWTH': 'DADOS GERAL GROWTH',
+  'QUALIDADE GERAL GROWTH': 'QUALIDADE GERAL GROWTH',
+  'R&D INTERNACIONAL PPMF': 'R&D INTERNACIONAL PPMF',
+  'COALITION CORPORATE': 'COALITION CORPORATE',
+  'RELGOV CORPORATE': 'RELGOV CORPORATE',
+  'OUTROS CORPORATE': 'OUTROS CORPORATE',
+  'POCs IA': 'POCs IA'
+};
 
 var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
 var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
@@ -370,6 +469,7 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('valor_restored').addEventListener('input', calcTotais);
   document.getElementById('nf_file').addEventListener('change', handleNFUpload);
   document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
+  document.getElementById('rateio_file').addEventListener('change', handleRateioUpload);
   document.getElementById('btn_submit').addEventListener('click', submitForm);
 });
 
@@ -377,7 +477,7 @@ function showToast(msg, type) {
   var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast ' + (type || 'info');
-  setTimeout(function() { t.className = 'toast'; }, 4000);
+  setTimeout(function() { t.className = 'toast'; }, 5000);
 }
 
 function carregarFornecedores() {
@@ -448,11 +548,8 @@ function iniciarRateio() {
     var sel = document.getElementById('cs' + c);
     CATEGORIAS.forEach(function(cat) {
       var opt = document.createElement('option');
-      opt.value = cat;
-      opt.textContent = cat;
-      // ✅ CORREÇÃO: options com cor escura para ficarem visíveis
-      opt.style.color = '#333';
-      opt.style.background = 'white';
+      opt.value = cat; opt.textContent = cat;
+      opt.style.color = '#333'; opt.style.background = 'white';
       sel.appendChild(opt);
     });
     sel.addEventListener('change', calcTotais);
@@ -501,6 +598,225 @@ function calcTotais() {
       else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e'; valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',','); }
     } else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666'; valEl.textContent='Aguardando...'; }
   }
+}
+
+// ✅ FUNÇÃO DE PREENCHIMENTO DO RATEIO
+function preencherRateio(rateioExtraido) {
+  // rateioExtraido = { "CS GROWTH": { "Passagens aéreas": 500, "Hospedagem": 200 }, ... }
+  if (!rateioIniciado) return;
+
+  // Determina quais categorias foram usadas
+  var categoriasUsadas = {};
+  Object.keys(rateioExtraido).forEach(function(cc) {
+    Object.keys(rateioExtraido[cc]).forEach(function(cat) {
+      if (!categoriasUsadas[cat]) {
+        var qtd = Object.keys(categoriasUsadas).length + 1;
+        if (qtd <= 5) categoriasUsadas[cat] = qtd;
+      }
+    });
+  });
+
+  // Seta os selects de categoria
+  Object.keys(categoriasUsadas).forEach(function(cat) {
+    var colIdx = categoriasUsadas[cat];
+    var sel = document.getElementById('cs' + colIdx);
+    if (sel) sel.value = cat;
+  });
+
+  // Preenche os valores nas células
+  Object.keys(rateioExtraido).forEach(function(ccOriginal) {
+    var ccNormalizado = CC_MAP[ccOriginal.toUpperCase().trim()] || ccOriginal.trim();
+    var deptIdx = DEPARTAMENTOS.indexOf(ccNormalizado);
+    if (deptIdx === -1) {
+      // Tenta match parcial
+      deptIdx = DEPARTAMENTOS.findIndex(function(d) {
+        return d.includes(ccOriginal.toUpperCase().trim()) || ccOriginal.toUpperCase().trim().includes(d);
+      });
+    }
+    if (deptIdx === -1) return;
+
+    Object.keys(rateioExtraido[ccOriginal]).forEach(function(cat) {
+      var colIdx = categoriasUsadas[cat];
+      if (!colIdx) return;
+      var valor = rateioExtraido[ccOriginal][cat];
+      var input = document.querySelector('#rateio_tbody input[data-dept="' + deptIdx + '"][data-cat="' + colIdx + '"]');
+      if (input) {
+        input.value = valor.toFixed(2);
+        rateioData[deptIdx] = rateioData[deptIdx] || {};
+        rateioData[deptIdx][colIdx] = valor;
+      }
+    });
+  });
+
+  calcTotais();
+}
+
+// ✅ LEITURA DA PLANILHA ONFLY
+function lerOnfly(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var wb = XLSX.read(e.target.result, {type: 'binary'});
+        var resultado = {};
+
+        // Mapeamento aba → categoria
+        var abaCategoria = {
+          'Aéreo': 'Passagens aéreas',
+          'Hoteis': 'Hospedagem',
+          'Automóveis': 'Aluguel de Carro',
+          'Ônibus': 'Passagens aéreas',
+          'Cobranças adicionais aéreo': 'Passagens aéreas'
+        };
+
+        wb.SheetNames.forEach(function(sheetName) {
+          var categoria = abaCategoria[sheetName];
+          if (!categoria) return;
+          var ws = wb.Sheets[sheetName];
+          var data = XLSX.utils.sheet_to_json(ws);
+          data.forEach(function(row) {
+            var cc = row['Centro de Custo'] || row['centro de custo'] || row['CENTRO DE CUSTO'];
+            var valor = row['Valor pago'] || row['Valor Pago'] || row['VALOR'] || 0;
+            if (!cc || !valor) return;
+            if (typeof valor === 'string') valor = parseFloat(valor.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
+            if (valor <= 0) return;
+            var ccNorm = String(cc).trim().toUpperCase();
+            if (!resultado[ccNorm]) resultado[ccNorm] = {};
+            resultado[ccNorm][categoria] = (resultado[ccNorm][categoria] || 0) + valor;
+          });
+        });
+
+        // Reembolsos: subtrai
+        if (wb.SheetNames.includes('Reembolsos')) {
+          var wsR = wb.Sheets['Reembolsos'];
+          var dataR = XLSX.utils.sheet_to_json(wsR);
+          dataR.forEach(function(row) {
+            var cc = row['Centro de Custo'] || '';
+            var valor = row['Valor pago'] || row['Valor Pago'] || 0;
+            if (!cc || !valor) return;
+            if (typeof valor === 'string') valor = parseFloat(valor.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
+            var ccNorm = String(cc).trim().toUpperCase();
+            // Reembolso é negativo — aplica na categoria mais relevante
+            if (resultado[ccNorm]) {
+              var cats = Object.keys(resultado[ccNorm]);
+              if (cats.length > 0) resultado[ccNorm][cats[0]] = (resultado[ccNorm][cats[0]] || 0) + valor;
+            }
+          });
+        }
+
+        resolve(resultado);
+      } catch(err) { reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsBinaryString(file);
+  });
+}
+
+// ✅ LEITURA DA COPASTUR VIA CLAUDE
+function lerCopastur(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var b64 = e.target.result.split(',')[1];
+      var token = document.getElementById('claude_token').value.trim();
+      var prompt = `Analise esta fatura da Copastur e extraia o rateio por centro de custo.
+
+REGRA ESPECIAL — estas pessoas sempre pertencem a "DIRETORIA CORPORATE", independente do que aparecer na fatura:
+${DIRETORIA_COPASTUR.join(', ')}
+
+Para cada centro de custo, some APENAS as taxas de serviço (campo "Tx.Serviço", normalmente R$ 42,20 por bilhete).
+
+Retorne APENAS um JSON no formato:
+{
+  "NOME DO CENTRO DE CUSTO": {
+    "Passagens aéreas": valor_numerico
+  }
+}
+
+Use os nomes exatos dos centros de custo como aparecem na fatura, mas aplicando a regra acima para Diretoria.
+Retorne apenas o JSON, sem explicações.`;
+
+      fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {'x-api-key': token, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true'},
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          messages: [{role: 'user', content: [
+            {type: 'document', source: {type: 'base64', media_type: 'application/pdf', data: b64}},
+            {type: 'text', text: prompt}
+          ]}]
+        })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        try {
+          var text = data.content[0].text.replace(/```json|```/g, '').trim();
+          resolve(JSON.parse(text));
+        } catch(err) { reject(err); }
+      }).catch(reject);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ✅ HANDLER DO UPLOAD DE RATEIO
+function handleRateioUpload() {
+  var file = document.getElementById('rateio_file').files[0];
+  if (!file) return;
+
+  document.getElementById('rateio_filename').textContent = file.name;
+
+  if (!rateioIniciado) iniciarRateio();
+
+  var ext = file.name.split('.').pop().toLowerCase();
+  var fornecedor = '';
+  var isOnfly = file.name.toLowerCase().includes('onfly') || ext === 'xlsx' || ext === 'xls';
+  var isCopastur = file.name.toLowerCase().includes('copastur') || (ext === 'pdf' && !file.name.toLowerCase().includes('nf') && !file.name.toLowerCase().includes('boleto'));
+
+  document.getElementById('rateio_analyzing').classList.add('show');
+
+  if (isOnfly) {
+    fornecedor = 'Onfly';
+    document.getElementById('rateio_analyzing_text').textContent = '📊 Lendo planilha Onfly...';
+    lerOnfly(file).then(function(resultado) {
+      document.getElementById('rateio_analyzing').classList.remove('show');
+      preencherRateio(resultado);
+      mostrarResumoRateio(resultado, 'Onfly');
+      showToast('✅ Planilha Onfly processada com sucesso!', 'success');
+    }).catch(function(e) {
+      document.getElementById('rateio_analyzing').classList.remove('show');
+      showToast('❌ Erro ao ler planilha Onfly: ' + e.message, 'error');
+    });
+  } else if (isCopastur) {
+    fornecedor = 'Copastur';
+    document.getElementById('rateio_analyzing_text').textContent = '🤖 Analisando fatura Copastur com IA...';
+    lerCopastur(file).then(function(resultado) {
+      document.getElementById('rateio_analyzing').classList.remove('show');
+      preencherRateio(resultado);
+      mostrarResumoRateio(resultado, 'Copastur');
+      showToast('✅ Fatura Copastur processada com sucesso!', 'success');
+    }).catch(function(e) {
+      document.getElementById('rateio_analyzing').classList.remove('show');
+      showToast('❌ Erro ao analisar Copastur: ' + e.message, 'error');
+    });
+  } else {
+    document.getElementById('rateio_analyzing').classList.remove('show');
+    showToast('⚠️ Formato não reconhecido. Use planilha Onfly (.xlsx) ou fatura Copastur (.pdf)', 'error');
+  }
+}
+
+function mostrarResumoRateio(resultado, fornecedor) {
+  var ul = document.getElementById('rateio_extracted_list');
+  var total = 0;
+  ul.innerHTML = '';
+  Object.keys(resultado).forEach(function(cc) {
+    var subtotal = Object.values(resultado[cc]).reduce(function(a,b){return a+b;}, 0);
+    total += subtotal;
+    ul.innerHTML += '<li>🏢 <b>' + cc + '</b>: R$ ' + subtotal.toFixed(2).replace('.',',') + '</li>';
+  });
+  ul.innerHTML += '<li style="margin-top:6px;border-top:1px solid #86efac;padding-top:6px">💰 <b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></li>';
+  document.getElementById('rateio_extracted_title').textContent = '✅ Rateio ' + fornecedor + ' preenchido automaticamente:';
+  document.getElementById('rateio_extracted').classList.add('show');
 }
 
 function fileToBase64(file) {
@@ -631,15 +947,14 @@ function submitForm() {
   Promise.all([uploadParaPipefy(boletoFile), uploadParaPipefy(nfFile)])
     .then(function(paths) {
       var boletoPath = paths[0];
-      var nfPath    = paths[1];
-
+      var nfPath = paths[1];
       setProgress(35, 'Criando registro de parcela...');
       var parcelaFields = [
-        {field_id:'forma_de_pagamento_da_parcela',                  field_value:'BOLETO'},
-        {field_id:'valor_da_parcela',                               field_value: document.getElementById('valor_da_parcela').value},
-        {field_id:'vencimento_da_parcela',                          field_value: vencParcela ? vencParcela+' 12:00' : ''},
+        {field_id:'forma_de_pagamento_da_parcela', field_value:'BOLETO'},
+        {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
+        {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
         {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-        {field_id:'anexos_quando_for_boletos',                      field_value: boletoPath}
+        {field_id:'anexos_quando_for_boletos', field_value: boletoPath}
       ].filter(function(f) { return f.field_value; });
 
       return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
@@ -647,7 +962,6 @@ function submitForm() {
         .then(function(res) {
           var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
           if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
-
           setProgress(65, 'Criando solicitação no Pipefy...');
           var mainFields = [
             {field_id:'tipo_de_solicita_o_de_solicita_o',                field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
@@ -670,7 +984,6 @@ function submitForm() {
             {field_id:'vencimento_do_pagamento',                          field_value: vencParcela ? vencParcela+' 12:00' : ''},
             {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo',field_value: parcelaId}
           ].filter(function(f) { return f.field_value; });
-
           return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
             {input:{pipe_id:"307088005", fields_attributes:mainFields}});
         });
