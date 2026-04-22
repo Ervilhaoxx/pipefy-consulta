@@ -240,7 +240,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 
   <div class="card" id="rateio_section" style="display:none">
     <h2>📊 Planilha de Rateio</h2>
-
     <div class="rateio-upload-box">
       <input type="file" id="rateio_file" accept=".xlsx,.xls,.pdf" />
       <div style="font-size:24px">📂</div>
@@ -252,24 +251,16 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
       </p>
       <div id="rateio_filename" style="font-size:12px;color:#6613D0;font-weight:600;margin-top:6px"></div>
     </div>
-
-    <div class="analyzing" id="rateio_analyzing">
-      <div class="spinner"></div>
-      <span id="rateio_analyzing_text">Processando planilha...</span>
-    </div>
-
+    <div class="analyzing" id="rateio_analyzing"><div class="spinner"></div><span id="rateio_analyzing_text">Processando...</span></div>
     <div class="extracted-data" id="rateio_extracted">
       <h4 id="rateio_extracted_title">✅ Rateio preenchido automaticamente:</h4>
       <ul id="rateio_extracted_list"></ul>
     </div>
-
     <div class="aviso-cc" id="aviso_cc"></div>
-
     <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0;flex-wrap:wrap;gap:10px">
       <div style="font-size:13px;font-weight:600;color:#333">Total da NF: <span id="rateio_nf_display" style="color:#6613D0">R$ 0,00</span></div>
       <div id="rateio_validacao" style="font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666">Aguardando...</div>
     </div>
-
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1400px">
         <thead>
@@ -442,7 +433,7 @@ var DEPARTAMENTOS = [
 
 var ABA_CAT = {
   'Aéreo':'Passagens aéreas','Aereo':'Passagens aéreas','AÉREO':'Passagens aéreas','AEREO':'Passagens aéreas',
-  'Hotel':'Hospedagem','Hoteis':'Hospedagem','Hotéis':'Hospedagem','HOTEL':'Hospedagem','HOTEIS':'Hospedagem','HOTÉIS':'Hospedagem',
+  'Hotel':'Hospedagem','Hoteis':'Hospedagem','Hotéis':'Hospedagem','HOTEL':'Hospedagem','HOTEIS':'Hospedagem',
   'Automóveis':'Aluguel de Carro','Automoveis':'Aluguel de Carro','AUTOMÓVEIS':'Aluguel de Carro','AUTOMOVEIS':'Aluguel de Carro',
   'Ônibus':'Passagens rodoviárias','Onibus':'Passagens rodoviárias','ÔNIBUS':'Passagens rodoviárias','ONIBUS':'Passagens rodoviárias',
   'Cobranças adicionais aéreo':'Passagens aéreas','Cobrancas adicionais aereo':'Passagens aéreas',
@@ -450,48 +441,33 @@ var ABA_CAT = {
   'Cobranças add. Aéreo':'Passagens aéreas','Cobranças add. Automóveis':'Aluguel de Carro'
 };
 
-// ✅ Mapeamento COMPLETO e CORRIGIDO de nomes antigos → nomes novos do Pipefy
 var CC_NORM = {
-  // Nomes antigos com acento → novos
-  'PRÉ-VENDAS INTEL':'PRE-VENDAS GROWTH',
   'PRE-VENDAS INTEL':'PRE-VENDAS GROWTH',
-  'PRÉ-VENDAS SUPPLY':'PRE-VENDAS PPMF',
   'PRE-VENDAS SUPPLY':'PRE-VENDAS PPMF',
-  'EXPANSÃO INTEL':'REVOPS OPERATIONS GROWTH',
   'EXPANSAO INTEL':'REVOPS OPERATIONS GROWTH',
-  'EXPANSÃO SUPPLY':'REVOPS INTELLIGENCE PPMF',
   'EXPANSAO SUPPLY':'REVOPS INTELLIGENCE PPMF',
-  // Comercial
   'COMERCIAL INTEL':'COMERCIAL GROWTH',
   'COMERCIAL SUPPLY':'COMERCIAL PPMF',
-  // CS
   'CS INTEL':'CS GROWTH',
   'CS SUPPLY':'CS PPMF',
   'CS GERAL':'CS GERAL GROWTH',
   'CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH',
-  // Tech
   'TECH INTEL':'TECH GROWTH',
   'TECH SUPPLY':'TECH PPMF',
   'TECHNOLOGY':'TECH GERAL PPMF',
   'AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
-  // Marketing
   'MARKETING INTEL':'MARKETING GROWTH',
   'MARKETING SUPPLY':'MARKETING PPMF',
   'MARKETING INSTITUCIONAL':'MARKETING INSTITUCIONAL CORPORATE',
-  // Dados
   'DADOS INTEL':'DADOS GROWTH',
   'DADOS SUPPLY':'DADOS PPMF',
-  // Suporte
   'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH',
   'SUPORTE SUPPLY':'SUPORTE PPMF',
-  // Qualidade
   'QUALIDADE CS':'QUALIDADE GERAL GROWTH',
   'QUALIDADE INTEL':'QUALIDADE GROWTH',
   'QUALIDADE SUPPLY':'QUALIDADE PPMF',
-  // R&D
   'R&D':'R&D GERAL PPMF',
   'R&D SUPPLY':'R&D PPMF',
-  // Corporate (sem sufixo)
   'DIRETORIA':'DIRETORIA CORPORATE',
   'FINANCEIRO':'FINANCEIRO CORPORATE',
   'CONTABILIDADE':'CONTABILIDADE CORPORATE',
@@ -500,12 +476,8 @@ var CC_NORM = {
   'RH':'RH CORPORATE',
   'DP':'DP CORPORATE',
   'LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE',
-  'BI E INTEGRAÇÕES':'BI E INTEGRACOES CORPORATE',
   'BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
-  // Outros
-  'GOVERNANÇA SALES':'REVOPS GROWTH',
   'GOVERNANCA SALES':'REVOPS GROWTH',
-  'NOVOS NEGÓCIOS':'NOVOS NEGOCIOS PPMF',
   'NOVOS NEGOCIOS':'NOVOS NEGOCIOS PPMF',
   'CCO':'CCO GROWTH',
   'FINANCIAL SERVICE':'COMERCIAL MVP',
@@ -516,6 +488,10 @@ var CC_NORM = {
 
 var todosFornecedores = [], fornecedorCarregado = false;
 var rateioData = {}, rateioIniciado = false;
+
+function removerAcentos(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
 
 function formatarBRL(valor) {
   return 'R$ ' + Number(valor).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -533,20 +509,27 @@ function parsearValor(val) {
   return parseFloat(s) || 0;
 }
 
+// ✅ Normalização robusta — compara SEM ACENTOS para evitar problemas de encoding
 function normalizarCC(cc) {
   var upper = String(cc).trim().toUpperCase();
-  // Remove acentos para comparação
-  var semAcento = upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  // Tenta match direto
+  var semAcento = removerAcentos(upper);
+
+  // 1. Tenta match direto com acento
   if (CC_NORM[upper]) return CC_NORM[upper];
-  // Tenta sem acento
-  if (CC_NORM[semAcento]) return CC_NORM[semAcento];
-  // Tenta match direto na lista de departamentos
+
+  // 2. ✅ Tenta cada CHAVE do CC_NORM sem acento (resolve problema de encoding)
+  var chaves = Object.keys(CC_NORM);
+  for (var i = 0; i < chaves.length; i++) {
+    if (removerAcentos(chaves[i]) === semAcento) return CC_NORM[chaves[i]];
+  }
+
+  // 3. Tenta match direto na lista de departamentos
   var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
   if (direto) return direto;
-  // Tenta match sem acento na lista
+
+  // 4. Tenta match sem acento na lista de departamentos
   var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
-    return d.normalize('NFD').replace(/[\u0300-\u036f]/g,'') === semAcento;
+    return removerAcentos(d) === semAcento;
   });
   return semAcentoMatch || upper;
 }
@@ -593,17 +576,20 @@ function lerOnfly(file) {
     reader.onload = function(e) {
       try {
         var wb = XLSX.read(e.target.result, {type:'binary'});
-        var resultado = {};
-        var avisos = [];
+        var resultado = {}, avisos = [];
         console.log('Abas encontradas:', wb.SheetNames);
 
         wb.SheetNames.forEach(function(sheetName) {
           var sheetTrim = sheetName.trim();
+          // Busca categoria da aba (com e sem acento)
           var categoria = ABA_CAT[sheetTrim];
-          // Tenta sem acento
+          if (!categoria) categoria = ABA_CAT[removerAcentos(sheetTrim)];
           if (!categoria) {
-            var semAcento = sheetTrim.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-            categoria = ABA_CAT[semAcento];
+            // Tenta cada chave sem acento
+            var ks = Object.keys(ABA_CAT);
+            for (var i=0; i<ks.length; i++) {
+              if (removerAcentos(ks[i]) === removerAcentos(sheetTrim)) { categoria = ABA_CAT[ks[i]]; break; }
+            }
           }
           var isReembolso = /reembolso/i.test(sheetTrim);
           if (!categoria && !isReembolso) return;
@@ -628,22 +614,21 @@ function lerOnfly(file) {
               avisos.push(String(cc).trim());
             if (!resultado[ccNorm]) resultado[ccNorm] = {};
             if (isReembolso) {
-              // ✅ Reembolso subtrai de Passagens aéreas
               var catR = 'Passagens aéreas';
-              resultado[ccNorm][catR] = Math.round(((resultado[ccNorm][catR] || 0) + valor) * 100) / 100;
+              resultado[ccNorm][catR] = Math.round(((resultado[ccNorm][catR]||0) + valor)*100)/100;
             } else {
-              resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria] || 0) + valor) * 100) / 100;
+              resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria]||0) + valor)*100)/100;
             }
           });
         });
 
-        // ✅ Remove CCs com total zero (reembolso zerou tudo)
+        // Remove CCs com total zero
         Object.keys(resultado).forEach(function(cc) {
-          var total = Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
-          if (Math.abs(total) < 0.01) delete resultado[cc];
+          var t = Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
+          if (Math.abs(t) < 0.01) delete resultado[cc];
         });
 
-        resolve({resultado: resultado, avisos: avisos});
+        resolve({resultado:resultado, avisos:avisos});
       } catch(err) { reject(err); }
     };
     reader.onerror = reject;
@@ -659,12 +644,11 @@ function lerCopastur(file) {
       var token = document.getElementById('claude_token').value.trim();
       if (!token) { reject(new Error('Configure a chave API Claude!')); return; }
       var prompt = 'Analise esta fatura da Copastur.\n\n' +
-        'REGRA ESPECIAL: Estas pessoas SEMPRE pertencem a "DIRETORIA CORPORATE" independente do CC na fatura:\n' +
+        'REGRA ESPECIAL: Estas pessoas SEMPRE pertencem a "DIRETORIA CORPORATE":\n' +
         DIRETORIA_COPASTUR.join(', ') + '\n\n' +
-        'Para cada centro de custo, some APENAS as taxas de serviço (campo "Tx.Serviço", geralmente R$ 42,20 por bilhete).\n\n' +
-        'Retorne APENAS JSON no formato:\n{"NOME DO CC": {"Passagens aéreas": valor_numerico}}\n' +
-        'Retorne apenas o JSON puro, sem explicações.';
-      fetch('https://api.anthropic.com/v1/messages', {
+        'Some APENAS as taxas de serviço (Tx.Serviço, ~R$ 42,20 por bilhete) por CC.\n' +
+        'Retorne APENAS JSON: {"NOME CC": {"Passagens aéreas": valor}}\nSem explicações.';
+      fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
         body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[
@@ -673,137 +657,134 @@ function lerCopastur(file) {
         ]}]})
       }).then(function(r){return r.json();}).then(function(data){
         try {
-          var text = data.content[0].text.replace(/```json|```/g,'').trim();
-          var json = JSON.parse(text);
-          var resultado = {};
-          Object.keys(json).forEach(function(cc) { resultado[normalizarCC(cc)] = json[cc]; });
-          resolve({resultado: resultado, avisos: []});
-        } catch(err) { reject(new Error('Erro ao interpretar resposta da IA')); }
+          var text=data.content[0].text.replace(/```json|```/g,'').trim();
+          var json=JSON.parse(text);
+          var resultado={};
+          Object.keys(json).forEach(function(cc){resultado[normalizarCC(cc)]=json[cc];});
+          resolve({resultado:resultado,avisos:[]});
+        } catch(err){reject(new Error('Erro ao interpretar resposta da IA'));}
       }).catch(reject);
     };
-    reader.onerror = reject;
+    reader.onerror=reject;
     reader.readAsDataURL(file);
   });
 }
 
 function handleRateioUpload() {
-  var file = document.getElementById('rateio_file').files[0];
+  var file=document.getElementById('rateio_file').files[0];
   if (!file) return;
-  document.getElementById('rateio_filename').textContent = '📎 ' + file.name;
+  document.getElementById('rateio_filename').textContent='📎 '+file.name;
   if (!rateioIniciado) iniciarRateio();
-  var ext = file.name.split('.').pop().toLowerCase();
-  var nomeLower = file.name.toLowerCase();
-  var isOnfly   = (ext === 'xlsx' || ext === 'xls') || nomeLower.includes('onfly');
-  var isCopastur = ext === 'pdf' || nomeLower.includes('copastur');
+  var ext=file.name.split('.').pop().toLowerCase();
+  var nomeLower=file.name.toLowerCase();
+  var isOnfly=(ext==='xlsx'||ext==='xls')||nomeLower.includes('onfly');
+  var isCopastur=ext==='pdf'||nomeLower.includes('copastur');
   document.getElementById('rateio_analyzing').classList.add('show');
   document.getElementById('aviso_cc').classList.remove('show');
   var promise;
   if (isOnfly) {
-    document.getElementById('rateio_analyzing_text').textContent = '📊 Lendo planilha Onfly...';
-    promise = lerOnfly(file);
+    document.getElementById('rateio_analyzing_text').textContent='📊 Lendo planilha Onfly...';
+    promise=lerOnfly(file);
   } else if (isCopastur) {
-    document.getElementById('rateio_analyzing_text').textContent = '🤖 Analisando fatura Copastur com IA...';
-    promise = lerCopastur(file);
+    document.getElementById('rateio_analyzing_text').textContent='🤖 Analisando Copastur com IA...';
+    promise=lerCopastur(file);
   } else {
     document.getElementById('rateio_analyzing').classList.remove('show');
-    showToast('⚠️ Formato não reconhecido. Use .xlsx (Onfly) ou .pdf (Copastur)', 'error');
+    showToast('⚠️ Use .xlsx (Onfly) ou .pdf (Copastur)','error');
     return;
   }
-  promise.then(function(res) {
+  promise.then(function(res){
     document.getElementById('rateio_analyzing').classList.remove('show');
     preencherRateio(res.resultado);
-    mostrarResumoRateio(res.resultado, isOnfly ? 'Onfly' : 'Copastur');
-    if (res.avisos && res.avisos.length > 0) {
-      var avEl = document.getElementById('aviso_cc');
-      avEl.innerHTML = '⚠️ <b>Centros de custo não mapeados:</b> ' + res.avisos.join(', ') + ' — verifique manualmente.';
+    mostrarResumoRateio(res.resultado,isOnfly?'Onfly':'Copastur');
+    if (res.avisos&&res.avisos.length>0) {
+      var avEl=document.getElementById('aviso_cc');
+      avEl.innerHTML='⚠️ <b>CCs não mapeados:</b> '+res.avisos.join(', ')+' — verifique manualmente.';
       avEl.classList.add('show');
     }
-    showToast('✅ Rateio preenchido automaticamente!', 'success');
-  }).catch(function(err) {
+    showToast('✅ Rateio preenchido!','success');
+  }).catch(function(err){
     document.getElementById('rateio_analyzing').classList.remove('show');
-    showToast('❌ Erro: ' + err.message, 'error');
+    showToast('❌ Erro: '+err.message,'error');
     console.error(err);
   });
 }
 
 function preencherRateio(resultado) {
   if (!rateioIniciado) return;
-  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
-    inp.value = ''; inp.classList.remove('preenchido');
-    var d = parseInt(inp.getAttribute('data-dept'));
-    var c = parseInt(inp.getAttribute('data-cat'));
-    if (!rateioData[d]) rateioData[d] = {};
-    rateioData[d][c] = 0;
+  document.querySelectorAll('#rateio_tbody input').forEach(function(inp){
+    inp.value=''; inp.classList.remove('preenchido');
+    var d=parseInt(inp.getAttribute('data-dept'));
+    var c=parseInt(inp.getAttribute('data-cat'));
+    if(!rateioData[d]) rateioData[d]={};
+    rateioData[d][c]=0;
   });
-  for (var c = 1; c <= NUM_CATS; c++) {
-    var sel = document.getElementById('cs' + c);
-    sel.value = '';
-    while (sel.options.length > 1) sel.remove(1);
-    CATEGORIAS.forEach(function(cat) {
-      var opt = document.createElement('option');
-      opt.value = cat; opt.textContent = cat;
-      opt.style.color = '#333'; opt.style.background = 'white';
+  for (var c=1;c<=NUM_CATS;c++) {
+    var sel=document.getElementById('cs'+c);
+    sel.value='';
+    while(sel.options.length>1) sel.remove(1);
+    CATEGORIAS.forEach(function(cat){
+      var opt=document.createElement('option');
+      opt.value=cat; opt.textContent=cat;
+      opt.style.color='#333'; opt.style.background='white';
       sel.appendChild(opt);
     });
   }
-  var categoriasUsadas = {};
-  Object.values(resultado).forEach(function(cats) {
-    Object.keys(cats).forEach(function(cat) {
-      if (cat && !categoriasUsadas[cat] && Object.keys(categoriasUsadas).length < NUM_CATS)
-        categoriasUsadas[cat] = Object.keys(categoriasUsadas).length + 1;
+  var categoriasUsadas={};
+  Object.values(resultado).forEach(function(cats){
+    Object.keys(cats).forEach(function(cat){
+      if(cat&&!categoriasUsadas[cat]&&Object.keys(categoriasUsadas).length<NUM_CATS)
+        categoriasUsadas[cat]=Object.keys(categoriasUsadas).length+1;
     });
   });
-  Object.keys(categoriasUsadas).forEach(function(cat) {
-    var sel = document.getElementById('cs' + categoriasUsadas[cat]);
-    if (sel) sel.value = cat;
+  Object.keys(categoriasUsadas).forEach(function(cat){
+    var sel=document.getElementById('cs'+categoriasUsadas[cat]);
+    if(sel) sel.value=cat;
   });
-  Object.keys(resultado).forEach(function(cc) {
-    var deptIdx = DEPARTAMENTOS.indexOf(cc);
-    if (deptIdx === -1) return;
-    Object.keys(resultado[cc]).forEach(function(cat) {
-      var colIdx = categoriasUsadas[cat];
-      if (!colIdx) return;
-      var valor = resultado[cc][cat];
-      if (!valor || valor === 0) return;
-      var input = document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
-      if (input) {
-        var valorAbs = Math.abs(valor);
-        input.value = valorAbs.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  Object.keys(resultado).forEach(function(cc){
+    var deptIdx=DEPARTAMENTOS.indexOf(cc);
+    if(deptIdx===-1) return;
+    Object.keys(resultado[cc]).forEach(function(cat){
+      var colIdx=categoriasUsadas[cat];
+      if(!colIdx) return;
+      var valor=resultado[cc][cat];
+      if(!valor||valor===0) return;
+      var input=document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
+      if(input){
+        var valorAbs=Math.abs(valor);
+        input.value=valorAbs.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         input.classList.add('preenchido');
-        if (!rateioData[deptIdx]) rateioData[deptIdx] = {};
-        rateioData[deptIdx][colIdx] = valorAbs;
+        if(!rateioData[deptIdx]) rateioData[deptIdx]={};
+        rateioData[deptIdx][colIdx]=valorAbs;
       }
     });
   });
   calcTotais();
 }
 
-function mostrarResumoRateio(resultado, fornecedor) {
-  var ul = document.getElementById('rateio_extracted_list');
-  var total = 0;
-  ul.innerHTML = '';
-  Object.keys(resultado).sort().forEach(function(cc) {
-    var subtotal = Object.values(resultado[cc]).reduce(function(a,b){return a+(b||0);},0);
-    total += subtotal;
-    var cats = Object.entries(resultado[cc]).map(function(e){
-      return e[0]+': '+formatarBRL(Math.abs(e[1]));
-    }).join(' | ');
-    ul.innerHTML += '<li>🏢 <b>'+cc+'</b>: '+formatarBRL(Math.abs(subtotal))+
-      ' <span style="color:#888;font-size:10px">('+cats+')</span></li>';
+function mostrarResumoRateio(resultado,fornecedor){
+  var ul=document.getElementById('rateio_extracted_list');
+  var total=0;
+  ul.innerHTML='';
+  Object.keys(resultado).sort().forEach(function(cc){
+    var subtotal=Object.values(resultado[cc]).reduce(function(a,b){return a+(b||0);},0);
+    total+=subtotal;
+    var cats=Object.entries(resultado[cc]).map(function(e){return e[0]+': '+formatarBRL(Math.abs(e[1]));}).join(' | ');
+    ul.innerHTML+='<li>🏢 <b>'+cc+'</b>: '+formatarBRL(Math.abs(subtotal))+' <span style="color:#888;font-size:10px">('+cats+')</span></li>';
   });
-  ul.innerHTML += '<li style="margin-top:8px;border-top:1px solid #86efac;padding-top:8px">💰 <b>Total: '+formatarBRL(Math.abs(total))+'</b></li>';
-  document.getElementById('rateio_extracted_title').textContent = '✅ Rateio '+fornecedor+' preenchido automaticamente:';
+  ul.innerHTML+='<li style="margin-top:8px;border-top:1px solid #86efac;padding-top:8px">💰 <b>Total: '+formatarBRL(Math.abs(total))+'</b></li>';
+  document.getElementById('rateio_extracted_title').textContent='✅ Rateio '+fornecedor+' preenchido automaticamente:';
   document.getElementById('rateio_extracted').classList.add('show');
 }
 
-function carregarFornecedores() {
-  var inp = document.getElementById('fornecedor_search');
-  inp.placeholder = 'Carregando fornecedores...'; inp.disabled = true;
-  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
-  var allEdges = [], cursor = null;
-  function buscarPagina() {
-    var afterClause = cursor ? ', after: "'+cursor+'"' : '';
-    var query = '{ table_records(table_id: "304075895", first: 100'+afterClause+') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+function carregarFornecedores(){
+  var inp=document.getElementById('fornecedor_search');
+  inp.placeholder='Carregando fornecedores...'; inp.disabled=true;
+  var TOKEN='eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
+  var allEdges=[],cursor=null;
+  function buscarPagina(){
+    var afterClause=cursor?', after: "'+cursor+'"':'';
+    var query='{ table_records(table_id: "304075895", first: 100'+afterClause+') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
     fetch('https://api.pipefy.com/graphql',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({query:query})})
       .then(function(r){return r.json();}).then(function(data){
         var records=data&&data.data&&data.data.table_records;
@@ -817,7 +798,7 @@ function carregarFornecedores() {
         if(records.pageInfo&&records.pageInfo.hasNextPage) buscarPagina(); else finalizarCarregamento();
       }).catch(function(){inp.placeholder='Erro ao carregar.';inp.disabled=false;});
   }
-  function finalizarCarregamento() {
+  function finalizarCarregamento(){
     allEdges.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
     todosFornecedores=allEdges; fornecedorCarregado=true;
     inp.placeholder='Digite para buscar... ('+todosFornecedores.length+' fornecedores)';
@@ -827,7 +808,7 @@ function carregarFornecedores() {
   buscarPagina();
 }
 
-function filtrarFornecedores(query) {
+function filtrarFornecedores(query){
   var dd=document.getElementById('fornecedor_dropdown');
   if(!query||query.length<2){dd.style.display='none';return;}
   if(!fornecedorCarregado){dd.innerHTML='<div class="forn-item" style="color:#888">Aguarde...</div>';dd.style.display='block';return;}
@@ -848,33 +829,32 @@ function selecionarFornecedor(id,nome){
   document.getElementById('fornecedor_selected').style.display='block';
 }
 
-function iniciarRateio() {
-  rateioIniciado = true;
-  for (var c = 1; c <= NUM_CATS; c++) {
-    var sel = document.getElementById('cs'+c);
-    CATEGORIAS.forEach(function(cat) {
-      var opt = document.createElement('option');
+function iniciarRateio(){
+  rateioIniciado=true;
+  for(var c=1;c<=NUM_CATS;c++){
+    var sel=document.getElementById('cs'+c);
+    CATEGORIAS.forEach(function(cat){
+      var opt=document.createElement('option');
       opt.value=cat; opt.textContent=cat;
       opt.style.color='#333'; opt.style.background='white';
       sel.appendChild(opt);
     });
-    sel.addEventListener('change', calcTotais);
+    sel.addEventListener('change',calcTotais);
   }
-  var tbody = document.getElementById('rateio_tbody');
-  tbody.innerHTML = DEPARTAMENTOS.map(function(dept, i) {
-    rateioData[i] = {};
-    var bg = i%2===0?'#fff':'#faf8ff';
-    var cols = '';
-    for (var c=1; c<=NUM_CATS; c++) {
-      cols += '<td style="padding:4px 6px"><input type="text" inputmode="decimal" placeholder="-" data-dept="'+i+'" data-cat="'+c+'" class="rateio-input" /></td>';
-    }
+  var tbody=document.getElementById('rateio_tbody');
+  tbody.innerHTML=DEPARTAMENTOS.map(function(dept,i){
+    rateioData[i]={};
+    var bg=i%2===0?'#fff':'#faf8ff';
+    var cols='';
+    for(var c=1;c<=NUM_CATS;c++)
+      cols+='<td style="padding:4px 6px"><input type="text" inputmode="decimal" placeholder="-" data-dept="'+i+'" data-cat="'+c+'" class="rateio-input" /></td>';
     return '<tr style="background:'+bg+';border-bottom:1px solid #f0edff">'+
       '<td style="padding:6px 10px;font-size:11px;font-weight:600;color:#333;position:sticky;left:0;background:'+bg+';white-space:nowrap">'+dept+'</td>'+
       cols+
       '<td id="dt'+i+'" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333;white-space:nowrap">R$ 0,00</td></tr>';
   }).join('');
-  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
-    inp.addEventListener('input', function() {
+  document.querySelectorAll('#rateio_tbody input').forEach(function(inp){
+    inp.addEventListener('input',function(){
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       if(!rateioData[d]) rateioData[d]={};
@@ -882,18 +862,16 @@ function iniciarRateio() {
       rateioData[d][c]=parseFloat(raw)||0;
       calcTotais();
     });
-    inp.addEventListener('blur', function() {
+    inp.addEventListener('blur',function(){
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       var val=rateioData[d]&&rateioData[d][c];
       if(val&&val>0){
         this.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         this.classList.add('preenchido');
-      } else {
-        this.value=''; this.classList.remove('preenchido');
-      }
+      } else { this.value=''; this.classList.remove('preenchido'); }
     });
-    inp.addEventListener('focus', function() {
+    inp.addEventListener('focus',function(){
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       var val=rateioData[d]&&rateioData[d][c];
@@ -902,7 +880,7 @@ function iniciarRateio() {
   });
 }
 
-function calcTotais() {
+function calcTotais(){
   if(!rateioIniciado) return;
   var catT={};
   for(var c=1;c<=NUM_CATS;c++) catT[c]=0;
@@ -964,7 +942,7 @@ function extractWithClaude(b64,mediaType,prompt,tentativa){
 
 function handleNFUpload(){
   var file=document.getElementById('nf_file').files[0];
-  if(!file)return;
+  if(!file) return;
   document.getElementById('nf_filename').textContent=file.name;
   document.getElementById('nf_analyzing').classList.add('show');
   fileToBase64(file).then(function(b64){
@@ -985,7 +963,7 @@ function handleNFUpload(){
 
 function handleBoletoUpload(){
   var file=document.getElementById('boleto_file').files[0];
-  if(!file)return;
+  if(!file) return;
   document.getElementById('boleto_filename').textContent=file.name;
   document.getElementById('boleto_analyzing').classList.add('show');
   fileToBase64(file).then(function(b64){
@@ -1056,7 +1034,7 @@ function submitForm(){
     return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',{input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
       .then(function(res){
         var parcelaId=res&&res.data&&res.data.createCard&&res.data.createCard.card&&res.data.createCard.card.id;
-        if(!parcelaId)throw new Error('Erro ao criar parcela: '+JSON.stringify(res));
+        if(!parcelaId) throw new Error('Erro ao criar parcela: '+JSON.stringify(res));
         setProgress(65,'Criando solicitação no Pipefy...');
         var mainFields=[
           {field_id:'tipo_de_solicita_o_de_solicita_o',field_value:document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
@@ -1083,7 +1061,7 @@ function submitForm(){
       });
   }).then(function(res){
     var card=res&&res.data&&res.data.createCard&&res.data.createCard.card;
-    if(!card)throw new Error('Erro ao criar card: '+JSON.stringify(res));
+    if(!card) throw new Error('Erro ao criar card: '+JSON.stringify(res));
     setProgress(100,'✅ Card criado com sucesso!');
     showToast('✅ Card #'+card.id+' criado no Pipefy!','success');
     setTimeout(function(){if(card.url)window.open(card.url,'_blank');},1000);
