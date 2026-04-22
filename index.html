@@ -442,211 +442,154 @@ var ABA_CAT = {
 };
 
 var CC_NORM = {
-  'PRE-VENDAS INTEL':'PRE-VENDAS GROWTH',
-  'PRE-VENDAS SUPPLY':'PRE-VENDAS PPMF',
-  'EXPANSAO INTEL':'REVOPS OPERATIONS GROWTH',
-  'EXPANSAO SUPPLY':'REVOPS INTELLIGENCE PPMF',
-  'COMERCIAL INTEL':'COMERCIAL GROWTH',
-  'COMERCIAL SUPPLY':'COMERCIAL PPMF',
-  'CS INTEL':'CS GROWTH',
-  'CS SUPPLY':'CS PPMF',
-  'CS GERAL':'CS GERAL GROWTH',
-  'CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH',
-  'TECH INTEL':'TECH GROWTH',
-  'TECH SUPPLY':'TECH PPMF',
-  'TECHNOLOGY':'TECH GERAL PPMF',
-  'AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
-  'MARKETING INTEL':'MARKETING GROWTH',
-  'MARKETING SUPPLY':'MARKETING PPMF',
-  'MARKETING INSTITUCIONAL':'MARKETING INSTITUCIONAL CORPORATE',
-  'DADOS INTEL':'DADOS GROWTH',
-  'DADOS SUPPLY':'DADOS PPMF',
-  'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH',
-  'SUPORTE SUPPLY':'SUPORTE PPMF',
-  'QUALIDADE CS':'QUALIDADE GERAL GROWTH',
-  'QUALIDADE INTEL':'QUALIDADE GROWTH',
-  'QUALIDADE SUPPLY':'QUALIDADE PPMF',
-  'R&D':'R&D GERAL PPMF',
-  'R&D SUPPLY':'R&D PPMF',
-  'DIRETORIA':'DIRETORIA CORPORATE',
-  'FINANCEIRO':'FINANCEIRO CORPORATE',
-  'CONTABILIDADE':'CONTABILIDADE CORPORATE',
-  'CONTROLADORIA':'CONTROLADORIA CORPORATE',
-  'FACILITIES':'FACILITIES CORPORATE',
-  'RH':'RH CORPORATE',
-  'DP':'DP CORPORATE',
-  'LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE',
-  'BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
-  'GOVERNANCA SALES':'REVOPS GROWTH',
-  'NOVOS NEGOCIOS':'NOVOS NEGOCIOS PPMF',
-  'CCO':'CCO GROWTH',
-  'FINANCIAL SERVICE':'COMERCIAL MVP',
-  'SALES INTERNATIONAL':'COMERCIAL INTERNATIONAL PPMF',
-  'COALITION':'COALITION CORPORATE',
-  'RELGOV':'RELGOV CORPORATE'
+  'PRE-VENDAS INTEL':'PRE-VENDAS GROWTH','PRE-VENDAS SUPPLY':'PRE-VENDAS PPMF',
+  'EXPANSAO INTEL':'REVOPS OPERATIONS GROWTH','EXPANSAO SUPPLY':'REVOPS INTELLIGENCE PPMF',
+  'COMERCIAL INTEL':'COMERCIAL GROWTH','COMERCIAL SUPPLY':'COMERCIAL PPMF',
+  'CS INTEL':'CS GROWTH','CS SUPPLY':'CS PPMF','CS GERAL':'CS GERAL GROWTH','CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH',
+  'TECH INTEL':'TECH GROWTH','TECH SUPPLY':'TECH PPMF','TECHNOLOGY':'TECH GERAL PPMF','AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
+  'MARKETING INTEL':'MARKETING GROWTH','MARKETING SUPPLY':'MARKETING PPMF','MARKETING INSTITUCIONAL':'MARKETING INSTITUCIONAL CORPORATE',
+  'DADOS INTEL':'DADOS GROWTH','DADOS SUPPLY':'DADOS PPMF',
+  'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH','SUPORTE SUPPLY':'SUPORTE PPMF',
+  'QUALIDADE CS':'QUALIDADE GERAL GROWTH','QUALIDADE INTEL':'QUALIDADE GROWTH','QUALIDADE SUPPLY':'QUALIDADE PPMF',
+  'R&D':'R&D GERAL PPMF','R&D SUPPLY':'R&D PPMF',
+  'DIRETORIA':'DIRETORIA CORPORATE','FINANCEIRO':'FINANCEIRO CORPORATE','CONTABILIDADE':'CONTABILIDADE CORPORATE',
+  'CONTROLADORIA':'CONTROLADORIA CORPORATE','FACILITIES':'FACILITIES CORPORATE','RH':'RH CORPORATE','DP':'DP CORPORATE',
+  'LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE','BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
+  'GOVERNANCA SALES':'REVOPS GROWTH','NOVOS NEGOCIOS':'NOVOS NEGOCIOS PPMF',
+  'CCO':'CCO GROWTH','FINANCIAL SERVICE':'COMERCIAL MVP','SALES INTERNATIONAL':'COMERCIAL INTERNATIONAL PPMF',
+  'COALITION':'COALITION CORPORATE','RELGOV':'RELGOV CORPORATE'
 };
 
-var todosFornecedores = [], fornecedorCarregado = false;
-var rateioData = {}, rateioIniciado = false;
+var todosFornecedores=[], fornecedorCarregado=false;
+var rateioData={}, rateioIniciado=false;
 
-function removerAcentos(str) {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function removerAcentos(str){
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
-
-function formatarBRL(valor) {
-  return 'R$ ' + Number(valor).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+function formatarBRL(valor){
+  return 'R$ '+Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-
-function parsearValor(val) {
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  var s = String(val).replace(/\s/g,'').replace('R$','');
-  if (s.indexOf(',') > s.indexOf('.') && s.indexOf('.') !== -1) {
-    s = s.replace(/\./g,'').replace(',','.');
-  } else {
-    s = s.replace(',','.');
+function parsearValor(val){
+  if(typeof val==='number') return val;
+  if(!val) return 0;
+  var s=String(val).replace(/\s/g,'').replace('R$','');
+  if(s.indexOf(',')>s.indexOf('.')&&s.indexOf('.')!==-1){s=s.replace(/\./g,'').replace(',','.');}
+  else{s=s.replace(',','.');}
+  return parseFloat(s)||0;
+}
+function normalizarCC(cc){
+  var upper=String(cc).trim().toUpperCase();
+  var semAcento=removerAcentos(upper);
+  if(CC_NORM[upper]) return CC_NORM[upper];
+  var chaves=Object.keys(CC_NORM);
+  for(var i=0;i<chaves.length;i++){
+    if(removerAcentos(chaves[i])===semAcento) return CC_NORM[chaves[i]];
   }
-  return parseFloat(s) || 0;
+  var direto=DEPARTAMENTOS.find(function(d){return d===upper;});
+  if(direto) return direto;
+  var semAcentoMatch=DEPARTAMENTOS.find(function(d){return removerAcentos(d)===semAcento;});
+  return semAcentoMatch||upper;
 }
 
-// ✅ Normalização robusta — compara SEM ACENTOS para evitar problemas de encoding
-function normalizarCC(cc) {
-  var upper = String(cc).trim().toUpperCase();
-  var semAcento = removerAcentos(upper);
-
-  // 1. Tenta match direto com acento
-  if (CC_NORM[upper]) return CC_NORM[upper];
-
-  // 2. ✅ Tenta cada CHAVE do CC_NORM sem acento (resolve problema de encoding)
-  var chaves = Object.keys(CC_NORM);
-  for (var i = 0; i < chaves.length; i++) {
-    if (removerAcentos(chaves[i]) === semAcento) return CC_NORM[chaves[i]];
-  }
-
-  // 3. Tenta match direto na lista de departamentos
-  var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
-  if (direto) return direto;
-
-  // 4. Tenta match sem acento na lista de departamentos
-  var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
-    return removerAcentos(d) === semAcento;
-  });
-  return semAcentoMatch || upper;
-}
-
-window.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('configToggle').addEventListener('click', function() { document.getElementById('configPanel').classList.toggle('show'); });
-  document.getElementById('pipefy_token').addEventListener('input', function() { localStorage.setItem('pipefy_token', this.value); });
-  document.getElementById('claude_token').addEventListener('input', function() { localStorage.setItem('claude_token', this.value); });
-  document.getElementById('pipefy_token').value = localStorage.getItem('pipefy_token') || '';
-  document.getElementById('claude_token').value = localStorage.getItem('claude_token') || '';
+window.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('configToggle').addEventListener('click',function(){document.getElementById('configPanel').classList.toggle('show');});
+  document.getElementById('pipefy_token').addEventListener('input',function(){localStorage.setItem('pipefy_token',this.value);});
+  document.getElementById('claude_token').addEventListener('input',function(){localStorage.setItem('claude_token',this.value);});
+  document.getElementById('pipefy_token').value=localStorage.getItem('pipefy_token')||'';
+  document.getElementById('claude_token').value=localStorage.getItem('claude_token')||'';
   carregarFornecedores();
-  document.getElementById('fornecedor_search').addEventListener('input', function() { filtrarFornecedores(this.value); });
-  document.getElementById('fornecedor_clear').addEventListener('click', function() {
-    document.getElementById('fornecedor_id').value = '';
-    document.getElementById('fornecedor_search').value = '';
-    document.getElementById('fornecedor_selected').style.display = 'none';
+  document.getElementById('fornecedor_search').addEventListener('input',function(){filtrarFornecedores(this.value);});
+  document.getElementById('fornecedor_clear').addEventListener('click',function(){
+    document.getElementById('fornecedor_id').value='';
+    document.getElementById('fornecedor_search').value='';
+    document.getElementById('fornecedor_selected').style.display='none';
   });
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('#fornecedor_search') && !e.target.closest('#fornecedor_dropdown'))
-      document.getElementById('fornecedor_dropdown').style.display = 'none';
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#fornecedor_search')&&!e.target.closest('#fornecedor_dropdown'))
+      document.getElementById('fornecedor_dropdown').style.display='none';
   });
-  document.getElementById('rateio_entre_uma_ou_mais_categorias').addEventListener('change', function() {
-    var sec = document.getElementById('rateio_section');
-    if (this.value === 'Sim') { sec.style.display = 'block'; if (!rateioIniciado) iniciarRateio(); }
-    else { sec.style.display = 'none'; }
+  document.getElementById('rateio_entre_uma_ou_mais_categorias').addEventListener('change',function(){
+    var sec=document.getElementById('rateio_section');
+    if(this.value==='Sim'){sec.style.display='block';if(!rateioIniciado)iniciarRateio();}
+    else{sec.style.display='none';}
   });
-  document.getElementById('valor_restored').addEventListener('input', calcTotais);
-  document.getElementById('nf_file').addEventListener('change', handleNFUpload);
-  document.getElementById('boleto_file').addEventListener('change', handleBoletoUpload);
-  document.getElementById('rateio_file').addEventListener('change', handleRateioUpload);
-  document.getElementById('btn_submit').addEventListener('click', submitForm);
+  document.getElementById('valor_restored').addEventListener('input',calcTotais);
+  document.getElementById('nf_file').addEventListener('change',handleNFUpload);
+  document.getElementById('boleto_file').addEventListener('change',handleBoletoUpload);
+  document.getElementById('rateio_file').addEventListener('change',handleRateioUpload);
+  document.getElementById('btn_submit').addEventListener('click',submitForm);
 });
 
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast ' + (type || 'info');
-  setTimeout(function() { t.className = 'toast'; }, 5000);
+function showToast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+(type||'info');
+  setTimeout(function(){t.className='toast';},5000);
 }
 
-function lerOnfly(file) {
-  return new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        var wb = XLSX.read(e.target.result, {type:'binary'});
-        var resultado = {}, avisos = [];
-        console.log('Abas encontradas:', wb.SheetNames);
-
-        wb.SheetNames.forEach(function(sheetName) {
-          var sheetTrim = sheetName.trim();
-          // Busca categoria da aba (com e sem acento)
-          var categoria = ABA_CAT[sheetTrim];
-          if (!categoria) categoria = ABA_CAT[removerAcentos(sheetTrim)];
-          if (!categoria) {
-            // Tenta cada chave sem acento
-            var ks = Object.keys(ABA_CAT);
-            for (var i=0; i<ks.length; i++) {
-              if (removerAcentos(ks[i]) === removerAcentos(sheetTrim)) { categoria = ABA_CAT[ks[i]]; break; }
+function lerOnfly(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        var wb=XLSX.read(e.target.result,{type:'binary'});
+        var resultado={},avisos=[];
+        console.log('Abas encontradas:',wb.SheetNames);
+        wb.SheetNames.forEach(function(sheetName){
+          var sheetTrim=sheetName.trim();
+          var categoria=ABA_CAT[sheetTrim];
+          if(!categoria){
+            var ks=Object.keys(ABA_CAT);
+            for(var i=0;i<ks.length;i++){
+              if(removerAcentos(ks[i])===removerAcentos(sheetTrim)){categoria=ABA_CAT[ks[i]];break;}
             }
           }
-          var isReembolso = /reembolso/i.test(sheetTrim);
-          if (!categoria && !isReembolso) return;
-
-          var ws = wb.Sheets[sheetName];
-          var rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-          if (!rows.length) return;
-
-          var primeiraLinha = rows[0];
-          var valCol = Object.keys(primeiraLinha).find(function(k) { return /valor/i.test(k); });
-          var ccCol  = Object.keys(primeiraLinha).find(function(k) { return /centro/i.test(k); });
-          if (!valCol || !ccCol) return;
-
-          rows.forEach(function(row) {
-            var cc  = row[ccCol];
-            var val = row[valCol];
-            if (!cc || val === '' || val === undefined) return;
-            var ccNorm = normalizarCC(cc);
-            var valor  = parsearValor(val);
-            if (valor === 0) return;
-            if (DEPARTAMENTOS.indexOf(ccNorm) === -1 && avisos.indexOf(String(cc).trim()) === -1)
+          var isReembolso=/reembolso/i.test(sheetTrim);
+          if(!categoria&&!isReembolso) return;
+          var ws=wb.Sheets[sheetName];
+          var rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+          if(!rows.length) return;
+          var primeiraLinha=rows[0];
+          var valCol=Object.keys(primeiraLinha).find(function(k){return /valor/i.test(k);});
+          var ccCol=Object.keys(primeiraLinha).find(function(k){return /centro/i.test(k);});
+          if(!valCol||!ccCol) return;
+          rows.forEach(function(row){
+            var cc=row[ccCol],val=row[valCol];
+            if(!cc||val===''||val===undefined) return;
+            var ccNorm=normalizarCC(cc);
+            var valor=parsearValor(val);
+            if(valor===0) return;
+            if(DEPARTAMENTOS.indexOf(ccNorm)===-1&&avisos.indexOf(String(cc).trim())===-1)
               avisos.push(String(cc).trim());
-            if (!resultado[ccNorm]) resultado[ccNorm] = {};
-            if (isReembolso) {
-              var catR = 'Passagens aéreas';
-              resultado[ccNorm][catR] = Math.round(((resultado[ccNorm][catR]||0) + valor)*100)/100;
-            } else {
-              resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria]||0) + valor)*100)/100;
+            if(!resultado[ccNorm]) resultado[ccNorm]={};
+            if(isReembolso){
+              var catR='Passagens aéreas';
+              resultado[ccNorm][catR]=Math.round(((resultado[ccNorm][catR]||0)+valor)*100)/100;
+            }else{
+              resultado[ccNorm][categoria]=Math.round(((resultado[ccNorm][categoria]||0)+valor)*100)/100;
             }
           });
         });
-
-        // Remove CCs com total zero
-        Object.keys(resultado).forEach(function(cc) {
-          var t = Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
-          if (Math.abs(t) < 0.01) delete resultado[cc];
+        Object.keys(resultado).forEach(function(cc){
+          var t=Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
+          if(Math.abs(t)<0.01) delete resultado[cc];
         });
-
-        resolve({resultado:resultado, avisos:avisos});
-      } catch(err) { reject(err); }
+        resolve({resultado:resultado,avisos:avisos});
+      }catch(err){reject(err);}
     };
-    reader.onerror = reject;
+    reader.onerror=reject;
     reader.readAsBinaryString(file);
   });
 }
 
-function lerCopastur(file) {
-  return new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var b64 = e.target.result.split(',')[1];
-      var token = document.getElementById('claude_token').value.trim();
-      if (!token) { reject(new Error('Configure a chave API Claude!')); return; }
-      var prompt = 'Analise esta fatura da Copastur.\n\n' +
-        'REGRA ESPECIAL: Estas pessoas SEMPRE pertencem a "DIRETORIA CORPORATE":\n' +
-        DIRETORIA_COPASTUR.join(', ') + '\n\n' +
-        'Some APENAS as taxas de serviço (Tx.Serviço, ~R$ 42,20 por bilhete) por CC.\n' +
+function lerCopastur(file){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var b64=e.target.result.split(',')[1];
+      var token=document.getElementById('claude_token').value.trim();
+      if(!token){reject(new Error('Configure a chave API Claude!'));return;}
+      var prompt='Analise esta fatura da Copastur.\n\nREGRA ESPECIAL: Estas pessoas SEMPRE pertencem a "DIRETORIA CORPORATE":\n'+
+        DIRETORIA_COPASTUR.join(', ')+'\n\nSome APENAS as taxas de serviço (Tx.Serviço, ~R$ 42,20 por bilhete) por CC.\n'+
         'Retorne APENAS JSON: {"NOME CC": {"Passagens aéreas": valor}}\nSem explicações.';
       fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
@@ -656,13 +599,13 @@ function lerCopastur(file) {
           {type:'text',text:prompt}
         ]}]})
       }).then(function(r){return r.json();}).then(function(data){
-        try {
+        try{
           var text=data.content[0].text.replace(/```json|```/g,'').trim();
           var json=JSON.parse(text);
           var resultado={};
           Object.keys(json).forEach(function(cc){resultado[normalizarCC(cc)]=json[cc];});
           resolve({resultado:resultado,avisos:[]});
-        } catch(err){reject(new Error('Erro ao interpretar resposta da IA'));}
+        }catch(err){reject(new Error('Erro ao interpretar resposta da IA'));}
       }).catch(reject);
     };
     reader.onerror=reject;
@@ -670,11 +613,11 @@ function lerCopastur(file) {
   });
 }
 
-function handleRateioUpload() {
+function handleRateioUpload(){
   var file=document.getElementById('rateio_file').files[0];
-  if (!file) return;
+  if(!file) return;
   document.getElementById('rateio_filename').textContent='📎 '+file.name;
-  if (!rateioIniciado) iniciarRateio();
+  if(!rateioIniciado) iniciarRateio();
   var ext=file.name.split('.').pop().toLowerCase();
   var nomeLower=file.name.toLowerCase();
   var isOnfly=(ext==='xlsx'||ext==='xls')||nomeLower.includes('onfly');
@@ -682,22 +625,14 @@ function handleRateioUpload() {
   document.getElementById('rateio_analyzing').classList.add('show');
   document.getElementById('aviso_cc').classList.remove('show');
   var promise;
-  if (isOnfly) {
-    document.getElementById('rateio_analyzing_text').textContent='📊 Lendo planilha Onfly...';
-    promise=lerOnfly(file);
-  } else if (isCopastur) {
-    document.getElementById('rateio_analyzing_text').textContent='🤖 Analisando Copastur com IA...';
-    promise=lerCopastur(file);
-  } else {
-    document.getElementById('rateio_analyzing').classList.remove('show');
-    showToast('⚠️ Use .xlsx (Onfly) ou .pdf (Copastur)','error');
-    return;
-  }
+  if(isOnfly){document.getElementById('rateio_analyzing_text').textContent='📊 Lendo planilha Onfly...';promise=lerOnfly(file);}
+  else if(isCopastur){document.getElementById('rateio_analyzing_text').textContent='🤖 Analisando Copastur com IA...';promise=lerCopastur(file);}
+  else{document.getElementById('rateio_analyzing').classList.remove('show');showToast('⚠️ Use .xlsx (Onfly) ou .pdf (Copastur)','error');return;}
   promise.then(function(res){
     document.getElementById('rateio_analyzing').classList.remove('show');
     preencherRateio(res.resultado);
     mostrarResumoRateio(res.resultado,isOnfly?'Onfly':'Copastur');
-    if (res.avisos&&res.avisos.length>0) {
+    if(res.avisos&&res.avisos.length>0){
       var avEl=document.getElementById('aviso_cc');
       avEl.innerHTML='⚠️ <b>CCs não mapeados:</b> '+res.avisos.join(', ')+' — verifique manualmente.';
       avEl.classList.add('show');
@@ -710,23 +645,22 @@ function handleRateioUpload() {
   });
 }
 
-function preencherRateio(resultado) {
-  if (!rateioIniciado) return;
+function preencherRateio(resultado){
+  if(!rateioIniciado) return;
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp){
-    inp.value=''; inp.classList.remove('preenchido');
+    inp.value='';inp.classList.remove('preenchido');
     var d=parseInt(inp.getAttribute('data-dept'));
     var c=parseInt(inp.getAttribute('data-cat'));
     if(!rateioData[d]) rateioData[d]={};
     rateioData[d][c]=0;
   });
-  for (var c=1;c<=NUM_CATS;c++) {
+  for(var c=1;c<=NUM_CATS;c++){
     var sel=document.getElementById('cs'+c);
     sel.value='';
     while(sel.options.length>1) sel.remove(1);
     CATEGORIAS.forEach(function(cat){
       var opt=document.createElement('option');
-      opt.value=cat; opt.textContent=cat;
-      opt.style.color='#333'; opt.style.background='white';
+      opt.value=cat;opt.textContent=cat;opt.style.color='#333';opt.style.background='white';
       sel.appendChild(opt);
     });
   }
@@ -748,14 +682,14 @@ function preencherRateio(resultado) {
       var colIdx=categoriasUsadas[cat];
       if(!colIdx) return;
       var valor=resultado[cc][cat];
-      if(!valor||valor===0) return;
+      // ✅ CORREÇÃO: ignora valores zero ou negativos (reembolsos que zeraram o CC)
+      if(valor<=0) return;
       var input=document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
       if(input){
-        var valorAbs=Math.abs(valor);
-        input.value=valorAbs.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+        input.value=valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         input.classList.add('preenchido');
         if(!rateioData[deptIdx]) rateioData[deptIdx]={};
-        rateioData[deptIdx][colIdx]=valorAbs;
+        rateioData[deptIdx][colIdx]=valor;
       }
     });
   });
@@ -779,7 +713,7 @@ function mostrarResumoRateio(resultado,fornecedor){
 
 function carregarFornecedores(){
   var inp=document.getElementById('fornecedor_search');
-  inp.placeholder='Carregando fornecedores...'; inp.disabled=true;
+  inp.placeholder='Carregando fornecedores...';inp.disabled=true;
   var TOKEN='eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
   var allEdges=[],cursor=null;
   function buscarPagina(){
@@ -800,7 +734,7 @@ function carregarFornecedores(){
   }
   function finalizarCarregamento(){
     allEdges.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
-    todosFornecedores=allEdges; fornecedorCarregado=true;
+    todosFornecedores=allEdges;fornecedorCarregado=true;
     inp.placeholder='Digite para buscar... ('+todosFornecedores.length+' fornecedores)';
     inp.disabled=false;
     document.getElementById('fornecedor_hint').textContent=todosFornecedores.length+' fornecedores carregados.';
@@ -835,8 +769,7 @@ function iniciarRateio(){
     var sel=document.getElementById('cs'+c);
     CATEGORIAS.forEach(function(cat){
       var opt=document.createElement('option');
-      opt.value=cat; opt.textContent=cat;
-      opt.style.color='#333'; opt.style.background='white';
+      opt.value=cat;opt.textContent=cat;opt.style.color='#333';opt.style.background='white';
       sel.appendChild(opt);
     });
     sel.addEventListener('change',calcTotais);
@@ -866,10 +799,8 @@ function iniciarRateio(){
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       var val=rateioData[d]&&rateioData[d][c];
-      if(val&&val>0){
-        this.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-        this.classList.add('preenchido');
-      } else { this.value=''; this.classList.remove('preenchido'); }
+      if(val&&val>0){this.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});this.classList.add('preenchido');}
+      else{this.value='';this.classList.remove('preenchido');}
     });
     inp.addEventListener('focus',function(){
       var d=parseInt(this.getAttribute('data-dept'));
@@ -916,7 +847,7 @@ function fileToBase64(file){
   return new Promise(function(res,rej){
     var r=new FileReader();
     r.onload=function(){res(r.result.split(',')[1]);};
-    r.onerror=rej; r.readAsDataURL(file);
+    r.onerror=rej;r.readAsDataURL(file);
   });
 }
 
