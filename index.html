@@ -65,6 +65,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .badge-tecnicopias { background: #dcfce7; color: #166534; }
 .aviso-cc { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #92400e; margin-top: 8px; display: none; }
 .aviso-cc.show { display: block; }
+/* ✅ Input de rateio estilizado */
+.rateio-input { width:100%; padding:5px 6px; border:1.5px solid #e0d9ff; border-radius:5px; font-size:12px; text-align:right; background:white; color:#333; }
+.rateio-input:focus { outline:none; border-color:#6613D0; background:#faf6ff; }
+.rateio-input.preenchido { background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:600; }
 </style>
 </head>
 <body>
@@ -303,7 +307,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
         <tbody id="rateio_tbody"></tbody>
       </table>
     </div>
-    <div class="hint" style="margin-top:8px">💡 Deixe em branco os departamentos sem rateio nessa categoria.</div>
+    <div class="hint" style="margin-top:8px">💡 Digite valores no formato R$ (ex: 1.234,56). Deixe em branco os departamentos sem rateio.</div>
   </div>
 
   <div class="card">
@@ -402,7 +406,6 @@ var DIRETORIA_COPASTUR = [
   'THIERRY JOINOVICI CADIER','MICHELA CANTARINI SCHLOSSER','MICHELA SCHLOSSER','RAFAEL AGUIAR'
 ];
 
-// ✅ Categorias corretas da planilha de rateio
 var CATEGORIAS = [
   "Ações de Clima & Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro",
   "Aluguel de Equipamentos","Aquisição de Equipamentos","Aquisição de Móveis e Utensílios",
@@ -439,19 +442,18 @@ var DEPARTAMENTOS = [
   "TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"
 ];
 
-// ✅ Mapeamento aba Onfly → categoria da planilha de rateio
+// ✅ Automóveis → Aluguel de Carro (correto)
 var ABA_CAT = {
   'Aéreo': 'Passagens aéreas',
   'Hotel': 'Hospedagem',
   'Hoteis': 'Hospedagem',
-  'Automóveis': 'Combustíveis e translado',
+  'Automóveis': 'Aluguel de Carro',
   'Ônibus': 'Passagens rodoviárias',
   'Cobranças adicionais aéreo': 'Passagens aéreas',
-  'Cobranças adicionais automóveis': 'Combustíveis e translado',
+  'Cobranças adicionais automóveis': 'Aluguel de Carro',
   'Cobranças add. Aéreo': 'Passagens aéreas'
 };
 
-// ✅ Normalização de nomes de CC antigos → novos
 var CC_NORM = {
   'DIRETORIA':'DIRETORIA CORPORATE','PRÉ-VENDAS INTEL':'PRE-VENDAS GROWTH',
   'PRÉ-VENDAS SUPPLY':'PRE-VENDAS PPMF','EXPANSÃO INTEL':'REVOPS OPERATIONS GROWTH',
@@ -477,6 +479,32 @@ var CC_NORM = {
 
 var todosFornecedores = [], fornecedorCarregado = false;
 var rateioData = {}, rateioIniciado = false;
+
+// ✅ Formata número para R$ brasileiro
+function formatarBRL(valor) {
+  return 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// ✅ Parseia string R$ brasileira para número
+function parsearBRL(str) {
+  if (typeof str === 'number') return str;
+  var s = String(str).replace(/R\$\s*/g,'').trim();
+  // Formato: 1.234,56 → remove pontos de milhar, troca vírgula por ponto
+  s = s.replace(/\./g,'').replace(',','.');
+  return parseFloat(s) || 0;
+}
+
+function parsearValor(val) {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  var s = String(val).replace(/\s/g,'').replace('R$','');
+  if (s.indexOf(',') > s.indexOf('.') && s.indexOf('.') !== -1) {
+    s = s.replace(/\./g,'').replace(',','.');
+  } else {
+    s = s.replace(',','.');
+  }
+  return parseFloat(s) || 0;
+}
 
 window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('configToggle').addEventListener('click', function() { document.getElementById('configPanel').classList.toggle('show'); });
@@ -527,19 +555,6 @@ function normalizarCC(cc) {
   return semAcentoMatch || upper;
 }
 
-function parsearValor(val) {
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  var s = String(val).replace(/\s/g,'').replace('R$','');
-  if (s.indexOf(',') > s.indexOf('.') && s.indexOf('.') !== -1) {
-    s = s.replace(/\./g,'').replace(',','.');
-  } else {
-    s = s.replace(',','.');
-  }
-  return parseFloat(s) || 0;
-}
-
-// ✅ LEITURA ONFLY
 function lerOnfly(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -548,7 +563,6 @@ function lerOnfly(file) {
         var wb = XLSX.read(e.target.result, {type:'binary'});
         var resultado = {};
         var avisos = [];
-
         wb.SheetNames.forEach(function(sheetName) {
           var categoria = ABA_CAT[sheetName];
           if (!categoria) return;
@@ -559,7 +573,6 @@ function lerOnfly(file) {
           var valCol = Object.keys(primeiraLinha).find(function(k) { return /valor/i.test(k); });
           var ccCol  = Object.keys(primeiraLinha).find(function(k) { return /centro/i.test(k); });
           if (!valCol || !ccCol) return;
-
           rows.forEach(function(row) {
             var cc  = row[ccCol];
             var val = row[valCol];
@@ -579,7 +592,6 @@ function lerOnfly(file) {
             }
           });
         });
-
         resolve({resultado: resultado, avisos: avisos});
       } catch(err) { reject(err); }
     };
@@ -588,7 +600,6 @@ function lerOnfly(file) {
   });
 }
 
-// ✅ LEITURA COPASTUR via Claude API
 function lerCopastur(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -603,9 +614,9 @@ function lerCopastur(file) {
         'Retorne APENAS JSON no formato:\n{"NOME DO CC": {"Passagens aéreas": valor_numerico}}\n' +
         'Retorne apenas o JSON puro, sem explicações.';
       fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-        body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[
+        method:'POST',
+        headers:{'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[
           {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
           {type:'text',text:prompt}
         ]}]})
@@ -614,9 +625,7 @@ function lerCopastur(file) {
           var text = data.content[0].text.replace(/```json|```/g,'').trim();
           var json = JSON.parse(text);
           var resultado = {};
-          Object.keys(json).forEach(function(cc) {
-            resultado[normalizarCC(cc)] = json[cc];
-          });
+          Object.keys(json).forEach(function(cc) { resultado[normalizarCC(cc)] = json[cc]; });
           resolve({resultado: resultado, avisos: []});
         } catch(err) { reject(new Error('Erro ao interpretar resposta da IA')); }
       }).catch(reject);
@@ -626,7 +635,6 @@ function lerCopastur(file) {
   });
 }
 
-// ✅ HANDLER UPLOAD RATEIO
 function handleRateioUpload() {
   var file = document.getElementById('rateio_file').files[0];
   if (!file) return;
@@ -666,12 +674,13 @@ function handleRateioUpload() {
   });
 }
 
-// ✅ PREENCHER RATEIO NA TABELA
+// ✅ Preenche rateio com valores formatados em R$
 function preencherRateio(resultado) {
   if (!rateioIniciado) return;
   // Limpa tudo
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.value = '';
+    inp.classList.remove('preenchido');
     var d = parseInt(inp.getAttribute('data-dept'));
     var c = parseInt(inp.getAttribute('data-cat'));
     if (!rateioData[d]) rateioData[d] = {};
@@ -696,12 +705,12 @@ function preencherRateio(resultado) {
         categoriasUsadas[cat] = Object.keys(categoriasUsadas).length + 1;
     });
   });
-  // Seta selects
+  // Seta selects de categoria
   Object.keys(categoriasUsadas).forEach(function(cat) {
     var sel = document.getElementById('cs' + categoriasUsadas[cat]);
     if (sel) sel.value = cat;
   });
-  // Preenche valores
+  // Preenche valores formatados em R$ com estilo verde
   Object.keys(resultado).forEach(function(cc) {
     var deptIdx = DEPARTAMENTOS.indexOf(cc);
     if (deptIdx === -1) return;
@@ -712,9 +721,12 @@ function preencherRateio(resultado) {
       if (!valor || valor === 0) return;
       var input = document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
       if (input) {
-        input.value = Math.abs(valor).toFixed(2);
+        var valorAbs = Math.abs(valor);
+        // ✅ Exibe formatado em R$ brasileiro
+        input.value = valorAbs.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+        input.classList.add('preenchido');
         if (!rateioData[deptIdx]) rateioData[deptIdx] = {};
-        rateioData[deptIdx][colIdx] = Math.abs(valor);
+        rateioData[deptIdx][colIdx] = valorAbs;
       }
     });
   });
@@ -729,13 +741,12 @@ function mostrarResumoRateio(resultado, fornecedor) {
     var subtotal = Object.values(resultado[cc]).reduce(function(a,b){return a+(b||0);},0);
     total += subtotal;
     var cats = Object.entries(resultado[cc]).map(function(e){
-      return e[0]+': R$ '+Math.abs(e[1]).toFixed(2).replace('.',',');
+      return e[0]+': '+formatarBRL(Math.abs(e[1]));
     }).join(' | ');
-    ul.innerHTML += '<li>🏢 <b>'+cc+'</b>: R$ '+Math.abs(subtotal).toFixed(2).replace('.',',')+
+    ul.innerHTML += '<li>🏢 <b>'+cc+'</b>: '+formatarBRL(Math.abs(subtotal))+
       ' <span style="color:#888;font-size:10px">('+cats+')</span></li>';
   });
-  ul.innerHTML += '<li style="margin-top:8px;border-top:1px solid #86efac;padding-top:8px">💰 <b>Total: R$ '+
-    Math.abs(total).toFixed(2).replace('.',',')+'</b></li>';
+  ul.innerHTML += '<li style="margin-top:8px;border-top:1px solid #86efac;padding-top:8px">💰 <b>Total: '+formatarBRL(Math.abs(total))+'</b></li>';
   document.getElementById('rateio_extracted_title').textContent = '✅ Rateio '+fornecedor+' preenchido automaticamente:';
   document.getElementById('rateio_extracted').classList.add('show');
 }
@@ -751,13 +762,13 @@ function carregarFornecedores() {
     fetch('https://api.pipefy.com/graphql',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({query:query})})
       .then(function(r){return r.json();}).then(function(data){
         var records = data&&data.data&&data.data.table_records;
-        if (!records||!records.edges){finalizarCarregamento();return;}
+        if(!records||!records.edges){finalizarCarregamento();return;}
         records.edges.forEach(function(e){
           if(e.node&&e.node.id&&e.node.title&&e.node.title.trim())
             allEdges.push({id:String(e.node.id),nome:e.node.title.trim()});
         });
         document.getElementById('fornecedor_hint').textContent='Carregando... '+allEdges.length+' fornecedores';
-        cursor = records.pageInfo&&records.pageInfo.endCursor;
+        cursor=records.pageInfo&&records.pageInfo.endCursor;
         if(records.pageInfo&&records.pageInfo.hasNextPage) buscarPagina(); else finalizarCarregamento();
       }).catch(function(){inp.placeholder='Erro ao carregar.';inp.disabled=false;});
   }
@@ -772,7 +783,7 @@ function carregarFornecedores() {
 }
 
 function filtrarFornecedores(query) {
-  var dd = document.getElementById('fornecedor_dropdown');
+  var dd=document.getElementById('fornecedor_dropdown');
   if(!query||query.length<2){dd.style.display='none';return;}
   if(!fornecedorCarregado){dd.innerHTML='<div class="forn-item" style="color:#888">Aguarde...</div>';dd.style.display='block';return;}
   var q=query.toLowerCase();
@@ -783,7 +794,7 @@ function filtrarFornecedores(query) {
   dd.style.display='block';
 }
 
-function selecionarFornecedor(id, nome) {
+function selecionarFornecedor(id,nome){
   document.getElementById('fornecedor_id').value=id;
   document.getElementById('fornecedor_search').value='';
   document.getElementById('fornecedor_dropdown').style.display='none';
@@ -810,20 +821,45 @@ function iniciarRateio() {
     var bg = i%2===0?'#fff':'#faf8ff';
     var cols = '';
     for (var c=1; c<=NUM_CATS; c++) {
-      cols += '<td style="padding:4px 6px"><input type="number" step="0.01" placeholder="-" data-dept="'+i+'" data-cat="'+c+'" style="width:100%;padding:5px;border:1.5px solid #e0d9ff;border-radius:5px;font-size:12px;text-align:right;background:white" /></td>';
+      cols += '<td style="padding:4px 6px"><input type="text" inputmode="decimal" placeholder="-" data-dept="'+i+'" data-cat="'+c+'" class="rateio-input" /></td>';
     }
     return '<tr style="background:'+bg+';border-bottom:1px solid #f0edff">'+
       '<td style="padding:6px 10px;font-size:11px;font-weight:600;color:#333;position:sticky;left:0;background:'+bg+';white-space:nowrap">'+dept+'</td>'+
       cols+
-      '<td id="dt'+i+'" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333">R$ 0,00</td></tr>';
+      '<td id="dt'+i+'" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333;white-space:nowrap">R$ 0,00</td></tr>';
   }).join('');
+  // ✅ Listener com parse de formato brasileiro
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.addEventListener('input', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       if(!rateioData[d]) rateioData[d]={};
-      rateioData[d][c]=parseFloat(this.value)||0;
+      // Parseia formato brasileiro: 1.234,56 → 1234.56
+      var raw = this.value.replace(/R\$\s*/g,'').trim().replace(/\./g,'').replace(',','.');
+      rateioData[d][c] = parseFloat(raw) || 0;
       calcTotais();
+    });
+    // ✅ Ao sair do campo, formata automaticamente
+    inp.addEventListener('blur', function() {
+      var d=parseInt(this.getAttribute('data-dept'));
+      var c=parseInt(this.getAttribute('data-cat'));
+      var val = rateioData[d] && rateioData[d][c];
+      if (val && val > 0) {
+        this.value = val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+        this.classList.add('preenchido');
+      } else if (this.value === '' || this.value === '-') {
+        this.classList.remove('preenchido');
+      }
+    });
+    // ✅ Ao entrar no campo, limpa formatação para edição
+    inp.addEventListener('focus', function() {
+      var d=parseInt(this.getAttribute('data-dept'));
+      var c=parseInt(this.getAttribute('data-cat'));
+      var val = rateioData[d] && rateioData[d][c];
+      if (val && val > 0) {
+        // Mostra só o número para facilitar edição
+        this.value = val.toFixed(2).replace('.',',');
+      }
     });
   });
 }
@@ -835,23 +871,27 @@ function calcTotais() {
   DEPARTAMENTOS.forEach(function(d,i){
     var dt=0;
     for(var c=1;c<=NUM_CATS;c++){var v=(rateioData[i]&&rateioData[i][c])||0;catT[c]+=v;dt+=v;}
-    var el=document.getElementById('dt'+i);if(el)el.textContent='R$ '+dt.toFixed(2).replace('.',',');
+    var el=document.getElementById('dt'+i);
+    if(el) el.textContent = dt>0 ? formatarBRL(dt) : 'R$ 0,00';
   });
   var grand=0;
   for(var c=1;c<=NUM_CATS;c++){
     grand+=catT[c];
-    var el=document.getElementById('ct'+c);if(el)el.textContent='R$ '+catT[c].toFixed(2).replace('.',',');
+    var el=document.getElementById('ct'+c);
+    if(el) el.textContent = catT[c]>0 ? formatarBRL(catT[c]) : 'R$ 0,00';
   }
-  var gtEl=document.getElementById('gt');if(gtEl)gtEl.textContent='R$ '+grand.toFixed(2).replace('.',',');
+  var gtEl=document.getElementById('gt');
+  if(gtEl) gtEl.textContent = grand>0 ? formatarBRL(grand) : 'R$ 0,00';
   var nfVal=parseFloat(document.getElementById('valor_restored').value)||0;
-  if(document.getElementById('rateio_nf_display'))document.getElementById('rateio_nf_display').textContent='R$ '+nfVal.toFixed(2).replace('.',',');
+  if(document.getElementById('rateio_nf_display'))
+    document.getElementById('rateio_nf_display').textContent = nfVal>0 ? formatarBRL(nfVal) : 'R$ 0,00';
   var valEl=document.getElementById('rateio_validacao');
   if(valEl){
     if(nfVal>0){
       var diff=Math.abs(grand-nfVal);
       if(diff<0.02){valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534';valEl.textContent='✔ OK';}
-      else if(grand>nfVal){valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626';valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',',');}
-      else{valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e';valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',',');}
+      else if(grand>nfVal){valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626';valEl.textContent='❌ Excede '+formatarBRL(grand-nfVal);}
+      else{valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e';valEl.textContent='⚠️ Falta '+formatarBRL(nfVal-grand);}
     }else{valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666';valEl.textContent='Aguardando...';}
   }
 }
@@ -860,8 +900,7 @@ function fileToBase64(file){
   return new Promise(function(res,rej){
     var r=new FileReader();
     r.onload=function(){res(r.result.split(',')[1]);};
-    r.onerror=rej;
-    r.readAsDataURL(file);
+    r.onerror=rej; r.readAsDataURL(file);
   });
 }
 
@@ -899,7 +938,7 @@ function handleNFUpload(){
       if(r.data_emissao){document.getElementById('data_de_emiss_o_da_nf').value=r.data_emissao;document.getElementById('ext_nf_data').classList.add('show');}
       if(r.valor){document.getElementById('valor_restored').value=r.valor;document.getElementById('ext_nf_valor').classList.add('show');calcTotais();}
       if(r.retencao_imposto){document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value=r.retencao_imposto;document.getElementById('ext_nf_ret').classList.add('show');}
-      document.getElementById('nf_extracted_list').innerHTML='<li>📌 NF: <b>'+(r.numero_nf||'-')+'</b></li><li>📅 Data: <b>'+(r.data_emissao||'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor||'-')+'</b></li><li>🧾 Retenção: <b>'+(r.retencao_imposto||'-')+'</b></li>';
+      document.getElementById('nf_extracted_list').innerHTML='<li>📌 NF: <b>'+(r.numero_nf||'-')+'</b></li><li>📅 Data: <b>'+(r.data_emissao||'-')+'</b></li><li>💰 Valor: <b>'+(r.valor?formatarBRL(r.valor):'-')+'</b></li><li>🧾 Retenção: <b>'+(r.retencao_imposto||'-')+'</b></li>';
       document.getElementById('nf_extracted').classList.add('show');
       showToast('Nota fiscal analisada!','success');
     }else showToast('Não foi possível extrair. Preencha manualmente.','error');
@@ -919,7 +958,7 @@ function handleBoletoUpload(){
       if(r.codigo_barras){document.getElementById('c_digo_de_barras_do_boleto_2').value=r.codigo_barras;document.getElementById('ext_cod_barras').classList.add('show');}
       if(r.valor_parcela){document.getElementById('valor_da_parcela').value=r.valor_parcela;document.getElementById('ext_valor_parcela').classList.add('show');}
       if(r.vencimento){document.getElementById('vencimento_da_parcela').value=r.vencimento;document.getElementById('ext_venc').classList.add('show');}
-      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li>';
+      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>'+(r.valor_parcela?formatarBRL(r.valor_parcela):'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li>';
       document.getElementById('boleto_extracted').classList.add('show');
       showToast('Boleto analisado!','success');
     }else showToast('Não foi possível extrair. Preencha manualmente.','error');
@@ -979,7 +1018,7 @@ function submitForm(){
     return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',{input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
       .then(function(res){
         var parcelaId=res&&res.data&&res.data.createCard&&res.data.createCard.card&&res.data.createCard.card.id;
-        if(!parcelaId) throw new Error('Erro ao criar parcela: '+JSON.stringify(res));
+        if(!parcelaId)throw new Error('Erro ao criar parcela: '+JSON.stringify(res));
         setProgress(65,'Criando solicitação no Pipefy...');
         var mainFields=[
           {field_id:'tipo_de_solicita_o_de_solicita_o',field_value:document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
@@ -1006,7 +1045,7 @@ function submitForm(){
       });
   }).then(function(res){
     var card=res&&res.data&&res.data.createCard&&res.data.createCard.card;
-    if(!card) throw new Error('Erro ao criar card: '+JSON.stringify(res));
+    if(!card)throw new Error('Erro ao criar card: '+JSON.stringify(res));
     setProgress(100,'✅ Card criado com sucesso!');
     showToast('✅ Card #'+card.id+' criado no Pipefy!','success');
     setTimeout(function(){if(card.url)window.open(card.url,'_blank');},1000);
