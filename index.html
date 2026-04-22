@@ -57,15 +57,14 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .forn-item { padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid #f0edff; }
 .forn-item:hover { background:#f5f3ff; }
 .rateio-cat-select option { color: #333 !important; background: white !important; }
-.rateio-upload-box { background: linear-gradient(135deg, #f5f3ff, #fff8f0); border: 2px dashed #9333ea; border-radius: 10px; padding: 20px; margin-bottom: 16px; position: relative; }
+.rateio-upload-box { background: linear-gradient(135deg, #f5f3ff, #fff8f0); border: 2px dashed #9333ea; border-radius: 10px; padding: 20px; margin-bottom: 16px; position: relative; text-align: center; }
 .rateio-upload-box input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.rateio-upload-box .rateio-icon { font-size: 24px; }
-.rateio-upload-box p { font-size: 13px; color: #666; margin-top: 6px; }
-.rateio-upload-box .rateio-filename { font-size: 12px; color: #6613D0; font-weight: 600; margin-top: 4px; }
-.fornecedor-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-left: 8px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 2px; }
 .badge-onfly { background: #dbeafe; color: #1d4ed8; }
 .badge-copastur { background: #fef3c7; color: #92400e; }
 .badge-tecnicopias { background: #dcfce7; color: #166534; }
+.aviso-cc { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #92400e; margin-top: 8px; display: none; }
+.aviso-cc.show { display: block; }
 </style>
 </head>
 <body>
@@ -202,16 +201,30 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
         <label>Categoria <span class="req">*</span></label>
         <select id="tipo_de_pagamento">
           <option value="">Selecione...</option>
-          <option>Ações de Clima e Cultura</option><option>Adiantamento ao fornecedor</option><option>Advocacia</option>
+          <option>Ações de Clima & Cultura</option><option>Adiantamento ao fornecedor</option><option>Advocacia</option>
           <option>Aluguel</option><option>Aluguel de Carro</option><option>Aluguel de Equipamentos</option>
-          <option>Aquisição de Equipamentos</option><option>Auditoria</option><option>Consultoria</option>
-          <option>Contabilidade</option><option>Correios</option><option>Cursos e Treinamentos</option>
-          <option>Feiras, Eventos</option><option>Licenças</option><option>Manutenção de Equipamentos</option>
-          <option>Manutenção de escritorio</option><option>Material de Consumo/Limpeza</option><option>Mídia Paga</option>
-          <option>Serviços de Limpeza</option><option>Serviços de terceiros</option><option>Servidores</option>
-          <option>Seguro</option><option>Telefonia</option><option>Internet</option>
-          <option>Passagens aéreas</option><option>Hospedagem</option><option>Energia elétrica</option>
-          <option>Copa e Cozinha</option><option>Taxas</option><option>Multas</option><option>Outros</option>
+          <option>Aquisição de Equipamentos</option><option>Aquisição de Móveis e Utensílios</option>
+          <option>Assessoria de Imprensa</option><option>Auditoria</option><option>Brindes Colaboradores</option>
+          <option>Brindes e Incentivos - Clientes</option><option>Cartórios</option><option>Confraternizações</option>
+          <option>Consultoria</option><option>Consultoria ReS</option><option>Contabilidade</option>
+          <option>Contribuições e Associações</option><option>Correios</option><option>Cursos e Treinamentos</option>
+          <option>Dados</option><option>Estacionamento</option><option>Exames Admissionais/Periódicos</option>
+          <option>Feiras, Eventos</option><option>Indenizações</option><option>Licenças</option>
+          <option>Manutenção de Equipamentos</option><option>Manutenção do escritório</option>
+          <option>Material de Consumo/Limpeza</option><option>Material de Escritório</option><option>Mídia Paga</option>
+          <option>Patrocínios</option><option>Serviços de Limpeza</option><option>Serviços de terceiros</option>
+          <option>Servidores</option><option>Seguros</option><option>Telefonia</option><option>Internet</option>
+          <option>Passagens aéreas</option><option>Passagens rodoviárias</option><option>Combustíveis e translado</option>
+          <option>Hospedagem</option><option>Outros gastos com marketing</option><option>Outras despesas com o pessoal</option>
+          <option>Copa e Cozinha</option><option>Comex Tech Forum</option><option>Energia elétrica</option>
+          <option>Bens de pequeno valor</option><option>Benfeitorias em bens de terceiros - Segundo andar</option>
+          <option>Benfeitoria em bens de terceiros</option><option>Black November Brindes</option>
+          <option>Black november confraternizações</option><option>Intermodal 2025</option><option>Taxas</option>
+          <option>Inglês</option><option>Empréstimos Colaboradores</option><option>Massagem</option>
+          <option>Plano de Saúde</option><option>Plano Odontológico</option><option>Seguros de Vida</option>
+          <option>Gympass</option><option>Auxílio Farmácia</option><option>Multas</option>
+          <option>DOAÇÕES</option><option>FRETE/TRANSPORTE</option><option>VIAGENS</option>
+          <option>ALIMENTAÇÃO EM VIAGENS</option><option>TOTALPASS</option>
         </select>
       </div>
     </div>
@@ -226,44 +239,65 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
   <div class="card" id="rateio_section" style="display:none">
     <h2>📊 Planilha de Rateio</h2>
 
-    <!-- UPLOAD AUTOMÁTICO -->
-    <div class="rateio-upload-box" style="text-align:center">
+    <div class="rateio-upload-box">
       <input type="file" id="rateio_file" accept=".xlsx,.xls,.pdf" />
-      <div class="rateio-icon">📂</div>
+      <div style="font-size:24px">📂</div>
       <p style="font-weight:600;color:#6613D0;margin-top:6px">Anexe a planilha de rateio para preenchimento automático</p>
-      <p style="font-size:11px;color:#888;margin-top:4px">Suporta: <span class="fornecedor-badge badge-onfly">Onfly (.xlsx)</span> <span class="fornecedor-badge badge-copastur">Copastur (.pdf)</span> <span class="fornecedor-badge badge-tecnicopias">Tecnicópias (em breve)</span></p>
-      <div class="rateio-filename" id="rateio_filename"></div>
+      <p style="font-size:11px;color:#888;margin-top:4px">
+        <span class="badge badge-onfly">Onfly (.xlsx)</span>
+        <span class="badge badge-copastur">Copastur (.pdf)</span>
+        <span class="badge badge-tecnicopias">Tecnicópias (em breve)</span>
+      </p>
+      <div id="rateio_filename" style="font-size:12px;color:#6613D0;font-weight:600;margin-top:6px"></div>
     </div>
-    <div class="analyzing" id="rateio_analyzing"><div class="spinner"></div> <span id="rateio_analyzing_text">Lendo planilha de rateio com IA...</span></div>
+
+    <div class="analyzing" id="rateio_analyzing">
+      <div class="spinner"></div>
+      <span id="rateio_analyzing_text">Processando planilha...</span>
+    </div>
+
     <div class="extracted-data" id="rateio_extracted">
       <h4 id="rateio_extracted_title">✅ Rateio preenchido automaticamente:</h4>
       <ul id="rateio_extracted_list"></ul>
     </div>
 
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;margin-top:16px">
+    <div class="aviso-cc" id="aviso_cc"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0;flex-wrap:wrap;gap:10px">
       <div style="font-size:13px;font-weight:600;color:#333">Total da NF: <span id="rateio_nf_display" style="color:#6613D0">R$ 0,00</span></div>
       <div id="rateio_validacao" style="font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666">Aguardando...</div>
     </div>
+
     <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:800px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1400px">
         <thead>
           <tr style="background:#6613D0;color:white">
-            <th style="padding:8px 10px;text-align:left;min-width:180px;position:sticky;left:0;background:#6613D0;z-index:2">DEPARTAMENTOS</th>
+            <th style="padding:8px 10px;text-align:left;min-width:200px;position:sticky;left:0;background:#6613D0;z-index:2">DEPARTAMENTOS</th>
             <th style="padding:6px;min-width:150px"><select id="cs1" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 1</option></select></th>
             <th style="padding:6px;min-width:150px"><select id="cs2" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 2</option></select></th>
             <th style="padding:6px;min-width:150px"><select id="cs3" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 3</option></select></th>
             <th style="padding:6px;min-width:150px"><select id="cs4" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 4</option></select></th>
             <th style="padding:6px;min-width:150px"><select id="cs5" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 5</option></select></th>
-            <th style="padding:8px;min-width:100px;background:#4a0099;text-align:center">TOTAL DEPT</th>
+            <th style="padding:6px;min-width:150px"><select id="cs6" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 6</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs7" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 7</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs8" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 8</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs9" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 9</option></select></th>
+            <th style="padding:6px;min-width:150px"><select id="cs10" class="rateio-cat-select" style="background:#5500bb;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;padding:3px 4px;font-size:11px;width:100%"><option value="" style="color:#333;background:white">Categoria 10</option></select></th>
+            <th style="padding:8px;min-width:110px;background:#4a0099;text-align:center">TOTAL DEPT</th>
           </tr>
           <tr style="background:#f0edff">
             <td style="padding:6px 10px;font-size:11px;color:#6613D0;font-weight:600;position:sticky;left:0;background:#f0edff">Total por categoria →</td>
-            <td id="ct1" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
-            <td id="ct2" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
-            <td id="ct3" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
-            <td id="ct4" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
-            <td id="ct5" style="padding:6px;text-align:center;font-weight:700;color:#6613D0">R$ 0,00</td>
-            <td id="gt" style="padding:6px;text-align:center;font-weight:700;color:#4a0099">R$ 0,00</td>
+            <td id="ct1" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct2" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct3" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct4" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct5" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct6" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct7" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct8" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct9" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="ct10" style="padding:6px;text-align:center;font-weight:700;color:#6613D0;font-size:11px">R$ 0,00</td>
+            <td id="gt" style="padding:6px;text-align:center;font-weight:700;color:#4a0099;font-size:11px">R$ 0,00</td>
           </tr>
         </thead>
         <tbody id="rateio_tbody"></tbody>
@@ -358,91 +392,91 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ✅ IDs confirmados
 var LOGGER_ID    = '1249410709';
 var APROVADOR_ID = '932558839';
+var NUM_CATS = 10;
 
-// ✅ Pessoas que SEMPRE vão para DIRETORIA CORPORATE na Copastur
 var DIRETORIA_COPASTUR = [
-  'CARLOS HENRIQUE BASTOS FERREIRA DE SOUZA',
-  'HELMUTH HOFSTATTER FILHO',
-  'ALLAN ROGERIO FLORES SCHMITT',
-  'RAFAEL AUGUSTO FIRAKOWSKI CRUZ',
-  'RAFAEL CASTELLI SILVA AGUIAR',
-  'THIERRY JOINOVICI CADIER',
-  'MICHELA CANTARINI SCHLOSSER',
-  'MICHELA SCHLOSSER'
+  'CARLOS HENRIQUE BASTOS FERREIRA DE SOUZA','CARLOS SOUZA','HELMUTH HOFSTATTER FILHO',
+  'ALLAN ROGERIO FLORES SCHMITT','RAFAEL AUGUSTO FIRAKOWSKI CRUZ','RAFAEL CASTELLI SILVA AGUIAR',
+  'THIERRY JOINOVICI CADIER','MICHELA CANTARINI SCHLOSSER','MICHELA SCHLOSSER','RAFAEL AGUIAR'
 ];
 
-// ✅ Mapeamento CC Copastur → CC Pipefy
-var CC_MAP = {
-  'DIRETORIA': 'DIRETORIA CORPORATE',
-  'DIRETORIA CORPORATE': 'DIRETORIA CORPORATE',
-  'CS GROWTH': 'CS GROWTH',
-  'TECH GROWTH': 'TECH GROWTH',
-  'COMERCIAL MVP': 'COMERCIAL MVP',
-  'COMERCIAL GROWTH': 'COMERCIAL GROWTH',
-  'R&D GERAL PPMF': 'R&D GERAL PPMF',
-  'LEGAL/COMPLIANCE CORPORATE': 'LEGAL/COMPLIANCE CORPORATE',
-  'TECH GERAL PPMF': 'TECH GERAL PPMF',
-  'MARKETING INSTITUCIONAL': 'MARKETING INSTITUCIONAL CORPORATE',
-  'MARKETING INSTITUCIONAL CORPORATE': 'MARKETING INSTITUCIONAL CORPORATE',
-  'FINANCEIRO': 'FINANCEIRO CORPORATE',
-  'FINANCEIRO CORPORATE': 'FINANCEIRO CORPORATE',
-  'RH': 'RH CORPORATE',
-  'RH CORPORATE': 'RH CORPORATE',
-  'FACILITIES': 'FACILITIES CORPORATE',
-  'FACILITIES CORPORATE': 'FACILITIES CORPORATE',
-  'BI E INTEGRACOES': 'BI E INTEGRACOES CORPORATE',
-  'BI E INTEGRACOES CORPORATE': 'BI E INTEGRACOES CORPORATE',
-  'CONTROLADORIA': 'CONTROLADORIA CORPORATE',
-  'CONTROLADORIA CORPORATE': 'CONTROLADORIA CORPORATE',
-  'CONTABILIDADE': 'CONTABILIDADE CORPORATE',
-  'CONTABILIDADE CORPORATE': 'CONTABILIDADE CORPORATE',
-  'DP': 'DP CORPORATE',
-  'DP CORPORATE': 'DP CORPORATE',
-  'PRE-VENDAS GROWTH': 'PRE-VENDAS GROWTH',
-  'PRE-VENDAS PPMF': 'PRE-VENDAS PPMF',
-  'CS PPMF': 'CS PPMF',
-  'CS GERAL GROWTH': 'CS GERAL GROWTH',
-  'CS OPS & INSIGHTS GROWTH': 'CS OPS & INSIGHTS GROWTH',
-  'DADOS GROWTH': 'DADOS GROWTH',
-  'DADOS PPMF': 'DADOS PPMF',
-  'DEVOPS PPMF': 'DEVOPS PPMF',
-  'TECH PPMF': 'TECH PPMF',
-  'TECH AUTOMATION GROWTH': 'TECH AUTOMATION GROWTH',
-  'R&D PPMF': 'R&D PPMF',
-  'R&D MVP': 'R&D MVP',
-  'COMERCIAL PPMF': 'COMERCIAL PPMF',
-  'SUPORTE GROWTH': 'SUPORTE GROWTH',
-  'SUPORTE PPMF': 'SUPORTE PPMF',
-  'QUALIDADE GROWTH': 'QUALIDADE GROWTH',
-  'QUALIDADE PPMF': 'QUALIDADE PPMF',
-  'MARKETING GROWTH': 'MARKETING GROWTH',
-  'MARKETING PPMF': 'MARKETING PPMF',
-  'REVOPS GROWTH': 'REVOPS GROWTH',
-  'REVOPS OPERATIONS GROWTH': 'REVOPS OPERATIONS GROWTH',
-  'REVOPS INTELLIGENCE PPMF': 'REVOPS INTELLIGENCE PPMF',
-  'CCO GROWTH': 'CCO GROWTH',
-  'PROFESSIONAL SERVICES GROWTH': 'PROFESSIONAL SERVICES GROWTH',
-  'CS INTERNACIONAL PPMF': 'CS INTERNACIONAL PPMF',
-  'COMERCIAL INTERNATIONAL PPMF': 'COMERCIAL INTERNATIONAL PPMF',
-  'COMERCIAL MEXICO PPMF': 'COMERCIAL MEXICO PPMF',
-  'DADOS GERAL GROWTH': 'DADOS GERAL GROWTH',
-  'QUALIDADE GERAL GROWTH': 'QUALIDADE GERAL GROWTH',
-  'R&D INTERNACIONAL PPMF': 'R&D INTERNACIONAL PPMF',
-  'COALITION CORPORATE': 'COALITION CORPORATE',
-  'RELGOV CORPORATE': 'RELGOV CORPORATE',
-  'OUTROS CORPORATE': 'OUTROS CORPORATE',
-  'POCs IA': 'POCs IA'
+// ✅ Categorias corretas da planilha de rateio
+var CATEGORIAS = [
+  "Ações de Clima & Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro",
+  "Aluguel de Equipamentos","Aquisição de Equipamentos","Aquisição de Móveis e Utensílios",
+  "Assessoria de Imprensa","Auditoria","Brindes Colaboradores","Brindes e Incentivos - Clientes",
+  "Cartórios","Confraternizações","Consultoria","Consultoria ReS","Contabilidade",
+  "Contribuições e Associações","Correios","Cursos e Treinamentos","Dados","Estacionamento",
+  "Exames Admissionais/Periódicos","Feiras, Eventos","Indenizações","Licenças",
+  "Manutenção de Equipamentos","Manutenção do escritório","Material de Consumo/Limpeza",
+  "Material de Escritório","Mídia Paga","Patrocínios","Serviços de Limpeza","Serviços de terceiros",
+  "Servidores","Seguros","Telefonia","Internet","Passagens aéreas","Passagens rodoviárias",
+  "Combustíveis e translado","Hospedagem","Outros gastos com marketing","Outras despesas com o pessoal",
+  "Copa e Cozinha","Comex Tech Forum","Energia elétrica","Bens de pequeno valor",
+  "Benfeitorias em bens de terceiros - Segundo andar","Benfeitoria em bens de terceiros",
+  "Black November Brindes","Black november confraternizações","Intermodal 2025","Taxas","Inglês",
+  "Empréstimos Colaboradores","Massagem","Plano de Saúde","Plano Odontológico","Seguros de Vida",
+  "Gympass","Auxílio Farmácia","Multas","DOAÇÕES","FRETE/TRANSPORTE","VIAGENS",
+  "ALIMENTAÇÃO EM VIAGENS","TOTALPASS"
+];
+
+var DEPARTAMENTOS = [
+  "BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH",
+  "COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF",
+  "CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH",
+  "CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF",
+  "DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF",
+  "DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE",
+  "LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE",
+  "MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF",
+  "NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF",
+  "PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF",
+  "R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF",
+  "RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH",
+  "RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF",
+  "TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"
+];
+
+// ✅ Mapeamento aba Onfly → categoria da planilha de rateio
+var ABA_CAT = {
+  'Aéreo': 'Passagens aéreas',
+  'Hotel': 'Hospedagem',
+  'Hoteis': 'Hospedagem',
+  'Automóveis': 'Combustíveis e translado',
+  'Ônibus': 'Passagens rodoviárias',
+  'Cobranças adicionais aéreo': 'Passagens aéreas',
+  'Cobranças adicionais automóveis': 'Combustíveis e translado',
+  'Cobranças add. Aéreo': 'Passagens aéreas'
 };
 
-var CATEGORIAS = ["Ações de Clima e Cultura","Adiantamento ao fornecedor","Advocacia","Aluguel","Aluguel de Carro","Aluguel de Equipamentos","Aquisição de Equipamentos","Auditoria","Consultoria","Contabilidade","Correios","Cursos e Treinamentos","Feiras, Eventos","Licenças","Manutenção de Equipamentos","Manutenção de escritorio","Material de Consumo/Limpeza","Mídia Paga","Serviços de Limpeza","Serviços de terceiros","Servidores","Seguro","Telefonia","Internet","Passagens aéreas","Hospedagem","Energia elétrica","Copa e Cozinha","Taxas","Multas","Outros"];
-var DEPARTAMENTOS = ["BI E INTEGRACOES CORPORATE","CCO GROWTH","COALITION CORPORATE","COMERCIAL GROWTH","COMERCIAL INTERNATIONAL PPMF","COMERCIAL MEXICO PPMF","COMERCIAL MVP","COMERCIAL PPMF","CONTABILIDADE CORPORATE","CONTROLADORIA CORPORATE","CS GERAL GROWTH","CS GROWTH","CS INTERNACIONAL PPMF","CS MEXICO PPMF","CS OPS & INSIGHTS GROWTH","CS PPMF","DADOS GERAL GROWTH","DADOS GROWTH","DADOS MVP","DADOS PPMF","DEVOPS PPMF","DIRETORIA CORPORATE","DP CORPORATE","FACILITIES CORPORATE","FINANCEIRO CORPORATE","LEGAL/COMPLIANCE CORPORATE","MARKETING GROWTH","MARKETING INSTITUCIONAL CORPORATE","MARKETING INTERNACIONAL PPMF","MARKETING MEXICO PPMF","MARKETING MVP","MARKETING PPMF","NOVOS NEGOCIOS PPMF","OUTROS CORPORATE","PRE-VENDAS GROWTH","PRE-VENDAS PPMF","PROFESSIONAL SERVICES GROWTH","QUALIDADE GERAL GROWTH","QUALIDADE GROWTH","QUALIDADE PPMF","R&D GERAL PPMF","R&D GROWTH","R&D INTERNACIONAL PPMF","R&D MEXICO PPMF","R&D MVP","R&D PPMF","RELGOV CORPORATE","REVOPS GROWTH","REVOPS INTELLIGENCE PPMF","REVOPS OPERATIONS GROWTH","RH CORPORATE","SUPORTE GROWTH","SUPORTE PPMF","TECH AUTOMATION GROWTH","TECH GERAL PPMF","TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"];
-var todosFornecedores = [];
-var fornecedorCarregado = false;
-var rateioData = {};
-var rateioIniciado = false;
+// ✅ Normalização de nomes de CC antigos → novos
+var CC_NORM = {
+  'DIRETORIA':'DIRETORIA CORPORATE','PRÉ-VENDAS INTEL':'PRE-VENDAS GROWTH',
+  'PRÉ-VENDAS SUPPLY':'PRE-VENDAS PPMF','EXPANSÃO INTEL':'REVOPS OPERATIONS GROWTH',
+  'EXPANSÃO SUPPLY':'REVOPS INTELLIGENCE PPMF','COMERCIAL INTEL':'COMERCIAL GROWTH',
+  'COMERCIAL SUPPLY':'COMERCIAL PPMF','CS INTEL':'CS GROWTH','CS SUPPLY':'CS PPMF',
+  'TECH INTEL':'TECH GROWTH','TECH SUPPLY':'TECH PPMF','MARKETING INTEL':'MARKETING GROWTH',
+  'MARKETING SUPPLY':'MARKETING PPMF','DADOS INTEL':'DADOS GROWTH','DADOS SUPPLY':'DADOS PPMF',
+  'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH','SUPORTE SUPPLY':'SUPORTE PPMF',
+  'QUALIDADE CS':'QUALIDADE GERAL GROWTH','QUALIDADE INTEL':'QUALIDADE GROWTH',
+  'QUALIDADE SUPPLY':'QUALIDADE PPMF','R&D':'R&D GERAL PPMF','R&D SUPPLY':'R&D PPMF',
+  'FINANCEIRO':'FINANCEIRO CORPORATE','CONTABILIDADE':'CONTABILIDADE CORPORATE',
+  'CONTROLADORIA':'CONTROLADORIA CORPORATE','FACILITIES':'FACILITIES CORPORATE',
+  'RH':'RH CORPORATE','DP':'DP CORPORATE','LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE',
+  'BI E INTEGRAÇÕES':'BI E INTEGRACOES CORPORATE','BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
+  'MARKETING INSTITUCIONAL':'MARKETING INSTITUCIONAL CORPORATE',
+  'GOVERNANÇA SALES':'REVOPS GROWTH','CS GERAL':'CS GERAL GROWTH',
+  'CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH','TECHNOLOGY':'TECH GERAL PPMF',
+  'NOVOS NEGÓCIOS':'NOVOS NEGOCIOS PPMF','AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
+  'CCO':'CCO GROWTH','FINANCIAL SERVICE':'COMERCIAL MVP',
+  'SALES INTERNATIONAL':'COMERCIAL INTERNATIONAL PPMF',
+  'COALITION':'COALITION CORPORATE','RELGOV':'RELGOV CORPORATE'
+};
+
+var todosFornecedores = [], fornecedorCarregado = false;
+var rateioData = {}, rateioIniciado = false;
 
 window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('configToggle').addEventListener('click', function() { document.getElementById('configPanel').classList.toggle('show'); });
@@ -480,231 +514,73 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 5000);
 }
 
-function carregarFornecedores() {
-  var inp = document.getElementById('fornecedor_search');
-  inp.placeholder = 'Carregando fornecedores...';
-  inp.disabled = true;
-  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
-  var TABLE_ID = '304075895';
-  var allEdges = [];
-  var cursor = null;
-  function buscarPagina() {
-    var afterClause = cursor ? ', after: "' + cursor + '"' : '';
-    var query = '{ table_records(table_id: "' + TABLE_ID + '", first: 100' + afterClause + ') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
-    fetch('https://api.pipefy.com/graphql', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query })
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      var records = data && data.data && data.data.table_records;
-      if (!records || !records.edges) { finalizarCarregamento(); return; }
-      records.edges.forEach(function(e) {
-        var node = e && e.node;
-        if (node && node.id && node.title && node.title.trim())
-          allEdges.push({ id: String(node.id), nome: node.title.trim() });
-      });
-      document.getElementById('fornecedor_hint').textContent = 'Carregando... ' + allEdges.length + ' fornecedores';
-      var hasNextPage = records.pageInfo && records.pageInfo.hasNextPage;
-      cursor = records.pageInfo && records.pageInfo.endCursor;
-      if (hasNextPage) { buscarPagina(); } else { finalizarCarregamento(); }
-    }).catch(function() { inp.placeholder = 'Erro ao carregar.'; inp.disabled = false; });
+function normalizarCC(cc) {
+  var upper = String(cc).trim().toUpperCase();
+  var semAcento = upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (CC_NORM[upper]) return CC_NORM[upper];
+  if (CC_NORM[semAcento]) return CC_NORM[semAcento];
+  var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
+  if (direto) return direto;
+  var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
+    return d.normalize('NFD').replace(/[\u0300-\u036f]/g,'') === semAcento;
+  });
+  return semAcentoMatch || upper;
+}
+
+function parsearValor(val) {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  var s = String(val).replace(/\s/g,'').replace('R$','');
+  if (s.indexOf(',') > s.indexOf('.') && s.indexOf('.') !== -1) {
+    s = s.replace(/\./g,'').replace(',','.');
+  } else {
+    s = s.replace(',','.');
   }
-  function finalizarCarregamento() {
-    allEdges.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
-    todosFornecedores = allEdges;
-    fornecedorCarregado = true;
-    inp.placeholder = 'Digite para buscar... (' + todosFornecedores.length + ' fornecedores)';
-    inp.disabled = false;
-    document.getElementById('fornecedor_hint').textContent = todosFornecedores.length + ' fornecedores carregados.';
-  }
-  buscarPagina();
+  return parseFloat(s) || 0;
 }
 
-function filtrarFornecedores(query) {
-  var dd = document.getElementById('fornecedor_dropdown');
-  if (!query || query.length < 2) { dd.style.display = 'none'; return; }
-  if (!fornecedorCarregado) { dd.innerHTML = '<div class="forn-item" style="color:#888">Aguarde...</div>'; dd.style.display = 'block'; return; }
-  var q = query.toLowerCase();
-  var res = todosFornecedores.filter(function(f) { return f.nome.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
-  dd.innerHTML = res.length ? res.map(function(f) {
-    return '<div class="forn-item" onclick="selecionarFornecedor(\'' + f.id + '\',\'' + f.nome.replace(/'/g, "\\'") + '\')">' +
-      '<div style="font-weight:600">' + f.nome + '</div><div style="font-size:11px;color:#888">ID: ' + f.id + '</div></div>';
-  }).join('') : '<div class="forn-item" style="color:#888">Nenhum encontrado.</div>';
-  dd.style.display = 'block';
-}
-
-function selecionarFornecedor(id, nome) {
-  document.getElementById('fornecedor_id').value = id;
-  document.getElementById('fornecedor_search').value = '';
-  document.getElementById('fornecedor_dropdown').style.display = 'none';
-  document.getElementById('fornecedor_nome').textContent = nome;
-  document.getElementById('fornecedor_id_display').textContent = 'ID: ' + id;
-  document.getElementById('fornecedor_selected').style.display = 'block';
-}
-
-function iniciarRateio() {
-  rateioIniciado = true;
-  for (var c = 1; c <= 5; c++) {
-    var sel = document.getElementById('cs' + c);
-    CATEGORIAS.forEach(function(cat) {
-      var opt = document.createElement('option');
-      opt.value = cat; opt.textContent = cat;
-      opt.style.color = '#333'; opt.style.background = 'white';
-      sel.appendChild(opt);
-    });
-    sel.addEventListener('change', calcTotais);
-  }
-  var tbody = document.getElementById('rateio_tbody');
-  tbody.innerHTML = DEPARTAMENTOS.map(function(dept, i) {
-    rateioData[i] = {};
-    var bg = i % 2 === 0 ? '#fff' : '#faf8ff';
-    return '<tr style="background:' + bg + ';border-bottom:1px solid #f0edff">' +
-      '<td style="padding:6px 10px;font-size:11px;font-weight:600;color:#333;position:sticky;left:0;background:' + bg + ';white-space:nowrap">' + dept + '</td>' +
-      [1,2,3,4,5].map(function(c) {
-        return '<td style="padding:4px 6px"><input type="number" step="0.01" placeholder="-" data-dept="' + i + '" data-cat="' + c + '" style="width:100%;padding:5px;border:1.5px solid #e0d9ff;border-radius:5px;font-size:12px;text-align:right;background:white" /></td>';
-      }).join('') +
-      '<td id="dt' + i + '" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333">R$ 0,00</td></tr>';
-  }).join('');
-  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
-    inp.addEventListener('input', function() {
-      rateioData[parseInt(this.getAttribute('data-dept'))][parseInt(this.getAttribute('data-cat'))] = parseFloat(this.value) || 0;
-      calcTotais();
-    });
-  });
-}
-
-function calcTotais() {
-  if (!rateioIniciado) return;
-  var catT = {1:0,2:0,3:0,4:0,5:0};
-  DEPARTAMENTOS.forEach(function(d, i) {
-    var dt = 0;
-    [1,2,3,4,5].forEach(function(c) { var v = (rateioData[i] && rateioData[i][c]) || 0; catT[c] += v; dt += v; });
-    var el = document.getElementById('dt' + i); if (el) el.textContent = 'R$ ' + dt.toFixed(2).replace('.',',');
-  });
-  var grand = 0;
-  [1,2,3,4,5].forEach(function(c) {
-    grand += catT[c];
-    var el = document.getElementById('ct' + c); if (el) el.textContent = 'R$ ' + catT[c].toFixed(2).replace('.',',');
-  });
-  var gtEl = document.getElementById('gt'); if (gtEl) gtEl.textContent = 'R$ ' + grand.toFixed(2).replace('.',',');
-  var nfVal = parseFloat(document.getElementById('valor_restored').value) || 0;
-  if (document.getElementById('rateio_nf_display')) document.getElementById('rateio_nf_display').textContent = 'R$ ' + nfVal.toFixed(2).replace('.',',');
-  var valEl = document.getElementById('rateio_validacao');
-  if (valEl) {
-    if (nfVal > 0) {
-      var diff = Math.abs(grand - nfVal);
-      if (diff < 0.01) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534'; valEl.textContent='✔ OK'; }
-      else if (grand > nfVal) { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626'; valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',','); }
-      else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e'; valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',','); }
-    } else { valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666'; valEl.textContent='Aguardando...'; }
-  }
-}
-
-// ✅ FUNÇÃO DE PREENCHIMENTO DO RATEIO
-function preencherRateio(rateioExtraido) {
-  // rateioExtraido = { "CS GROWTH": { "Passagens aéreas": 500, "Hospedagem": 200 }, ... }
-  if (!rateioIniciado) return;
-
-  // Determina quais categorias foram usadas
-  var categoriasUsadas = {};
-  Object.keys(rateioExtraido).forEach(function(cc) {
-    Object.keys(rateioExtraido[cc]).forEach(function(cat) {
-      if (!categoriasUsadas[cat]) {
-        var qtd = Object.keys(categoriasUsadas).length + 1;
-        if (qtd <= 5) categoriasUsadas[cat] = qtd;
-      }
-    });
-  });
-
-  // Seta os selects de categoria
-  Object.keys(categoriasUsadas).forEach(function(cat) {
-    var colIdx = categoriasUsadas[cat];
-    var sel = document.getElementById('cs' + colIdx);
-    if (sel) sel.value = cat;
-  });
-
-  // Preenche os valores nas células
-  Object.keys(rateioExtraido).forEach(function(ccOriginal) {
-    var ccNormalizado = CC_MAP[ccOriginal.toUpperCase().trim()] || ccOriginal.trim();
-    var deptIdx = DEPARTAMENTOS.indexOf(ccNormalizado);
-    if (deptIdx === -1) {
-      // Tenta match parcial
-      deptIdx = DEPARTAMENTOS.findIndex(function(d) {
-        return d.includes(ccOriginal.toUpperCase().trim()) || ccOriginal.toUpperCase().trim().includes(d);
-      });
-    }
-    if (deptIdx === -1) return;
-
-    Object.keys(rateioExtraido[ccOriginal]).forEach(function(cat) {
-      var colIdx = categoriasUsadas[cat];
-      if (!colIdx) return;
-      var valor = rateioExtraido[ccOriginal][cat];
-      var input = document.querySelector('#rateio_tbody input[data-dept="' + deptIdx + '"][data-cat="' + colIdx + '"]');
-      if (input) {
-        input.value = valor.toFixed(2);
-        rateioData[deptIdx] = rateioData[deptIdx] || {};
-        rateioData[deptIdx][colIdx] = valor;
-      }
-    });
-  });
-
-  calcTotais();
-}
-
-// ✅ LEITURA DA PLANILHA ONFLY
+// ✅ LEITURA ONFLY
 function lerOnfly(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
     reader.onload = function(e) {
       try {
-        var wb = XLSX.read(e.target.result, {type: 'binary'});
+        var wb = XLSX.read(e.target.result, {type:'binary'});
         var resultado = {};
-
-        // Mapeamento aba → categoria
-        var abaCategoria = {
-          'Aéreo': 'Passagens aéreas',
-          'Hoteis': 'Hospedagem',
-          'Automóveis': 'Aluguel de Carro',
-          'Ônibus': 'Passagens aéreas',
-          'Cobranças adicionais aéreo': 'Passagens aéreas'
-        };
+        var avisos = [];
 
         wb.SheetNames.forEach(function(sheetName) {
-          var categoria = abaCategoria[sheetName];
+          var categoria = ABA_CAT[sheetName];
           if (!categoria) return;
           var ws = wb.Sheets[sheetName];
-          var data = XLSX.utils.sheet_to_json(ws);
-          data.forEach(function(row) {
-            var cc = row['Centro de Custo'] || row['centro de custo'] || row['CENTRO DE CUSTO'];
-            var valor = row['Valor pago'] || row['Valor Pago'] || row['VALOR'] || 0;
-            if (!cc || !valor) return;
-            if (typeof valor === 'string') valor = parseFloat(valor.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
-            if (valor <= 0) return;
-            var ccNorm = String(cc).trim().toUpperCase();
+          var rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+          if (!rows.length) return;
+          var primeiraLinha = rows[0];
+          var valCol = Object.keys(primeiraLinha).find(function(k) { return /valor/i.test(k); });
+          var ccCol  = Object.keys(primeiraLinha).find(function(k) { return /centro/i.test(k); });
+          if (!valCol || !ccCol) return;
+
+          rows.forEach(function(row) {
+            var cc  = row[ccCol];
+            var val = row[valCol];
+            if (!cc || val === '' || val === undefined) return;
+            var ccNorm = normalizarCC(cc);
+            var valor  = parsearValor(val);
+            if (valor === 0) return;
+            if (DEPARTAMENTOS.indexOf(ccNorm) === -1 && avisos.indexOf(String(cc).trim()) === -1)
+              avisos.push(String(cc).trim());
             if (!resultado[ccNorm]) resultado[ccNorm] = {};
-            resultado[ccNorm][categoria] = (resultado[ccNorm][categoria] || 0) + valor;
+            if (sheetName === 'Reembolsos') {
+              var cats = Object.keys(resultado[ccNorm]);
+              if (cats.length > 0)
+                resultado[ccNorm][cats[0]] = Math.round((resultado[ccNorm][cats[0]] + valor) * 100) / 100;
+            } else {
+              resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria] || 0) + valor) * 100) / 100;
+            }
           });
         });
 
-        // Reembolsos: subtrai
-        if (wb.SheetNames.includes('Reembolsos')) {
-          var wsR = wb.Sheets['Reembolsos'];
-          var dataR = XLSX.utils.sheet_to_json(wsR);
-          dataR.forEach(function(row) {
-            var cc = row['Centro de Custo'] || '';
-            var valor = row['Valor pago'] || row['Valor Pago'] || 0;
-            if (!cc || !valor) return;
-            if (typeof valor === 'string') valor = parseFloat(valor.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
-            var ccNorm = String(cc).trim().toUpperCase();
-            // Reembolso é negativo — aplica na categoria mais relevante
-            if (resultado[ccNorm]) {
-              var cats = Object.keys(resultado[ccNorm]);
-              if (cats.length > 0) resultado[ccNorm][cats[0]] = (resultado[ccNorm][cats[0]] || 0) + valor;
-            }
-          });
-        }
-
-        resolve(resultado);
+        resolve({resultado: resultado, avisos: avisos});
       } catch(err) { reject(err); }
     };
     reader.onerror = reject;
@@ -712,46 +588,37 @@ function lerOnfly(file) {
   });
 }
 
-// ✅ LEITURA DA COPASTUR VIA CLAUDE
+// ✅ LEITURA COPASTUR via Claude API
 function lerCopastur(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
     reader.onload = function(e) {
       var b64 = e.target.result.split(',')[1];
       var token = document.getElementById('claude_token').value.trim();
-      var prompt = `Analise esta fatura da Copastur e extraia o rateio por centro de custo.
-
-REGRA ESPECIAL — estas pessoas sempre pertencem a "DIRETORIA CORPORATE", independente do que aparecer na fatura:
-${DIRETORIA_COPASTUR.join(', ')}
-
-Para cada centro de custo, some APENAS as taxas de serviço (campo "Tx.Serviço", normalmente R$ 42,20 por bilhete).
-
-Retorne APENAS um JSON no formato:
-{
-  "NOME DO CENTRO DE CUSTO": {
-    "Passagens aéreas": valor_numerico
-  }
-}
-
-Use os nomes exatos dos centros de custo como aparecem na fatura, mas aplicando a regra acima para Diretoria.
-Retorne apenas o JSON, sem explicações.`;
-
+      if (!token) { reject(new Error('Configure a chave API Claude!')); return; }
+      var prompt = 'Analise esta fatura da Copastur.\n\n' +
+        'REGRA ESPECIAL: Estas pessoas SEMPRE pertencem a "DIRETORIA CORPORATE" independente do CC na fatura:\n' +
+        DIRETORIA_COPASTUR.join(', ') + '\n\n' +
+        'Para cada centro de custo, some APENAS as taxas de serviço (campo "Tx.Serviço", geralmente R$ 42,20 por bilhete).\n\n' +
+        'Retorne APENAS JSON no formato:\n{"NOME DO CC": {"Passagens aéreas": valor_numerico}}\n' +
+        'Retorne apenas o JSON puro, sem explicações.';
       fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: {'x-api-key': token, 'anthropic-version': '2023-06-01', 'content-type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true'},
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 2000,
-          messages: [{role: 'user', content: [
-            {type: 'document', source: {type: 'base64', media_type: 'application/pdf', data: b64}},
-            {type: 'text', text: prompt}
-          ]}]
-        })
-      }).then(function(r) { return r.json(); }).then(function(data) {
+        headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[
+          {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+          {type:'text',text:prompt}
+        ]}]})
+      }).then(function(r){return r.json();}).then(function(data){
         try {
-          var text = data.content[0].text.replace(/```json|```/g, '').trim();
-          resolve(JSON.parse(text));
-        } catch(err) { reject(err); }
+          var text = data.content[0].text.replace(/```json|```/g,'').trim();
+          var json = JSON.parse(text);
+          var resultado = {};
+          Object.keys(json).forEach(function(cc) {
+            resultado[normalizarCC(cc)] = json[cc];
+          });
+          resolve({resultado: resultado, avisos: []});
+        } catch(err) { reject(new Error('Erro ao interpretar resposta da IA')); }
       }).catch(reject);
     };
     reader.onerror = reject;
@@ -759,244 +626,392 @@ Retorne apenas o JSON, sem explicações.`;
   });
 }
 
-// ✅ HANDLER DO UPLOAD DE RATEIO
+// ✅ HANDLER UPLOAD RATEIO
 function handleRateioUpload() {
   var file = document.getElementById('rateio_file').files[0];
   if (!file) return;
-
-  document.getElementById('rateio_filename').textContent = file.name;
-
+  document.getElementById('rateio_filename').textContent = '📎 ' + file.name;
   if (!rateioIniciado) iniciarRateio();
-
   var ext = file.name.split('.').pop().toLowerCase();
-  var fornecedor = '';
-  var isOnfly = file.name.toLowerCase().includes('onfly') || ext === 'xlsx' || ext === 'xls';
-  var isCopastur = file.name.toLowerCase().includes('copastur') || (ext === 'pdf' && !file.name.toLowerCase().includes('nf') && !file.name.toLowerCase().includes('boleto'));
-
+  var nomeLower = file.name.toLowerCase();
+  var isOnfly   = (ext === 'xlsx' || ext === 'xls') || nomeLower.includes('onfly');
+  var isCopastur = (ext === 'pdf') || nomeLower.includes('copastur');
   document.getElementById('rateio_analyzing').classList.add('show');
-
+  document.getElementById('aviso_cc').classList.remove('show');
+  var promise;
   if (isOnfly) {
-    fornecedor = 'Onfly';
     document.getElementById('rateio_analyzing_text').textContent = '📊 Lendo planilha Onfly...';
-    lerOnfly(file).then(function(resultado) {
-      document.getElementById('rateio_analyzing').classList.remove('show');
-      preencherRateio(resultado);
-      mostrarResumoRateio(resultado, 'Onfly');
-      showToast('✅ Planilha Onfly processada com sucesso!', 'success');
-    }).catch(function(e) {
-      document.getElementById('rateio_analyzing').classList.remove('show');
-      showToast('❌ Erro ao ler planilha Onfly: ' + e.message, 'error');
-    });
+    promise = lerOnfly(file);
   } else if (isCopastur) {
-    fornecedor = 'Copastur';
     document.getElementById('rateio_analyzing_text').textContent = '🤖 Analisando fatura Copastur com IA...';
-    lerCopastur(file).then(function(resultado) {
-      document.getElementById('rateio_analyzing').classList.remove('show');
-      preencherRateio(resultado);
-      mostrarResumoRateio(resultado, 'Copastur');
-      showToast('✅ Fatura Copastur processada com sucesso!', 'success');
-    }).catch(function(e) {
-      document.getElementById('rateio_analyzing').classList.remove('show');
-      showToast('❌ Erro ao analisar Copastur: ' + e.message, 'error');
-    });
+    promise = lerCopastur(file);
   } else {
     document.getElementById('rateio_analyzing').classList.remove('show');
-    showToast('⚠️ Formato não reconhecido. Use planilha Onfly (.xlsx) ou fatura Copastur (.pdf)', 'error');
+    showToast('⚠️ Formato não reconhecido. Use .xlsx (Onfly) ou .pdf (Copastur)', 'error');
+    return;
   }
+  promise.then(function(res) {
+    document.getElementById('rateio_analyzing').classList.remove('show');
+    preencherRateio(res.resultado);
+    mostrarResumoRateio(res.resultado, isOnfly ? 'Onfly' : 'Copastur');
+    if (res.avisos && res.avisos.length > 0) {
+      var avEl = document.getElementById('aviso_cc');
+      avEl.innerHTML = '⚠️ <b>Centros de custo não mapeados:</b> ' + res.avisos.join(', ') + ' — verifique manualmente.';
+      avEl.classList.add('show');
+    }
+    showToast('✅ Rateio preenchido automaticamente!', 'success');
+  }).catch(function(err) {
+    document.getElementById('rateio_analyzing').classList.remove('show');
+    showToast('❌ Erro: ' + err.message, 'error');
+  });
+}
+
+// ✅ PREENCHER RATEIO NA TABELA
+function preencherRateio(resultado) {
+  if (!rateioIniciado) return;
+  // Limpa tudo
+  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
+    inp.value = '';
+    var d = parseInt(inp.getAttribute('data-dept'));
+    var c = parseInt(inp.getAttribute('data-cat'));
+    if (!rateioData[d]) rateioData[d] = {};
+    rateioData[d][c] = 0;
+  });
+  for (var c = 1; c <= NUM_CATS; c++) {
+    var sel = document.getElementById('cs' + c);
+    sel.value = '';
+    while (sel.options.length > 1) sel.remove(1);
+    CATEGORIAS.forEach(function(cat) {
+      var opt = document.createElement('option');
+      opt.value = cat; opt.textContent = cat;
+      opt.style.color = '#333'; opt.style.background = 'white';
+      sel.appendChild(opt);
+    });
+  }
+  // Determina categorias usadas
+  var categoriasUsadas = {};
+  Object.values(resultado).forEach(function(cats) {
+    Object.keys(cats).forEach(function(cat) {
+      if (cat && !categoriasUsadas[cat] && Object.keys(categoriasUsadas).length < NUM_CATS)
+        categoriasUsadas[cat] = Object.keys(categoriasUsadas).length + 1;
+    });
+  });
+  // Seta selects
+  Object.keys(categoriasUsadas).forEach(function(cat) {
+    var sel = document.getElementById('cs' + categoriasUsadas[cat]);
+    if (sel) sel.value = cat;
+  });
+  // Preenche valores
+  Object.keys(resultado).forEach(function(cc) {
+    var deptIdx = DEPARTAMENTOS.indexOf(cc);
+    if (deptIdx === -1) return;
+    Object.keys(resultado[cc]).forEach(function(cat) {
+      var colIdx = categoriasUsadas[cat];
+      if (!colIdx) return;
+      var valor = resultado[cc][cat];
+      if (!valor || valor === 0) return;
+      var input = document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
+      if (input) {
+        input.value = Math.abs(valor).toFixed(2);
+        if (!rateioData[deptIdx]) rateioData[deptIdx] = {};
+        rateioData[deptIdx][colIdx] = Math.abs(valor);
+      }
+    });
+  });
+  calcTotais();
 }
 
 function mostrarResumoRateio(resultado, fornecedor) {
   var ul = document.getElementById('rateio_extracted_list');
   var total = 0;
   ul.innerHTML = '';
-  Object.keys(resultado).forEach(function(cc) {
-    var subtotal = Object.values(resultado[cc]).reduce(function(a,b){return a+b;}, 0);
+  Object.keys(resultado).sort().forEach(function(cc) {
+    var subtotal = Object.values(resultado[cc]).reduce(function(a,b){return a+(b||0);},0);
     total += subtotal;
-    ul.innerHTML += '<li>🏢 <b>' + cc + '</b>: R$ ' + subtotal.toFixed(2).replace('.',',') + '</li>';
+    var cats = Object.entries(resultado[cc]).map(function(e){
+      return e[0]+': R$ '+Math.abs(e[1]).toFixed(2).replace('.',',');
+    }).join(' | ');
+    ul.innerHTML += '<li>🏢 <b>'+cc+'</b>: R$ '+Math.abs(subtotal).toFixed(2).replace('.',',')+
+      ' <span style="color:#888;font-size:10px">('+cats+')</span></li>';
   });
-  ul.innerHTML += '<li style="margin-top:6px;border-top:1px solid #86efac;padding-top:6px">💰 <b>Total: R$ ' + total.toFixed(2).replace('.',',') + '</b></li>';
-  document.getElementById('rateio_extracted_title').textContent = '✅ Rateio ' + fornecedor + ' preenchido automaticamente:';
+  ul.innerHTML += '<li style="margin-top:8px;border-top:1px solid #86efac;padding-top:8px">💰 <b>Total: R$ '+
+    Math.abs(total).toFixed(2).replace('.',',')+'</b></li>';
+  document.getElementById('rateio_extracted_title').textContent = '✅ Rateio '+fornecedor+' preenchido automaticamente:';
   document.getElementById('rateio_extracted').classList.add('show');
 }
 
-function fileToBase64(file) {
-  return new Promise(function(res, rej) {
-    var r = new FileReader();
-    r.onload = function() { res(r.result.split(',')[1]); };
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
+function carregarFornecedores() {
+  var inp = document.getElementById('fornecedor_search');
+  inp.placeholder = 'Carregando fornecedores...'; inp.disabled = true;
+  var TOKEN = 'eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJQaXBlZnkiLCJpYXQiOjE3NzQ4OTM1NTMsImp0aSI6IjYzYzA3OTZhLWVhMzQtNGI3MS1hNDRiLTM2YzExODE4YWJkMSIsInN1YiI6MzA0OTM0MjQwLCJ1c2VyIjp7ImlkIjozMDQ5MzQyNDAsImVtYWlsIjoiYW5hLmx5dmlhQGxvZ2NvbWV4LmNvbSJ9LCJ1c2VyX3R5cGUiOiJhdXRoZW50aWNhdGVkIn0.64JtVBi2KQjIBFJNZRWjPXl-x7-vE3PdTfKK3O47WtpdLnFG0mgS1WIXOCQFaiZ87pxR_4r72OXTHIizUTke-g';
+  var allEdges = [], cursor = null;
+  function buscarPagina() {
+    var afterClause = cursor ? ', after: "'+cursor+'"' : '';
+    var query = '{ table_records(table_id: "304075895", first: 100'+afterClause+') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
+    fetch('https://api.pipefy.com/graphql',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({query:query})})
+      .then(function(r){return r.json();}).then(function(data){
+        var records = data&&data.data&&data.data.table_records;
+        if (!records||!records.edges){finalizarCarregamento();return;}
+        records.edges.forEach(function(e){
+          if(e.node&&e.node.id&&e.node.title&&e.node.title.trim())
+            allEdges.push({id:String(e.node.id),nome:e.node.title.trim()});
+        });
+        document.getElementById('fornecedor_hint').textContent='Carregando... '+allEdges.length+' fornecedores';
+        cursor = records.pageInfo&&records.pageInfo.endCursor;
+        if(records.pageInfo&&records.pageInfo.hasNextPage) buscarPagina(); else finalizarCarregamento();
+      }).catch(function(){inp.placeholder='Erro ao carregar.';inp.disabled=false;});
+  }
+  function finalizarCarregamento() {
+    allEdges.sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
+    todosFornecedores=allEdges; fornecedorCarregado=true;
+    inp.placeholder='Digite para buscar... ('+todosFornecedores.length+' fornecedores)';
+    inp.disabled=false;
+    document.getElementById('fornecedor_hint').textContent=todosFornecedores.length+' fornecedores carregados.';
+  }
+  buscarPagina();
 }
 
-function extractWithClaude(b64, mediaType, prompt, tentativa) {
-  tentativa = tentativa || 1;
-  var token = document.getElementById('claude_token').value.trim();
-  if (!token) { showToast('Configure a chave API Claude!', 'error'); return Promise.resolve(null); }
-  var block = mediaType.startsWith('image/')
-    ? {type:'image',source:{type:'base64',media_type:mediaType,data:b64}}
-    : {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}};
-  return fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
-    body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
-  }).then(function(r) { return r.json(); }).then(function(data) {
-    if (data.type === 'error' && data.error && data.error.type === 'overloaded_error' && tentativa < 4) {
-      showToast('API sobrecarregada, tentando novamente (' + tentativa + '/3)...', 'info');
-      return new Promise(function(resolve) { setTimeout(function() { resolve(extractWithClaude(b64, mediaType, prompt, tentativa + 1)); }, 3000 * tentativa); });
+function filtrarFornecedores(query) {
+  var dd = document.getElementById('fornecedor_dropdown');
+  if(!query||query.length<2){dd.style.display='none';return;}
+  if(!fornecedorCarregado){dd.innerHTML='<div class="forn-item" style="color:#888">Aguarde...</div>';dd.style.display='block';return;}
+  var q=query.toLowerCase();
+  var res=todosFornecedores.filter(function(f){return f.nome.toLowerCase().indexOf(q)!==-1;}).slice(0,20);
+  dd.innerHTML=res.length?res.map(function(f){
+    return '<div class="forn-item" onclick="selecionarFornecedor(\''+f.id+'\',\''+f.nome.replace(/'/g,"\\'")+'\')"><div style="font-weight:600">'+f.nome+'</div><div style="font-size:11px;color:#888">ID: '+f.id+'</div></div>';
+  }).join(''):'<div class="forn-item" style="color:#888">Nenhum encontrado.</div>';
+  dd.style.display='block';
+}
+
+function selecionarFornecedor(id, nome) {
+  document.getElementById('fornecedor_id').value=id;
+  document.getElementById('fornecedor_search').value='';
+  document.getElementById('fornecedor_dropdown').style.display='none';
+  document.getElementById('fornecedor_nome').textContent=nome;
+  document.getElementById('fornecedor_id_display').textContent='ID: '+id;
+  document.getElementById('fornecedor_selected').style.display='block';
+}
+
+function iniciarRateio() {
+  rateioIniciado = true;
+  for (var c = 1; c <= NUM_CATS; c++) {
+    var sel = document.getElementById('cs'+c);
+    CATEGORIAS.forEach(function(cat) {
+      var opt = document.createElement('option');
+      opt.value=cat; opt.textContent=cat;
+      opt.style.color='#333'; opt.style.background='white';
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', calcTotais);
+  }
+  var tbody = document.getElementById('rateio_tbody');
+  tbody.innerHTML = DEPARTAMENTOS.map(function(dept, i) {
+    rateioData[i] = {};
+    var bg = i%2===0?'#fff':'#faf8ff';
+    var cols = '';
+    for (var c=1; c<=NUM_CATS; c++) {
+      cols += '<td style="padding:4px 6px"><input type="number" step="0.01" placeholder="-" data-dept="'+i+'" data-cat="'+c+'" style="width:100%;padding:5px;border:1.5px solid #e0d9ff;border-radius:5px;font-size:12px;text-align:right;background:white" /></td>';
     }
-    try { return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim()); } catch(e) { return null; }
-  });
-}
-
-function handleNFUpload() {
-  var file = document.getElementById('nf_file').files[0];
-  if (!file) return;
-  document.getElementById('nf_filename').textContent = file.name;
-  document.getElementById('nf_analyzing').classList.add('show');
-  fileToBase64(file).then(function(b64) {
-    return extractWithClaude(b64, file.type, 'Analise esta nota fiscal e retorne APENAS um JSON:\n{"numero_nf":"número da NF","data_emissao":"YYYY-MM-DD","valor":0.00,"retencao_imposto":"Sim ou Não"}\nRetorne apenas o JSON.');
-  }).then(function(r) {
-    document.getElementById('nf_analyzing').classList.remove('show');
-    if (r) {
-      if (r.numero_nf) { document.getElementById('n_mero_da_nota_fiscal').value=r.numero_nf; document.getElementById('ext_nf_num').classList.add('show'); }
-      if (r.data_emissao) { document.getElementById('data_de_emiss_o_da_nf').value=r.data_emissao; document.getElementById('ext_nf_data').classList.add('show'); }
-      if (r.valor) { document.getElementById('valor_restored').value=r.valor; document.getElementById('ext_nf_valor').classList.add('show'); calcTotais(); }
-      if (r.retencao_imposto) { document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value=r.retencao_imposto; document.getElementById('ext_nf_ret').classList.add('show'); }
-      document.getElementById('nf_extracted_list').innerHTML='<li>📌 NF: <b>'+(r.numero_nf||'-')+'</b></li><li>📅 Data: <b>'+(r.data_emissao||'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor||'-')+'</b></li><li>🧾 Retenção: <b>'+(r.retencao_imposto||'-')+'</b></li>';
-      document.getElementById('nf_extracted').classList.add('show');
-      showToast('Nota fiscal analisada!', 'success');
-    } else showToast('Não foi possível extrair. Preencha manualmente.', 'error');
-  }).catch(function(e) { document.getElementById('nf_analyzing').classList.remove('show'); showToast('Erro: '+e.message,'error'); });
-}
-
-function handleBoletoUpload() {
-  var file = document.getElementById('boleto_file').files[0];
-  if (!file) return;
-  document.getElementById('boleto_filename').textContent = file.name;
-  document.getElementById('boleto_analyzing').classList.add('show');
-  fileToBase64(file).then(function(b64) {
-    return extractWithClaude(b64, file.type, 'Analise este boleto e retorne APENAS um JSON:\n{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD"}\nRetorne apenas o JSON.');
-  }).then(function(r) {
-    document.getElementById('boleto_analyzing').classList.remove('show');
-    if (r) {
-      if (r.codigo_barras) { document.getElementById('c_digo_de_barras_do_boleto_2').value=r.codigo_barras; document.getElementById('ext_cod_barras').classList.add('show'); }
-      if (r.valor_parcela) { document.getElementById('valor_da_parcela').value=r.valor_parcela; document.getElementById('ext_valor_parcela').classList.add('show'); }
-      if (r.vencimento) { document.getElementById('vencimento_da_parcela').value=r.vencimento; document.getElementById('ext_venc').classList.add('show'); }
-      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li>';
-      document.getElementById('boleto_extracted').classList.add('show');
-      showToast('Boleto analisado!', 'success');
-    } else showToast('Não foi possível extrair. Preencha manualmente.', 'error');
-  }).catch(function(e) { document.getElementById('boleto_analyzing').classList.remove('show'); showToast('Erro: '+e.message,'error'); });
-}
-
-function pipefyQuery(query, variables) {
-  var token = document.getElementById('pipefy_token').value.trim();
-  return fetch('https://api.pipefy.com/graphql', {
-    method: 'POST',
-    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: JSON.stringify({query:query,variables:variables})
-  }).then(function(r) { return r.json(); });
-}
-
-function uploadParaPipefy(file) {
-  var token = document.getElementById('pipefy_token').value.trim();
-  var nomeSeguro = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
-  return fetch('https://api.pipefy.com/graphql', {
-    method: 'POST',
-    headers: {'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: JSON.stringify({
-      query: 'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',
-      variables: {orgId: '300759615', filename: nomeSeguro}
-    })
-  }).then(function(r) { return r.json(); })
-  .then(function(res) {
-    var presignedUrl = res && res.data && res.data.createPresignedUrl && res.data.createPresignedUrl.url;
-    if (!presignedUrl) throw new Error('Erro ao obter URL: ' + JSON.stringify(res));
-    return fetch(presignedUrl, {
-      method: 'PUT',
-      headers: {'Content-Type': file.type || 'application/pdf'},
-      body: file
-    }).then(function(r) {
-      if (!r.ok) throw new Error('Erro S3: ' + r.status);
-      var urlPath = new URL(presignedUrl).pathname;
-      return urlPath.substring(1);
+    return '<tr style="background:'+bg+';border-bottom:1px solid #f0edff">'+
+      '<td style="padding:6px 10px;font-size:11px;font-weight:600;color:#333;position:sticky;left:0;background:'+bg+';white-space:nowrap">'+dept+'</td>'+
+      cols+
+      '<td id="dt'+i+'" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333">R$ 0,00</td></tr>';
+  }).join('');
+  document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      var d=parseInt(this.getAttribute('data-dept'));
+      var c=parseInt(this.getAttribute('data-cat'));
+      if(!rateioData[d]) rateioData[d]={};
+      rateioData[d][c]=parseFloat(this.value)||0;
+      calcTotais();
     });
   });
 }
 
-function setProgress(pct, label) {
-  document.getElementById('progress_bar').classList.add('show');
-  document.getElementById('progress_fill').style.width = pct + '%';
-  document.getElementById('progress_label').textContent = label;
+function calcTotais() {
+  if (!rateioIniciado) return;
+  var catT={};
+  for(var c=1;c<=NUM_CATS;c++) catT[c]=0;
+  DEPARTAMENTOS.forEach(function(d,i){
+    var dt=0;
+    for(var c=1;c<=NUM_CATS;c++){var v=(rateioData[i]&&rateioData[i][c])||0;catT[c]+=v;dt+=v;}
+    var el=document.getElementById('dt'+i);if(el)el.textContent='R$ '+dt.toFixed(2).replace('.',',');
+  });
+  var grand=0;
+  for(var c=1;c<=NUM_CATS;c++){
+    grand+=catT[c];
+    var el=document.getElementById('ct'+c);if(el)el.textContent='R$ '+catT[c].toFixed(2).replace('.',',');
+  }
+  var gtEl=document.getElementById('gt');if(gtEl)gtEl.textContent='R$ '+grand.toFixed(2).replace('.',',');
+  var nfVal=parseFloat(document.getElementById('valor_restored').value)||0;
+  if(document.getElementById('rateio_nf_display'))document.getElementById('rateio_nf_display').textContent='R$ '+nfVal.toFixed(2).replace('.',',');
+  var valEl=document.getElementById('rateio_validacao');
+  if(valEl){
+    if(nfVal>0){
+      var diff=Math.abs(grand-nfVal);
+      if(diff<0.02){valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#dcfce7;color:#166534';valEl.textContent='✔ OK';}
+      else if(grand>nfVal){valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fee2e2;color:#dc2626';valEl.textContent='❌ Excede R$ '+(grand-nfVal).toFixed(2).replace('.',',');}
+      else{valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#fef9c3;color:#854d0e';valEl.textContent='⚠️ Falta R$ '+(nfVal-grand).toFixed(2).replace('.',',');}
+    }else{valEl.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;border-radius:6px;background:#f3f4f6;color:#666';valEl.textContent='Aguardando...';}
+  }
 }
 
-function submitForm() {
-  var token = document.getElementById('pipefy_token').value.trim();
-  if (!token) { showToast('Configure o token do Pipefy!', 'error'); return; }
-  var boletoFile = document.getElementById('boleto_file').files[0];
-  if (!boletoFile) { showToast('Anexe o boleto antes de enviar!', 'error'); return; }
-  var nfFile = document.getElementById('nf_file').files[0];
-  if (!nfFile) { showToast('Anexe a nota fiscal antes de enviar!', 'error'); return; }
-  var btn = document.getElementById('btn_submit');
-  btn.disabled = true;
-  var vencParcela = document.getElementById('vencimento_da_parcela').value;
-  var valorNF = document.getElementById('valor_restored').value;
+function fileToBase64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(r.result.split(',')[1]);};
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
 
-  setProgress(10, 'Fazendo upload dos arquivos...');
+function extractWithClaude(b64,mediaType,prompt,tentativa){
+  tentativa=tentativa||1;
+  var token=document.getElementById('claude_token').value.trim();
+  if(!token){showToast('Configure a chave API Claude!','error');return Promise.resolve(null);}
+  var block=mediaType.startsWith('image/')
+    ?{type:'image',source:{type:'base64',media_type:mediaType,data:b64}}
+    :{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}};
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'x-api-key':token,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.type==='error'&&data.error&&data.error.type==='overloaded_error'&&tentativa<4){
+      showToast('API sobrecarregada, tentando novamente ('+tentativa+'/3)...','info');
+      return new Promise(function(resolve){setTimeout(function(){resolve(extractWithClaude(b64,mediaType,prompt,tentativa+1));},3000*tentativa);});
+    }
+    try{return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());}catch(e){return null;}
+  });
+}
 
-  Promise.all([uploadParaPipefy(boletoFile), uploadParaPipefy(nfFile)])
-    .then(function(paths) {
-      var boletoPath = paths[0];
-      var nfPath = paths[1];
-      setProgress(35, 'Criando registro de parcela...');
-      var parcelaFields = [
-        {field_id:'forma_de_pagamento_da_parcela', field_value:'BOLETO'},
-        {field_id:'valor_da_parcela', field_value: document.getElementById('valor_da_parcela').value},
-        {field_id:'vencimento_da_parcela', field_value: vencParcela ? vencParcela+' 12:00' : ''},
-        {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela', field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-        {field_id:'anexos_quando_for_boletos', field_value: boletoPath}
-      ].filter(function(f) { return f.field_value; });
+function handleNFUpload(){
+  var file=document.getElementById('nf_file').files[0];
+  if(!file)return;
+  document.getElementById('nf_filename').textContent=file.name;
+  document.getElementById('nf_analyzing').classList.add('show');
+  fileToBase64(file).then(function(b64){
+    return extractWithClaude(b64,file.type,'Analise esta nota fiscal e retorne APENAS um JSON:\n{"numero_nf":"número da NF","data_emissao":"YYYY-MM-DD","valor":0.00,"retencao_imposto":"Sim ou Não"}\nRetorne apenas o JSON.');
+  }).then(function(r){
+    document.getElementById('nf_analyzing').classList.remove('show');
+    if(r){
+      if(r.numero_nf){document.getElementById('n_mero_da_nota_fiscal').value=r.numero_nf;document.getElementById('ext_nf_num').classList.add('show');}
+      if(r.data_emissao){document.getElementById('data_de_emiss_o_da_nf').value=r.data_emissao;document.getElementById('ext_nf_data').classList.add('show');}
+      if(r.valor){document.getElementById('valor_restored').value=r.valor;document.getElementById('ext_nf_valor').classList.add('show');calcTotais();}
+      if(r.retencao_imposto){document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value=r.retencao_imposto;document.getElementById('ext_nf_ret').classList.add('show');}
+      document.getElementById('nf_extracted_list').innerHTML='<li>📌 NF: <b>'+(r.numero_nf||'-')+'</b></li><li>📅 Data: <b>'+(r.data_emissao||'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor||'-')+'</b></li><li>🧾 Retenção: <b>'+(r.retencao_imposto||'-')+'</b></li>';
+      document.getElementById('nf_extracted').classList.add('show');
+      showToast('Nota fiscal analisada!','success');
+    }else showToast('Não foi possível extrair. Preencha manualmente.','error');
+  }).catch(function(e){document.getElementById('nf_analyzing').classList.remove('show');showToast('Erro: '+e.message,'error');});
+}
 
-      return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',
-        {input:{pipe_id:"304137242", fields_attributes:parcelaFields}})
-        .then(function(res) {
-          var parcelaId = res && res.data && res.data.createCard && res.data.createCard.card && res.data.createCard.card.id;
-          if (!parcelaId) throw new Error('Erro ao criar parcela: ' + JSON.stringify(res));
-          setProgress(65, 'Criando solicitação no Pipefy...');
-          var mainFields = [
-            {field_id:'tipo_de_solicita_o_de_solicita_o',                field_value: document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
-            {field_id:'logger',                                           field_value: LOGGER_ID},
-            {field_id:'selecione_o_aprovador',                            field_value: APROVADOR_ID},
-            {field_id:'selecione_o_fornecedor',                           field_value: document.getElementById('fornecedor_id').value},
-            {field_id:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor',  field_value: document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
-            {field_id:'rateio_entre_uma_ou_mais_categorias',              field_value: document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
-            {field_id:'selecione_o_centro_de_custo',                      field_value: document.getElementById('selecione_o_centro_de_custo').value},
-            {field_id:'tipo_de_pagamento',                                field_value: document.getElementById('tipo_de_pagamento').value},
-            {field_id:'descreva_sua_solicita_o',                          field_value: document.getElementById('descreva_sua_solicita_o').value},
-            {field_id:'n_mero_da_nota_fiscal',                            field_value: document.getElementById('n_mero_da_nota_fiscal').value},
-            {field_id:'data_de_emiss_o_da_nf',                           field_value: document.getElementById('data_de_emiss_o_da_nf').value},
-            {field_id:'a_nota_fiscal_possui_reten_o_de_imposto',          field_value: document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
-            {field_id:'valor_restored',                                   field_value: valorNF},
-            {field_id:'valor_bruto_da_nota_fiscal',                       field_value: valorNF},
-            {field_id:'valor_l_quido_da_nf',                              field_value: valorNF},
-            {field_id:'anexo_da_nota_fiscal',                             field_value: nfPath},
-            {field_id:'c_digo_de_barras_do_boleto_2',                     field_value: document.getElementById('c_digo_de_barras_do_boleto_2').value},
-            {field_id:'vencimento_do_pagamento',                          field_value: vencParcela ? vencParcela+' 12:00' : ''},
-            {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo',field_value: parcelaId}
-          ].filter(function(f) { return f.field_value; });
-          return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',
-            {input:{pipe_id:"307088005", fields_attributes:mainFields}});
-        });
-    })
-    .then(function(res) {
-      var card = res && res.data && res.data.createCard && res.data.createCard.card;
-      if (!card) throw new Error('Erro ao criar card: ' + JSON.stringify(res));
-      setProgress(100, '✅ Card criado com sucesso!');
-      showToast('✅ Card #' + card.id + ' criado no Pipefy!', 'success');
-      setTimeout(function() { if (card.url) window.open(card.url, '_blank'); }, 1000);
-    })
-    .catch(function(e) { showToast('❌ Erro: ' + e.message, 'error'); console.error(e); })
-    .finally(function() { btn.disabled = false; });
+function handleBoletoUpload(){
+  var file=document.getElementById('boleto_file').files[0];
+  if(!file)return;
+  document.getElementById('boleto_filename').textContent=file.name;
+  document.getElementById('boleto_analyzing').classList.add('show');
+  fileToBase64(file).then(function(b64){
+    return extractWithClaude(b64,file.type,'Analise este boleto e retorne APENAS um JSON:\n{"codigo_barras":"código completo","valor_parcela":0.00,"vencimento":"YYYY-MM-DD"}\nRetorne apenas o JSON.');
+  }).then(function(r){
+    document.getElementById('boleto_analyzing').classList.remove('show');
+    if(r){
+      if(r.codigo_barras){document.getElementById('c_digo_de_barras_do_boleto_2').value=r.codigo_barras;document.getElementById('ext_cod_barras').classList.add('show');}
+      if(r.valor_parcela){document.getElementById('valor_da_parcela').value=r.valor_parcela;document.getElementById('ext_valor_parcela').classList.add('show');}
+      if(r.vencimento){document.getElementById('vencimento_da_parcela').value=r.vencimento;document.getElementById('ext_venc').classList.add('show');}
+      document.getElementById('boleto_extracted_list').innerHTML='<li>🔢 Código: <b>'+(r.codigo_barras?r.codigo_barras.substring(0,25)+'...':'-')+'</b></li><li>💰 Valor: <b>R$ '+(r.valor_parcela||'-')+'</b></li><li>📅 Vencimento: <b>'+(r.vencimento||'-')+'</b></li>';
+      document.getElementById('boleto_extracted').classList.add('show');
+      showToast('Boleto analisado!','success');
+    }else showToast('Não foi possível extrair. Preencha manualmente.','error');
+  }).catch(function(e){document.getElementById('boleto_analyzing').classList.remove('show');showToast('Erro: '+e.message,'error');});
+}
+
+function pipefyQuery(query,variables){
+  var token=document.getElementById('pipefy_token').value.trim();
+  return fetch('https://api.pipefy.com/graphql',{
+    method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({query:query,variables:variables})
+  }).then(function(r){return r.json();});
+}
+
+function uploadParaPipefy(file){
+  var token=document.getElementById('pipefy_token').value.trim();
+  var nomeSeguro=file.name.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9._-]/g,'');
+  return fetch('https://api.pipefy.com/graphql',{
+    method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({query:'mutation($orgId:ID!,$filename:String!){createPresignedUrl(input:{organizationId:$orgId,fileName:$filename}){url}}',variables:{orgId:'300759615',filename:nomeSeguro}})
+  }).then(function(r){return r.json();}).then(function(res){
+    var url=res&&res.data&&res.data.createPresignedUrl&&res.data.createPresignedUrl.url;
+    if(!url) throw new Error('Erro ao obter URL: '+JSON.stringify(res));
+    return fetch(url,{method:'PUT',headers:{'Content-Type':file.type||'application/pdf'},body:file})
+      .then(function(r){if(!r.ok)throw new Error('Erro S3: '+r.status);return new URL(url).pathname.substring(1);});
+  });
+}
+
+function setProgress(pct,label){
+  document.getElementById('progress_bar').classList.add('show');
+  document.getElementById('progress_fill').style.width=pct+'%';
+  document.getElementById('progress_label').textContent=label;
+}
+
+function submitForm(){
+  var token=document.getElementById('pipefy_token').value.trim();
+  if(!token){showToast('Configure o token do Pipefy!','error');return;}
+  var boletoFile=document.getElementById('boleto_file').files[0];
+  if(!boletoFile){showToast('Anexe o boleto antes de enviar!','error');return;}
+  var nfFile=document.getElementById('nf_file').files[0];
+  if(!nfFile){showToast('Anexe a nota fiscal antes de enviar!','error');return;}
+  var btn=document.getElementById('btn_submit');
+  btn.disabled=true;
+  var vencParcela=document.getElementById('vencimento_da_parcela').value;
+  var valorNF=document.getElementById('valor_restored').value;
+  setProgress(10,'Fazendo upload dos arquivos...');
+  Promise.all([uploadParaPipefy(boletoFile),uploadParaPipefy(nfFile)]).then(function(paths){
+    var boletoPath=paths[0],nfPath=paths[1];
+    setProgress(35,'Criando registro de parcela...');
+    var parcelaFields=[
+      {field_id:'forma_de_pagamento_da_parcela',field_value:'BOLETO'},
+      {field_id:'valor_da_parcela',field_value:document.getElementById('valor_da_parcela').value},
+      {field_id:'vencimento_da_parcela',field_value:vencParcela?vencParcela+' 12:00':''},
+      {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela',field_value:document.getElementById('c_digo_de_barras_do_boleto_2').value},
+      {field_id:'anexos_quando_for_boletos',field_value:boletoPath}
+    ].filter(function(f){return f.field_value;});
+    return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',{input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
+      .then(function(res){
+        var parcelaId=res&&res.data&&res.data.createCard&&res.data.createCard.card&&res.data.createCard.card.id;
+        if(!parcelaId) throw new Error('Erro ao criar parcela: '+JSON.stringify(res));
+        setProgress(65,'Criando solicitação no Pipefy...');
+        var mainFields=[
+          {field_id:'tipo_de_solicita_o_de_solicita_o',field_value:document.getElementById('tipo_de_solicita_o_de_solicita_o').value},
+          {field_id:'logger',field_value:LOGGER_ID},
+          {field_id:'selecione_o_aprovador',field_value:APROVADOR_ID},
+          {field_id:'selecione_o_fornecedor',field_value:document.getElementById('fornecedor_id').value},
+          {field_id:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor',field_value:document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
+          {field_id:'rateio_entre_uma_ou_mais_categorias',field_value:document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
+          {field_id:'selecione_o_centro_de_custo',field_value:document.getElementById('selecione_o_centro_de_custo').value},
+          {field_id:'tipo_de_pagamento',field_value:document.getElementById('tipo_de_pagamento').value},
+          {field_id:'descreva_sua_solicita_o',field_value:document.getElementById('descreva_sua_solicita_o').value},
+          {field_id:'n_mero_da_nota_fiscal',field_value:document.getElementById('n_mero_da_nota_fiscal').value},
+          {field_id:'data_de_emiss_o_da_nf',field_value:document.getElementById('data_de_emiss_o_da_nf').value},
+          {field_id:'a_nota_fiscal_possui_reten_o_de_imposto',field_value:document.getElementById('a_nota_fiscal_possui_reten_o_de_imposto').value},
+          {field_id:'valor_restored',field_value:valorNF},
+          {field_id:'valor_bruto_da_nota_fiscal',field_value:valorNF},
+          {field_id:'valor_l_quido_da_nf',field_value:valorNF},
+          {field_id:'anexo_da_nota_fiscal',field_value:nfPath},
+          {field_id:'c_digo_de_barras_do_boleto_2',field_value:document.getElementById('c_digo_de_barras_do_boleto_2').value},
+          {field_id:'vencimento_do_pagamento',field_value:vencParcela?vencParcela+' 12:00':''},
+          {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo',field_value:parcelaId}
+        ].filter(function(f){return f.field_value;});
+        return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',{input:{pipe_id:"307088005",fields_attributes:mainFields}});
+      });
+  }).then(function(res){
+    var card=res&&res.data&&res.data.createCard&&res.data.createCard.card;
+    if(!card) throw new Error('Erro ao criar card: '+JSON.stringify(res));
+    setProgress(100,'✅ Card criado com sucesso!');
+    showToast('✅ Card #'+card.id+' criado no Pipefy!','success');
+    setTimeout(function(){if(card.url)window.open(card.url,'_blank');},1000);
+  }).catch(function(e){showToast('❌ Erro: '+e.message,'error');console.error(e);})
+  .finally(function(){btn.disabled=false;});
 }
 </script>
 </body>
