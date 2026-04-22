@@ -440,60 +440,78 @@ var DEPARTAMENTOS = [
   "TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"
 ];
 
-// ✅ Mapeamento robusto com todas as variações de nomes de aba da Onfly
 var ABA_CAT = {
-  // Aéreo — variações
-  'Aéreo': 'Passagens aéreas',
-  'Aereo': 'Passagens aéreas',
-  'AÉREO': 'Passagens aéreas',
-  'AEREO': 'Passagens aéreas',
-  // Hotel/Hoteis — variações
-  'Hotel': 'Hospedagem',
-  'Hoteis': 'Hospedagem',
-  'Hotéis': 'Hospedagem',
-  'HOTEL': 'Hospedagem',
-  'HOTEIS': 'Hospedagem',
-  'HOTÉIS': 'Hospedagem',
-  // Automóveis — variações (✅ Aluguel de Carro)
-  'Automóveis': 'Aluguel de Carro',
-  'Automoveis': 'Aluguel de Carro',
-  'AUTOMÓVEIS': 'Aluguel de Carro',
-  'AUTOMOVEIS': 'Aluguel de Carro',
-  // Ônibus — variações
-  'Ônibus': 'Passagens rodoviárias',
-  'Onibus': 'Passagens rodoviárias',
-  'ÔNIBUS': 'Passagens rodoviárias',
-  'ONIBUS': 'Passagens rodoviárias',
-  // Cobranças adicionais
-  'Cobranças adicionais aéreo': 'Passagens aéreas',
-  'Cobrancas adicionais aereo': 'Passagens aéreas',
-  'Cobranças adicionais automóveis': 'Aluguel de Carro',
-  'Cobrancas adicionais automoveis': 'Aluguel de Carro',
-  'Cobranças add. Aéreo': 'Passagens aéreas',
-  'Cobranças add. Automóveis': 'Aluguel de Carro'
+  'Aéreo':'Passagens aéreas','Aereo':'Passagens aéreas','AÉREO':'Passagens aéreas','AEREO':'Passagens aéreas',
+  'Hotel':'Hospedagem','Hoteis':'Hospedagem','Hotéis':'Hospedagem','HOTEL':'Hospedagem','HOTEIS':'Hospedagem','HOTÉIS':'Hospedagem',
+  'Automóveis':'Aluguel de Carro','Automoveis':'Aluguel de Carro','AUTOMÓVEIS':'Aluguel de Carro','AUTOMOVEIS':'Aluguel de Carro',
+  'Ônibus':'Passagens rodoviárias','Onibus':'Passagens rodoviárias','ÔNIBUS':'Passagens rodoviárias','ONIBUS':'Passagens rodoviárias',
+  'Cobranças adicionais aéreo':'Passagens aéreas','Cobrancas adicionais aereo':'Passagens aéreas',
+  'Cobranças adicionais automóveis':'Aluguel de Carro','Cobrancas adicionais automoveis':'Aluguel de Carro',
+  'Cobranças add. Aéreo':'Passagens aéreas','Cobranças add. Automóveis':'Aluguel de Carro'
 };
 
+// ✅ Mapeamento COMPLETO e CORRIGIDO de nomes antigos → nomes novos do Pipefy
 var CC_NORM = {
-  'DIRETORIA':'DIRETORIA CORPORATE','PRÉ-VENDAS INTEL':'PRE-VENDAS GROWTH',
-  'PRÉ-VENDAS SUPPLY':'PRE-VENDAS PPMF','EXPANSÃO INTEL':'REVOPS OPERATIONS GROWTH',
-  'EXPANSÃO SUPPLY':'REVOPS INTELLIGENCE PPMF','COMERCIAL INTEL':'COMERCIAL GROWTH',
-  'COMERCIAL SUPPLY':'COMERCIAL PPMF','CS INTEL':'CS GROWTH','CS SUPPLY':'CS PPMF',
-  'TECH INTEL':'TECH GROWTH','TECH SUPPLY':'TECH PPMF','MARKETING INTEL':'MARKETING GROWTH',
-  'MARKETING SUPPLY':'MARKETING PPMF','DADOS INTEL':'DADOS GROWTH','DADOS SUPPLY':'DADOS PPMF',
-  'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH','SUPORTE SUPPLY':'SUPORTE PPMF',
-  'QUALIDADE CS':'QUALIDADE GERAL GROWTH','QUALIDADE INTEL':'QUALIDADE GROWTH',
-  'QUALIDADE SUPPLY':'QUALIDADE PPMF','R&D':'R&D GERAL PPMF','R&D SUPPLY':'R&D PPMF',
-  'FINANCEIRO':'FINANCEIRO CORPORATE','CONTABILIDADE':'CONTABILIDADE CORPORATE',
-  'CONTROLADORIA':'CONTROLADORIA CORPORATE','FACILITIES':'FACILITIES CORPORATE',
-  'RH':'RH CORPORATE','DP':'DP CORPORATE','LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE',
-  'BI E INTEGRAÇÕES':'BI E INTEGRACOES CORPORATE','BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
+  // Nomes antigos com acento → novos
+  'PRÉ-VENDAS INTEL':'PRE-VENDAS GROWTH',
+  'PRE-VENDAS INTEL':'PRE-VENDAS GROWTH',
+  'PRÉ-VENDAS SUPPLY':'PRE-VENDAS PPMF',
+  'PRE-VENDAS SUPPLY':'PRE-VENDAS PPMF',
+  'EXPANSÃO INTEL':'REVOPS OPERATIONS GROWTH',
+  'EXPANSAO INTEL':'REVOPS OPERATIONS GROWTH',
+  'EXPANSÃO SUPPLY':'REVOPS INTELLIGENCE PPMF',
+  'EXPANSAO SUPPLY':'REVOPS INTELLIGENCE PPMF',
+  // Comercial
+  'COMERCIAL INTEL':'COMERCIAL GROWTH',
+  'COMERCIAL SUPPLY':'COMERCIAL PPMF',
+  // CS
+  'CS INTEL':'CS GROWTH',
+  'CS SUPPLY':'CS PPMF',
+  'CS GERAL':'CS GERAL GROWTH',
+  'CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH',
+  // Tech
+  'TECH INTEL':'TECH GROWTH',
+  'TECH SUPPLY':'TECH PPMF',
+  'TECHNOLOGY':'TECH GERAL PPMF',
+  'AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
+  // Marketing
+  'MARKETING INTEL':'MARKETING GROWTH',
+  'MARKETING SUPPLY':'MARKETING PPMF',
   'MARKETING INSTITUCIONAL':'MARKETING INSTITUCIONAL CORPORATE',
-  'GOVERNANÇA SALES':'REVOPS GROWTH','CS GERAL':'CS GERAL GROWTH',
-  'CS OPS & INSIGHTS':'CS OPS & INSIGHTS GROWTH','TECHNOLOGY':'TECH GERAL PPMF',
-  'NOVOS NEGÓCIOS':'NOVOS NEGOCIOS PPMF','AUTOMATION SUPPLY':'TECH AUTOMATION GROWTH',
-  'CCO':'CCO GROWTH','FINANCIAL SERVICE':'COMERCIAL MVP',
+  // Dados
+  'DADOS INTEL':'DADOS GROWTH',
+  'DADOS SUPPLY':'DADOS PPMF',
+  // Suporte
+  'SUPORTE INTEL':'PROFESSIONAL SERVICES GROWTH',
+  'SUPORTE SUPPLY':'SUPORTE PPMF',
+  // Qualidade
+  'QUALIDADE CS':'QUALIDADE GERAL GROWTH',
+  'QUALIDADE INTEL':'QUALIDADE GROWTH',
+  'QUALIDADE SUPPLY':'QUALIDADE PPMF',
+  // R&D
+  'R&D':'R&D GERAL PPMF',
+  'R&D SUPPLY':'R&D PPMF',
+  // Corporate (sem sufixo)
+  'DIRETORIA':'DIRETORIA CORPORATE',
+  'FINANCEIRO':'FINANCEIRO CORPORATE',
+  'CONTABILIDADE':'CONTABILIDADE CORPORATE',
+  'CONTROLADORIA':'CONTROLADORIA CORPORATE',
+  'FACILITIES':'FACILITIES CORPORATE',
+  'RH':'RH CORPORATE',
+  'DP':'DP CORPORATE',
+  'LEGAL/COMPLIANCE':'LEGAL/COMPLIANCE CORPORATE',
+  'BI E INTEGRAÇÕES':'BI E INTEGRACOES CORPORATE',
+  'BI E INTEGRACOES':'BI E INTEGRACOES CORPORATE',
+  // Outros
+  'GOVERNANÇA SALES':'REVOPS GROWTH',
+  'GOVERNANCA SALES':'REVOPS GROWTH',
+  'NOVOS NEGÓCIOS':'NOVOS NEGOCIOS PPMF',
+  'NOVOS NEGOCIOS':'NOVOS NEGOCIOS PPMF',
+  'CCO':'CCO GROWTH',
+  'FINANCIAL SERVICE':'COMERCIAL MVP',
   'SALES INTERNATIONAL':'COMERCIAL INTERNATIONAL PPMF',
-  'COALITION':'COALITION CORPORATE','RELGOV':'RELGOV CORPORATE'
+  'COALITION':'COALITION CORPORATE',
+  'RELGOV':'RELGOV CORPORATE'
 };
 
 var todosFornecedores = [], fornecedorCarregado = false;
@@ -517,11 +535,16 @@ function parsearValor(val) {
 
 function normalizarCC(cc) {
   var upper = String(cc).trim().toUpperCase();
+  // Remove acentos para comparação
   var semAcento = upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  // Tenta match direto
   if (CC_NORM[upper]) return CC_NORM[upper];
+  // Tenta sem acento
   if (CC_NORM[semAcento]) return CC_NORM[semAcento];
+  // Tenta match direto na lista de departamentos
   var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
   if (direto) return direto;
+  // Tenta match sem acento na lista
   var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
     return d.normalize('NFD').replace(/[\u0300-\u036f]/g,'') === semAcento;
   });
@@ -564,7 +587,6 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 5000);
 }
 
-// ✅ LEITURA ONFLY — robusto com todas as variações de nome de aba
 function lerOnfly(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -573,23 +595,18 @@ function lerOnfly(file) {
         var wb = XLSX.read(e.target.result, {type:'binary'});
         var resultado = {};
         var avisos = [];
-
-        // Log das abas encontradas para debug
         console.log('Abas encontradas:', wb.SheetNames);
 
         wb.SheetNames.forEach(function(sheetName) {
           var sheetTrim = sheetName.trim();
           var categoria = ABA_CAT[sheetTrim];
-
-          // Tenta sem acento se não encontrou
+          // Tenta sem acento
           if (!categoria) {
             var semAcento = sheetTrim.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
             categoria = ABA_CAT[semAcento];
           }
-
           var isReembolso = /reembolso/i.test(sheetTrim);
-
-          if (!categoria && !isReembolso) return; // pula abas não mapeadas (Fatura, Centro de Custo etc)
+          if (!categoria && !isReembolso) return;
 
           var ws = wb.Sheets[sheetName];
           var rows = XLSX.utils.sheet_to_json(ws, {defval:''});
@@ -604,27 +621,23 @@ function lerOnfly(file) {
             var cc  = row[ccCol];
             var val = row[valCol];
             if (!cc || val === '' || val === undefined) return;
-
             var ccNorm = normalizarCC(cc);
             var valor  = parsearValor(val);
             if (valor === 0) return;
-
             if (DEPARTAMENTOS.indexOf(ccNorm) === -1 && avisos.indexOf(String(cc).trim()) === -1)
               avisos.push(String(cc).trim());
-
             if (!resultado[ccNorm]) resultado[ccNorm] = {};
-
             if (isReembolso) {
-              // ✅ Reembolso: subtrai de Passagens aéreas (principal categoria de viagem)
-              var catReembolso = 'Passagens aéreas';
-              resultado[ccNorm][catReembolso] = Math.round(((resultado[ccNorm][catReembolso] || 0) + valor) * 100) / 100;
+              // ✅ Reembolso subtrai de Passagens aéreas
+              var catR = 'Passagens aéreas';
+              resultado[ccNorm][catR] = Math.round(((resultado[ccNorm][catR] || 0) + valor) * 100) / 100;
             } else {
               resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria] || 0) + valor) * 100) / 100;
             }
           });
         });
 
-        // Remove CCs com total zero (reembolso zerou tudo)
+        // ✅ Remove CCs com total zero (reembolso zerou tudo)
         Object.keys(resultado).forEach(function(cc) {
           var total = Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
           if (Math.abs(total) < 0.01) delete resultado[cc];
@@ -638,7 +651,6 @@ function lerOnfly(file) {
   });
 }
 
-// ✅ LEITURA COPASTUR via Claude API
 function lerCopastur(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -717,8 +729,7 @@ function handleRateioUpload() {
 function preencherRateio(resultado) {
   if (!rateioIniciado) return;
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
-    inp.value = '';
-    inp.classList.remove('preenchido');
+    inp.value = ''; inp.classList.remove('preenchido');
     var d = parseInt(inp.getAttribute('data-dept'));
     var c = parseInt(inp.getAttribute('data-cat'));
     if (!rateioData[d]) rateioData[d] = {};
@@ -795,7 +806,7 @@ function carregarFornecedores() {
     var query = '{ table_records(table_id: "304075895", first: 100'+afterClause+') { edges { node { id title } } pageInfo { hasNextPage endCursor } } }';
     fetch('https://api.pipefy.com/graphql',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({query:query})})
       .then(function(r){return r.json();}).then(function(data){
-        var records = data&&data.data&&data.data.table_records;
+        var records=data&&data.data&&data.data.table_records;
         if(!records||!records.edges){finalizarCarregamento();return;}
         records.edges.forEach(function(e){
           if(e.node&&e.node.id&&e.node.title&&e.node.title.trim())
@@ -867,54 +878,51 @@ function iniciarRateio() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       if(!rateioData[d]) rateioData[d]={};
-      var raw = this.value.replace(/R\$\s*/g,'').trim().replace(/\./g,'').replace(',','.');
-      rateioData[d][c] = parseFloat(raw) || 0;
+      var raw=this.value.replace(/R\$\s*/g,'').trim().replace(/\./g,'').replace(',','.');
+      rateioData[d][c]=parseFloat(raw)||0;
       calcTotais();
     });
     inp.addEventListener('blur', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
-      var val = rateioData[d] && rateioData[d][c];
-      if (val && val > 0) {
-        this.value = val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+      var val=rateioData[d]&&rateioData[d][c];
+      if(val&&val>0){
+        this.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
         this.classList.add('preenchido');
       } else {
-        this.value = '';
-        this.classList.remove('preenchido');
+        this.value=''; this.classList.remove('preenchido');
       }
     });
     inp.addEventListener('focus', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
-      var val = rateioData[d] && rateioData[d][c];
-      if (val && val > 0) {
-        this.value = val.toFixed(2).replace('.',',');
-      }
+      var val=rateioData[d]&&rateioData[d][c];
+      if(val&&val>0) this.value=val.toFixed(2).replace('.',',');
     });
   });
 }
 
 function calcTotais() {
-  if (!rateioIniciado) return;
+  if(!rateioIniciado) return;
   var catT={};
   for(var c=1;c<=NUM_CATS;c++) catT[c]=0;
   DEPARTAMENTOS.forEach(function(d,i){
     var dt=0;
     for(var c=1;c<=NUM_CATS;c++){var v=(rateioData[i]&&rateioData[i][c])||0;catT[c]+=v;dt+=v;}
     var el=document.getElementById('dt'+i);
-    if(el) el.textContent = dt>0 ? formatarBRL(dt) : 'R$ 0,00';
+    if(el) el.textContent=dt>0?formatarBRL(dt):'R$ 0,00';
   });
   var grand=0;
   for(var c=1;c<=NUM_CATS;c++){
     grand+=catT[c];
     var el=document.getElementById('ct'+c);
-    if(el) el.textContent = catT[c]>0 ? formatarBRL(catT[c]) : 'R$ 0,00';
+    if(el) el.textContent=catT[c]>0?formatarBRL(catT[c]):'R$ 0,00';
   }
   var gtEl=document.getElementById('gt');
-  if(gtEl) gtEl.textContent = grand>0 ? formatarBRL(grand) : 'R$ 0,00';
+  if(gtEl) gtEl.textContent=grand>0?formatarBRL(grand):'R$ 0,00';
   var nfVal=parseFloat(document.getElementById('valor_restored').value)||0;
   if(document.getElementById('rateio_nf_display'))
-    document.getElementById('rateio_nf_display').textContent = nfVal>0 ? formatarBRL(nfVal) : 'R$ 0,00';
+    document.getElementById('rateio_nf_display').textContent=nfVal>0?formatarBRL(nfVal):'R$ 0,00';
   var valEl=document.getElementById('rateio_validacao');
   if(valEl){
     if(nfVal>0){
