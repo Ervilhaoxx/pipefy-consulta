@@ -65,7 +65,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
 .badge-tecnicopias { background: #dcfce7; color: #166534; }
 .aviso-cc { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #92400e; margin-top: 8px; display: none; }
 .aviso-cc.show { display: block; }
-/* ✅ Input de rateio estilizado */
 .rateio-input { width:100%; padding:5px 6px; border:1.5px solid #e0d9ff; border-radius:5px; font-size:12px; text-align:right; background:white; color:#333; }
 .rateio-input:focus { outline:none; border-color:#6613D0; background:#faf6ff; }
 .rateio-input.preenchido { background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:600; }
@@ -239,7 +238,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
     </div>
   </div>
 
-  <!-- PLANILHA DE RATEIO -->
   <div class="card" id="rateio_section" style="display:none">
     <h2>📊 Planilha de Rateio</h2>
 
@@ -442,16 +440,37 @@ var DEPARTAMENTOS = [
   "TECH GROWTH","TECH INTERNATIONAL PPMF","TECH MVP","TECH PPMF"
 ];
 
-// ✅ Automóveis → Aluguel de Carro (correto)
+// ✅ Mapeamento robusto com todas as variações de nomes de aba da Onfly
 var ABA_CAT = {
+  // Aéreo — variações
   'Aéreo': 'Passagens aéreas',
+  'Aereo': 'Passagens aéreas',
+  'AÉREO': 'Passagens aéreas',
+  'AEREO': 'Passagens aéreas',
+  // Hotel/Hoteis — variações
   'Hotel': 'Hospedagem',
   'Hoteis': 'Hospedagem',
+  'Hotéis': 'Hospedagem',
+  'HOTEL': 'Hospedagem',
+  'HOTEIS': 'Hospedagem',
+  'HOTÉIS': 'Hospedagem',
+  // Automóveis — variações (✅ Aluguel de Carro)
   'Automóveis': 'Aluguel de Carro',
+  'Automoveis': 'Aluguel de Carro',
+  'AUTOMÓVEIS': 'Aluguel de Carro',
+  'AUTOMOVEIS': 'Aluguel de Carro',
+  // Ônibus — variações
   'Ônibus': 'Passagens rodoviárias',
+  'Onibus': 'Passagens rodoviárias',
+  'ÔNIBUS': 'Passagens rodoviárias',
+  'ONIBUS': 'Passagens rodoviárias',
+  // Cobranças adicionais
   'Cobranças adicionais aéreo': 'Passagens aéreas',
+  'Cobrancas adicionais aereo': 'Passagens aéreas',
   'Cobranças adicionais automóveis': 'Aluguel de Carro',
-  'Cobranças add. Aéreo': 'Passagens aéreas'
+  'Cobrancas adicionais automoveis': 'Aluguel de Carro',
+  'Cobranças add. Aéreo': 'Passagens aéreas',
+  'Cobranças add. Automóveis': 'Aluguel de Carro'
 };
 
 var CC_NORM = {
@@ -480,18 +499,8 @@ var CC_NORM = {
 var todosFornecedores = [], fornecedorCarregado = false;
 var rateioData = {}, rateioIniciado = false;
 
-// ✅ Formata número para R$ brasileiro
 function formatarBRL(valor) {
-  return 'R$ ' + valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-// ✅ Parseia string R$ brasileira para número
-function parsearBRL(str) {
-  if (typeof str === 'number') return str;
-  var s = String(str).replace(/R\$\s*/g,'').trim();
-  // Formato: 1.234,56 → remove pontos de milhar, troca vírgula por ponto
-  s = s.replace(/\./g,'').replace(',','.');
-  return parseFloat(s) || 0;
+  return 'R$ ' + Number(valor).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
 function parsearValor(val) {
@@ -504,6 +513,19 @@ function parsearValor(val) {
     s = s.replace(',','.');
   }
   return parseFloat(s) || 0;
+}
+
+function normalizarCC(cc) {
+  var upper = String(cc).trim().toUpperCase();
+  var semAcento = upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (CC_NORM[upper]) return CC_NORM[upper];
+  if (CC_NORM[semAcento]) return CC_NORM[semAcento];
+  var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
+  if (direto) return direto;
+  var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
+    return d.normalize('NFD').replace(/[\u0300-\u036f]/g,'') === semAcento;
+  });
+  return semAcentoMatch || upper;
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -542,19 +564,7 @@ function showToast(msg, type) {
   setTimeout(function() { t.className = 'toast'; }, 5000);
 }
 
-function normalizarCC(cc) {
-  var upper = String(cc).trim().toUpperCase();
-  var semAcento = upper.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (CC_NORM[upper]) return CC_NORM[upper];
-  if (CC_NORM[semAcento]) return CC_NORM[semAcento];
-  var direto = DEPARTAMENTOS.find(function(d) { return d === upper; });
-  if (direto) return direto;
-  var semAcentoMatch = DEPARTAMENTOS.find(function(d) {
-    return d.normalize('NFD').replace(/[\u0300-\u036f]/g,'') === semAcento;
-  });
-  return semAcentoMatch || upper;
-}
-
+// ✅ LEITURA ONFLY — robusto com todas as variações de nome de aba
 function lerOnfly(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -563,35 +573,63 @@ function lerOnfly(file) {
         var wb = XLSX.read(e.target.result, {type:'binary'});
         var resultado = {};
         var avisos = [];
+
+        // Log das abas encontradas para debug
+        console.log('Abas encontradas:', wb.SheetNames);
+
         wb.SheetNames.forEach(function(sheetName) {
-          var categoria = ABA_CAT[sheetName];
-          if (!categoria) return;
+          var sheetTrim = sheetName.trim();
+          var categoria = ABA_CAT[sheetTrim];
+
+          // Tenta sem acento se não encontrou
+          if (!categoria) {
+            var semAcento = sheetTrim.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+            categoria = ABA_CAT[semAcento];
+          }
+
+          var isReembolso = /reembolso/i.test(sheetTrim);
+
+          if (!categoria && !isReembolso) return; // pula abas não mapeadas (Fatura, Centro de Custo etc)
+
           var ws = wb.Sheets[sheetName];
           var rows = XLSX.utils.sheet_to_json(ws, {defval:''});
           if (!rows.length) return;
+
           var primeiraLinha = rows[0];
           var valCol = Object.keys(primeiraLinha).find(function(k) { return /valor/i.test(k); });
           var ccCol  = Object.keys(primeiraLinha).find(function(k) { return /centro/i.test(k); });
           if (!valCol || !ccCol) return;
+
           rows.forEach(function(row) {
             var cc  = row[ccCol];
             var val = row[valCol];
             if (!cc || val === '' || val === undefined) return;
+
             var ccNorm = normalizarCC(cc);
             var valor  = parsearValor(val);
             if (valor === 0) return;
+
             if (DEPARTAMENTOS.indexOf(ccNorm) === -1 && avisos.indexOf(String(cc).trim()) === -1)
               avisos.push(String(cc).trim());
+
             if (!resultado[ccNorm]) resultado[ccNorm] = {};
-            if (sheetName === 'Reembolsos') {
-              var cats = Object.keys(resultado[ccNorm]);
-              if (cats.length > 0)
-                resultado[ccNorm][cats[0]] = Math.round((resultado[ccNorm][cats[0]] + valor) * 100) / 100;
+
+            if (isReembolso) {
+              // ✅ Reembolso: subtrai de Passagens aéreas (principal categoria de viagem)
+              var catReembolso = 'Passagens aéreas';
+              resultado[ccNorm][catReembolso] = Math.round(((resultado[ccNorm][catReembolso] || 0) + valor) * 100) / 100;
             } else {
               resultado[ccNorm][categoria] = Math.round(((resultado[ccNorm][categoria] || 0) + valor) * 100) / 100;
             }
           });
         });
+
+        // Remove CCs com total zero (reembolso zerou tudo)
+        Object.keys(resultado).forEach(function(cc) {
+          var total = Object.values(resultado[cc]).reduce(function(a,b){return a+b;},0);
+          if (Math.abs(total) < 0.01) delete resultado[cc];
+        });
+
         resolve({resultado: resultado, avisos: avisos});
       } catch(err) { reject(err); }
     };
@@ -600,6 +638,7 @@ function lerOnfly(file) {
   });
 }
 
+// ✅ LEITURA COPASTUR via Claude API
 function lerCopastur(file) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -643,7 +682,7 @@ function handleRateioUpload() {
   var ext = file.name.split('.').pop().toLowerCase();
   var nomeLower = file.name.toLowerCase();
   var isOnfly   = (ext === 'xlsx' || ext === 'xls') || nomeLower.includes('onfly');
-  var isCopastur = (ext === 'pdf') || nomeLower.includes('copastur');
+  var isCopastur = ext === 'pdf' || nomeLower.includes('copastur');
   document.getElementById('rateio_analyzing').classList.add('show');
   document.getElementById('aviso_cc').classList.remove('show');
   var promise;
@@ -671,13 +710,12 @@ function handleRateioUpload() {
   }).catch(function(err) {
     document.getElementById('rateio_analyzing').classList.remove('show');
     showToast('❌ Erro: ' + err.message, 'error');
+    console.error(err);
   });
 }
 
-// ✅ Preenche rateio com valores formatados em R$
 function preencherRateio(resultado) {
   if (!rateioIniciado) return;
-  // Limpa tudo
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.value = '';
     inp.classList.remove('preenchido');
@@ -697,7 +735,6 @@ function preencherRateio(resultado) {
       sel.appendChild(opt);
     });
   }
-  // Determina categorias usadas
   var categoriasUsadas = {};
   Object.values(resultado).forEach(function(cats) {
     Object.keys(cats).forEach(function(cat) {
@@ -705,12 +742,10 @@ function preencherRateio(resultado) {
         categoriasUsadas[cat] = Object.keys(categoriasUsadas).length + 1;
     });
   });
-  // Seta selects de categoria
   Object.keys(categoriasUsadas).forEach(function(cat) {
     var sel = document.getElementById('cs' + categoriasUsadas[cat]);
     if (sel) sel.value = cat;
   });
-  // Preenche valores formatados em R$ com estilo verde
   Object.keys(resultado).forEach(function(cc) {
     var deptIdx = DEPARTAMENTOS.indexOf(cc);
     if (deptIdx === -1) return;
@@ -722,7 +757,6 @@ function preencherRateio(resultado) {
       var input = document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
       if (input) {
         var valorAbs = Math.abs(valor);
-        // ✅ Exibe formatado em R$ brasileiro
         input.value = valorAbs.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
         input.classList.add('preenchido');
         if (!rateioData[deptIdx]) rateioData[deptIdx] = {};
@@ -828,18 +862,15 @@ function iniciarRateio() {
       cols+
       '<td id="dt'+i+'" style="padding:6px;text-align:center;font-size:12px;font-weight:700;color:#333;white-space:nowrap">R$ 0,00</td></tr>';
   }).join('');
-  // ✅ Listener com parse de formato brasileiro
   document.querySelectorAll('#rateio_tbody input').forEach(function(inp) {
     inp.addEventListener('input', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       if(!rateioData[d]) rateioData[d]={};
-      // Parseia formato brasileiro: 1.234,56 → 1234.56
       var raw = this.value.replace(/R\$\s*/g,'').trim().replace(/\./g,'').replace(',','.');
       rateioData[d][c] = parseFloat(raw) || 0;
       calcTotais();
     });
-    // ✅ Ao sair do campo, formata automaticamente
     inp.addEventListener('blur', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
@@ -847,17 +878,16 @@ function iniciarRateio() {
       if (val && val > 0) {
         this.value = val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
         this.classList.add('preenchido');
-      } else if (this.value === '' || this.value === '-') {
+      } else {
+        this.value = '';
         this.classList.remove('preenchido');
       }
     });
-    // ✅ Ao entrar no campo, limpa formatação para edição
     inp.addEventListener('focus', function() {
       var d=parseInt(this.getAttribute('data-dept'));
       var c=parseInt(this.getAttribute('data-cat'));
       var val = rateioData[d] && rateioData[d][c];
       if (val && val > 0) {
-        // Mostra só o número para facilitar edição
         this.value = val.toFixed(2).replace('.',',');
       }
     });
