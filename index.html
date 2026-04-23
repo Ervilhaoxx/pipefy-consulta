@@ -1078,6 +1078,24 @@ function blobParaFile(blob,nome){
   return new File([blob],nome,{type:blob.type});
 }
 
+function verificarNFDuplicada(numeroNF, token){
+  // Busca cards no pipe com o mesmo número de NF
+  var query = '{ searchCards(pipeId: "302699293", fieldId: "n_mero_da_nota_fiscal", fieldValue: "' + numeroNF + '") { edges { node { id title current_phase { name } } } } }';
+  return fetch('https://api.pipefy.com/graphql',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({query:query})
+  }).then(function(r){return r.json();}).then(function(data){
+    var edges = data&&data.data&&data.data.searchCards&&data.data.searchCards.edges||[];
+    // Filtrar cards com a mesma NF
+    var cardsAtivos = edges.filter(function(e){
+      var fase = e.node&&e.node.current_phase&&e.node.current_phase.name||'';
+      return fase.toLowerCase().indexOf('recus') === -1; // não está em Recusados
+    });
+    return cardsAtivos; // retorna array vazio se tudo estiver recusado
+  });
+}
+
 function submitForm(){
   var token=document.getElementById('pipefy_token').value.trim();
   if(!token){showToast('Configure o token do Pipefy!','error');return;}
@@ -1086,7 +1104,25 @@ function submitForm(){
   var nfFile=document.getElementById('nf_file').files[0];
   if(!nfFile){showToast('Anexe a nota fiscal antes de enviar!','error');return;}
   var btn=document.getElementById('btn_submit');
+  var numeroNF=document.getElementById('n_mero_da_nota_fiscal').value.trim();
   btn.disabled=true;
+  setProgress(5,'Verificando nota fiscal...');
+  verificarNFDuplicada(numeroNF, token).then(function(cardsAtivos){
+    if(cardsAtivos.length>0){
+      var fase=cardsAtivos[0].node.current_phase.name;
+      btn.disabled=false;
+      document.getElementById('progress_bar').classList.remove('show');
+      showToast('❌ NF '+numeroNF+' já existe no Pipefy (fase: '+fase+'). Verifique antes de continuar.','error');
+      return;
+    }
+    executarSubmit(token, btn);
+  }).catch(function(){
+    // Se a verificação falhar, continua normalmente
+    executarSubmit(token, btn);
+  });
+}
+
+function executarSubmit(token, btn){
   var vencParcela=document.getElementById('vencimento_da_parcela').value;
   var valorNF=document.getElementById('valor_restored').value;
   setProgress(10,'Fazendo upload dos arquivos...');
