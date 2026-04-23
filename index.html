@@ -1027,6 +1027,17 @@ function gerarPlanilhaRateio(){
   // Preencher Total da NF em B1
   ws['B1']={v:nfVal,t:'n',z:'R$ #,##0.00'};
 
+  // Preencher total por categoria na linha 3 (substituir fórmulas por valores)
+  cats.forEach(function(cat){
+    var soma=0;
+    DEPARTAMENTOS.forEach(function(dept,deptIdx){
+      soma+=((rateioData[deptIdx]&&rateioData[deptIdx][cat.idx])||0);
+    });
+    soma=Math.round(soma*100)/100;
+    var addrTotal=XLSX.utils.encode_cell({r:2,c:cat.colVal-1});
+    ws[addrTotal]={v:soma,t:'n',z:'R$ #,##0.00'};
+  });
+
   // Preencher nome das categorias na linha 4 (colunas B,D,F...)
   cats.forEach(function(cat){
     var addr=XLSX.utils.encode_cell({r:3,c:cat.colVal-1});
