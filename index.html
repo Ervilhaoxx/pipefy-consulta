@@ -682,8 +682,8 @@ function preencherRateio(resultado){
       var colIdx=categoriasUsadas[cat];
       if(!colIdx) return;
       var valor=resultado[cc][cat];
-      // ✅ CORREÇÃO: ignora valores zero ou negativos (reembolsos que zeraram o CC)
-      if(valor<=0) return;
+      // Ignora apenas zero exato — negativos são reembolsos já compensados pelo lerOnfly
+      if(valor===0) return;
       var input=document.querySelector('#rateio_tbody input[data-dept="'+deptIdx+'"][data-cat="'+colIdx+'"]');
       if(input){
         input.value=valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
