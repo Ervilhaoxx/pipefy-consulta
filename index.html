@@ -1120,7 +1120,7 @@ function submitForm(){
           {field_id:'vencimento_do_pagamento',field_value:vencParcela?vencParcela+' 12:00':''},
           {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo',field_value:parcelaId}
         ].filter(function(f){return f&&f.field_value;});
-        return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',{input:{pipe_id:"307088005",fields_attributes:mainFields}});
+        return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',{input:{pipe_id:"302699293",fields_attributes:mainFields}});
       });
   }).then(function(res){
     var card=res&&res.data&&res.data.createCard&&res.data.createCard.card;
