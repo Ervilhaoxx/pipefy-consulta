@@ -940,6 +940,113 @@ function setProgress(pct,label){
   document.getElementById('progress_label').textContent=label;
 }
 
+
+function gerarPlanilhaRateio(){
+  var cats=[];
+  for(var c=1;c<=NUM_CATS;c++){
+    var sel=document.getElementById('cs'+c);
+    if(sel&&sel.value) cats.push({idx:c,nome:sel.value});
+  }
+  if(!cats.length) return null;
+
+  var nfVal=parseFloat(document.getElementById('valor_restored').value)||0;
+
+  // Calcular subtotal por categoria e por dept
+  var subtotaisCat={};
+  cats.forEach(function(cat){
+    var soma=0;
+    DEPARTAMENTOS.forEach(function(d,i){
+      soma+=((rateioData[i]&&rateioData[i][cat.idx])||0);
+    });
+    subtotaisCat[cat.idx]=soma;
+  });
+
+  // Calcular validação
+  var grandTotal=Object.values(subtotaisCat).reduce(function(a,b){return a+b;},0);
+  var diff=Math.abs(grandTotal-nfVal);
+  var validacao=diff<0.02?'✔ OK':grandTotal>nfVal?'❌ Excede '+formatarBRL(grandTotal-nfVal):'⚠️ Falta '+formatarBRL(nfVal-grandTotal);
+
+  // Montar dados da planilha
+  // Cada bloco de categoria ocupa 2 colunas: DEPARTAMENTO | VALOR
+  // Blocos ficam lado a lado horizontalmente
+  var numCats=cats.length;
+  var aoa=[]; // array of arrays
+
+  // Linha 1: Total da NF | valor | vazio... | Validação nota | resultado
+  var linha1=new Array(numCats*2).fill('');
+  linha1[0]='Total da NF';
+  linha1[1]=nfVal;
+  linha1[numCats*2-4]='';
+  linha1[numCats*2-3]='';
+  linha1[numCats*2-2]='Validação nota';
+  linha1[numCats*2-1]=validacao;
+  aoa.push(linha1);
+
+  // Linha 2: vazia
+  aoa.push(new Array(numCats*2).fill(''));
+
+  // Linha 3: Total por categoria | subtotal (repetido por bloco)
+  var linha3=[];
+  cats.forEach(function(cat){
+    linha3.push('Total por categoria');
+    linha3.push(subtotaisCat[cat.idx]);
+  });
+  aoa.push(linha3);
+
+  // Linha 4: CategoriaX | nome da categoria (com dropdown)
+  var linha4=[];
+  cats.forEach(function(cat,i){
+    linha4.push('Categoria'+(i+1));
+    linha4.push(cat.nome);
+  });
+  aoa.push(linha4);
+
+  // Linha 5: vazia
+  aoa.push(new Array(numCats*2).fill(''));
+
+  // Linha 6: DEPARTAMENTOS | VALOR DO RATEIO (cabeçalho de cada bloco)
+  var linha6=[];
+  cats.forEach(function(){
+    linha6.push('DEPARTAMENTOS');
+    linha6.push('VALOR DO RATEIO');
+  });
+  aoa.push(linha6);
+
+  // Linhas de departamentos
+  DEPARTAMENTOS.forEach(function(dept,i){
+    var linhaDept=[];
+    cats.forEach(function(cat){
+      var val=(rateioData[i]&&rateioData[i][cat.idx])||0;
+      linhaDept.push(dept);
+      linhaDept.push(val>0?val:'');
+    });
+    aoa.push(linhaDept);
+  });
+
+  var ws=XLSX.utils.aoa_to_sheet(aoa);
+
+  // Formatação de largura de colunas
+  var cols=[];
+  cats.forEach(function(){
+    cols.push({wch:35}); // DEPARTAMENTOS
+    cols.push({wch:18}); // VALOR
+  });
+  ws['!cols']=cols;
+
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Rateio');
+
+  // Gerar como arquivo Blob
+  var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  var blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  blob.name='Rateio_Logcomex.xlsx';
+  return blob;
+}
+
+function blobParaFile(blob,nome){
+  return new File([blob],nome,{type:blob.type});
+}
+
 function submitForm(){
   var token=document.getElementById('pipefy_token').value.trim();
   if(!token){showToast('Configure o token do Pipefy!','error');return;}
@@ -952,10 +1059,10 @@ function submitForm(){
   var vencParcela=document.getElementById('vencimento_da_parcela').value;
   var valorNF=document.getElementById('valor_restored').value;
   setProgress(10,'Fazendo upload dos arquivos...');
-  var rateioFile=document.getElementById('rateio_file').files[0];
   var temRateio=document.getElementById('rateio_entre_uma_ou_mais_categorias').value==='Sim';
   var uploads=[uploadParaPipefy(boletoFile),uploadParaPipefy(nfFile)];
-  if(temRateio&&rateioFile) uploads.push(uploadParaPipefy(rateioFile));
+  var planilhaBlob=temRateio?gerarPlanilhaRateio():null;
+  if(planilhaBlob) uploads.push(uploadParaPipefy(blobParaFile(planilhaBlob,'Rateio_Logcomex.xlsx')));
   Promise.all(uploads).then(function(paths){
     var boletoPath=paths[0],nfPath=paths[1],planilhaPath=paths[2]||null;
     setProgress(35,'Criando registro de parcela...');
