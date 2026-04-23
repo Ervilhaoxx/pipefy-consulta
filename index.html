@@ -952,8 +952,12 @@ function submitForm(){
   var vencParcela=document.getElementById('vencimento_da_parcela').value;
   var valorNF=document.getElementById('valor_restored').value;
   setProgress(10,'Fazendo upload dos arquivos...');
-  Promise.all([uploadParaPipefy(boletoFile),uploadParaPipefy(nfFile)]).then(function(paths){
-    var boletoPath=paths[0],nfPath=paths[1];
+  var rateioFile=document.getElementById('rateio_file').files[0];
+  var temRateio=document.getElementById('rateio_entre_uma_ou_mais_categorias').value==='Sim';
+  var uploads=[uploadParaPipefy(boletoFile),uploadParaPipefy(nfFile)];
+  if(temRateio&&rateioFile) uploads.push(uploadParaPipefy(rateioFile));
+  Promise.all(uploads).then(function(paths){
+    var boletoPath=paths[0],nfPath=paths[1],planilhaPath=paths[2]||null;
     setProgress(35,'Criando registro de parcela...');
     var parcelaFields=[
       {field_id:'forma_de_pagamento_da_parcela',field_value:'BOLETO'},
@@ -961,7 +965,7 @@ function submitForm(){
       {field_id:'vencimento_da_parcela',field_value:vencParcela?vencParcela+' 12:00':''},
       {field_id:'insira_o_c_digo_de_barras_do_boleto_da_parcela',field_value:document.getElementById('c_digo_de_barras_do_boleto_2').value},
       {field_id:'anexos_quando_for_boletos',field_value:boletoPath}
-    ].filter(function(f){return f.field_value;});
+    ].filter(function(f){return f&&f.field_value;});
     return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id}}}',{input:{pipe_id:"304137242",fields_attributes:parcelaFields}})
       .then(function(res){
         var parcelaId=res&&res.data&&res.data.createCard&&res.data.createCard.card&&res.data.createCard.card.id;
@@ -974,6 +978,7 @@ function submitForm(){
           {field_id:'selecione_o_fornecedor',field_value:document.getElementById('fornecedor_id').value},
           {field_id:'qual_a_frequ_ncia_de_pagamento_deste_fornecedor',field_value:document.getElementById('qual_a_frequ_ncia_de_pagamento_deste_fornecedor').value},
           {field_id:'rateio_entre_uma_ou_mais_categorias',field_value:document.getElementById('rateio_entre_uma_ou_mais_categorias').value},
+          planilhaPath?{field_id:'planilha_preenchida',field_value:planilhaPath}:null,
           {field_id:'selecione_o_centro_de_custo',field_value:document.getElementById('selecione_o_centro_de_custo').value},
           {field_id:'tipo_de_pagamento',field_value:document.getElementById('tipo_de_pagamento').value},
           {field_id:'descreva_sua_solicita_o',field_value:document.getElementById('descreva_sua_solicita_o').value},
@@ -987,7 +992,7 @@ function submitForm(){
           {field_id:'c_digo_de_barras_do_boleto_2',field_value:document.getElementById('c_digo_de_barras_do_boleto_2').value},
           {field_id:'vencimento_do_pagamento',field_value:vencParcela?vencParcela+' 12:00':''},
           {field_id:'informe_o_valor_da_parcela_e_a_data_de_pagamentoo',field_value:parcelaId}
-        ].filter(function(f){return f.field_value;});
+        ].filter(function(f){return f&&f.field_value;});
         return pipefyQuery('mutation($input:CreateCardInput!){createCard(input:$input){card{id title url}}}',{input:{pipe_id:"307088005",fields_attributes:mainFields}});
       });
   }).then(function(res){
