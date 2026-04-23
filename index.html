@@ -1048,6 +1048,14 @@ function gerarPlanilhaRateio(){
     });
   });
 
+  // Ajustar largura das colunas: dept=38, valor=18, repetido por categoria
+  var colsConfig=[];
+  for(var i=0;i<cats.length;i++){
+    colsConfig.push({wch:38}); // DEPARTAMENTOS
+    colsConfig.push({wch:18}); // VALOR DO RATEIO
+  }
+  ws['!cols']=colsConfig;
+
   // Gerar blob
   var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
   var blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
