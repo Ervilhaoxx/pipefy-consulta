@@ -1115,14 +1115,14 @@ function submitForm(){
       showToast('❌ NF '+numeroNF+' já existe no Pipefy (fase: '+fase+'). Verifique antes de continuar.','error');
       return;
     }
-    executarSubmit(token, btn);
+    executarSubmit(token, btn, boletoFile, nfFile);
   }).catch(function(){
     // Se a verificação falhar, continua normalmente
-    executarSubmit(token, btn);
+    executarSubmit(token, btn, boletoFile, nfFile);
   });
 }
 
-function executarSubmit(token, btn){
+function executarSubmit(token, btn, boletoFile, nfFile){
   var vencParcela=document.getElementById('vencimento_da_parcela').value;
   var valorNF=document.getElementById('valor_restored').value;
   setProgress(10,'Fazendo upload dos arquivos...');
